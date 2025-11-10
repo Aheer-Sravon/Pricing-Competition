@@ -190,7 +190,7 @@ class TheoreticalBenchmarks:
         E_pi_N = p_N * q_N
         
         # At Monopoly
-        q_M = (a_bar - p_M - d * (a_bar - p_M)) / denominator
+        q_M = a_bar - p_M
         E_pi_M = p_M * q_M
         
         return {
