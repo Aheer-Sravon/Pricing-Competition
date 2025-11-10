@@ -4,6 +4,8 @@ import pandas as pd
 from environments import MarketEnvContinuous
 from agents import QLearningAgent
 
+SEED = 99
+
 def run_simulation(model, seed):
     np.random.seed(seed)
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
@@ -40,19 +42,19 @@ def run_simulation(model, seed):
     return avg_price1, avg_price2, delta
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 5  # Paper likely uses multiple runs; adjust for computation time
+num_runs = 10  # Paper likely uses multiple runs; adjust for computation time
 results = {}
 
 for model in models:
     # Get theo price outside the loop since it's constant per model
-    env_temp = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=42)
+    env_temp = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=SEED)
     p_n = env_temp.P_N
     
     avg_prices1 = []
     avg_prices2 = []
     deltas = []
     for run in range(num_runs):
-        seed = 42 + run  # Different seeds for each run
+        seed = SEED + run  # Different seeds for each run
         ap1, ap2, d = run_simulation(model, seed)
         avg_prices1.append(ap1)
         avg_prices2.append(ap2)
