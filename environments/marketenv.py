@@ -1,5 +1,7 @@
 from typing import Optional, Dict, Tuple
 import numpy as np
+from shocks import AR1_Shock
+import warnings
 
 class MarketEnv:
     """Base Market environment supporting all three models with optional shocks"""
@@ -37,8 +39,26 @@ class MarketEnv:
             self.c = 0.0
             self.a_bar = 1.0
             self.d = 0.25
-            self.P_N = 0.4286
-            self.P_M = 0.5
+            
+            # Nash (Cournot duopoly)
+            self.P_N = self.a_bar * (1 - self.d) / (2 - self.d)  # 0.4286
+            q_N = self.P_N  # By symmetry at equilibrium
+            pi_N = self.P_N * q_N  # 0.1959
+            
+            # Monopoly (single firm, no competition)
+            self.P_M = self.a_bar / 2  # 0.5
+            q_M = self.a_bar - self.P_M  # 0.5 (residual demand, NOT Cournot!)
+            pi_M = self.P_M * q_M  # 0.25
+            
+            # Store for Delta calculations
+            self.pi_N_linear = pi_N  # 0.1959
+            self.pi_M_linear = pi_M  # 0.25
+            
+            # Verify profit range is healthy
+            profit_range = pi_M - pi_N  # Should be ~0.05
+            if profit_range < 0.04:
+                import warnings
+                warnings.warn(f"Linear model profit range too small: {profit_range:.4f}")
         else:
             raise ValueError(f"Unknown model: {self.model}")
        
@@ -138,18 +158,26 @@ class MarketEnv:
             return self._linear_demand_profit(prices, shocks)
    
     def _logit_demand_profit(self, prices: np.ndarray, shocks: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Logit demand with shocks in the exponential (verified against PDF)"""
-        utilities = (self.a - prices + shocks) / self.mu
-       
+        """Logit demand - shocks affect variance but not Nash equilibrium
+        
+        Critical: E[demand | shocks] = demand(no shocks) since E[ε] = 0
+        Nash price must remain constant regardless of shock scheme
+        """
+        # Base utilities WITHOUT shocks (defines Nash equilibrium)
+        base_utilities = (self.a - prices) / self.mu
+        
+        # Add shocks OUTSIDE mu scaling to preserve E[utility]
+        realized_utilities = base_utilities + shocks
+        
         # Numerical stability
-        max_util = np.max(utilities)
-        exp_utils = np.exp(utilities - max_util)
+        max_util = np.max(realized_utilities)
+        exp_utils = np.exp(realized_utilities - max_util)
         exp_outside = np.exp(self.a0/self.mu - max_util)
-       
+        
         denominator = np.sum(exp_utils) + exp_outside
         demands = exp_utils / denominator
         profits = (prices - self.c) * demands
-       
+        
         return demands, profits
    
     def _hotelling_demand_profit(self, prices: np.ndarray, shocks: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:

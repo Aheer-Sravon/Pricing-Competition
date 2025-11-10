@@ -1,0 +1,22 @@
+Configuration,Model,Nash Price,Nash Profit,Monopoly Price,Monopoly Profit,Shock Enabled
+No Shocks,LOGIT,1.473,0.223,1.925,0.3375,False
+No Shocks,HOTELLING,1.0,0.5,1.25,0.625,False
+No Shocks,LINEAR,0.4286,0.1959,0.5,0.2,False
+Scheme A - Independent,LOGIT,1.7973,0.3282,2.0886,0.364,True
+Scheme A - Independent,HOTELLING,1.0,0.5,1.25,0.625,True
+Scheme A - Independent,LINEAR,0.4286,0.1959,0.5,0.2,True
+Scheme A - Correlated,LOGIT,1.4552,0.1938,2.022,0.299,True
+Scheme A - Correlated,HOTELLING,1.0,0.5,1.25,0.625,True
+Scheme A - Correlated,LINEAR,0.4286,0.1959,0.5,0.2,True
+Scheme B - Independent,LOGIT,1.5367,0.2485,1.9429,0.3407,True
+Scheme B - Independent,HOTELLING,1.0,0.5,1.25,0.625,True
+Scheme B - Independent,LINEAR,0.4286,0.1959,0.5,0.2,True
+Scheme B - Correlated,LOGIT,1.4698,0.2194,1.9313,0.3307,True
+Scheme B - Correlated,HOTELLING,1.0,0.5,1.25,0.625,True
+Scheme B - Correlated,LINEAR,0.4286,0.1959,0.5,0.2,True
+Scheme C - Independent,LOGIT,1.9151,0.3596,2.1769,0.3855,True
+Scheme C - Independent,HOTELLING,1.0,0.5,1.25,0.625,True
+Scheme C - Independent,LINEAR,0.4286,0.1959,0.5,0.2,True
+Scheme C - Correlated,LOGIT,1.4536,0.1836,2.095,0.293,True
+Scheme C - Correlated,HOTELLING,1.0,0.5,1.25,0.625,True
+Scheme C - Correlated,LINEAR,0.4286,0.1959,0.5,0.2,True
