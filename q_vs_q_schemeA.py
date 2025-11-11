@@ -1,35 +1,36 @@
 """
-PSO vs PSO with Scheme A Shocks
-Uses theoretical_benchmarks.py for proper benchmark calculations
+Q-Learning vs Q-Learning with Scheme A Shocks
+Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)
 """
 
 import numpy as np
 import pandas as pd
 from environments import MarketEnvContinuous
-from agents import PSOAgent
+from agents import QLearningAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 SEED = 99
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
-    """Run PSO vs PSO simulation"""
+    """Run Q vs Q simulation"""
     np.random.seed(seed)
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
-    agents = [PSOAgent(env, agent_id=0), PSOAgent(env, agent_id=1)]
+    agents = [QLearningAgent(env.N, agent_id=0), QLearningAgent(env.N, agent_id=1)]
+    
     state = env.reset()
     profits_history = []
     prices_history = []
     
-    current_prices = [agents[0].choose_price(), agents[1].choose_price()]
-    
     for t in range(env.horizon):
-        agents[0].update(current_prices[1])
-        agents[1].update(current_prices[0])
-        current_prices = [agents[0].choose_price(), agents[1].choose_price()]
-        next_state, rewards, done, info = env.step(current_prices)
+        actions = [agents[0].choose_action(state), agents[1].choose_action(state)]
+        next_state, rewards, done, info = env.step(actions)
+        
+        agents[0].update(state, actions[0], rewards[0], next_state)
+        agents[1].update(state, actions[1], rewards[1], next_state)
+        
         state = next_state
-        prices_history.append(current_prices)
+        prices_history.append(info['prices'])
         profits_history.append(rewards)
     
     last_prices = np.array(prices_history[-1000:])
@@ -58,13 +59,14 @@ def main():
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("PSO vs PSO - SCHEME A (INDEPENDENT SHOCKS)")
+    print("Q-LEARNING vs Q-LEARNING - SCHEME A")
+    print("Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 10
+    num_runs = 50
     results = {}
     
     for model in models:
@@ -92,7 +94,7 @@ def main():
             'Delta': np.mean(deltas)
         }
         
-        print(f"  Completed: Avg Price = {results[model]['Avg Price Firm 1']:.3f}, Δ = {results[model]['Delta']:.3f}")
+        print(f"  Completed: Δ = {results[model]['Delta']:.3f}")
     
     data = {
         'Model': [m.upper() for m in models],
@@ -104,13 +106,13 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/pso_vs_pso_schemeA.csv", index=False)
+    df.to_csv("./results/q_vs_q_schemeA.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
     print("=" * 80)
     print(df.to_string(index=False))
-    print("\n[Results saved to ./results/pso_vs_pso_schemeA.csv]")
+    print("\n[Results saved to ./results/q_vs_q_schemeA.csv]")
 
 
 if __name__ == "__main__":

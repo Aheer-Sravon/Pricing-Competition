@@ -49,7 +49,7 @@ def run_simulation(model, seed):
     return avg_price_q, avg_price_pso, delta_q, delta_pso
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 10  # Paper likely uses multiple runs; adjust for computation time
+num_runs = 50  # Paper likely uses multiple runs; adjust for computation time
 results = {}
 
 for model in models:

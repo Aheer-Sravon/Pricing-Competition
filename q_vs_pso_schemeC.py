@@ -1,6 +1,6 @@
 """
-Q-Learning vs PSO with Scheme A Shocks
-Uses theoretical_benchmarks.py for proper benchmark calculations
+Q-Learning vs PSO with Scheme C Shocks
+Scheme C: ρ=0.9, σ_η=0.3 (high persistence, medium variance)
 """
 
 import numpy as np
@@ -61,20 +61,21 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 def main():
     shock_cfg = {
         'enabled': True,
-        'scheme': 'A',
+        'scheme': 'C',
         'mode': 'independent'
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("Q-LEARNING vs PSO - SCHEME A (INDEPENDENT SHOCKS)")
+    print("Q-LEARNING vs PSO - SCHEME C")
+    print("Scheme C: ρ=0.9, σ_η=0.3 (high persistence, medium variance)")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 10
+    num_runs = 50
     results = {}
     
     for model in models:
@@ -118,13 +119,13 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/q_vs_pso_schemeA.csv", index=False)
+    df.to_csv("./results/q_vs_pso_schemeC.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
     print("=" * 80)
     print(df.to_string(index=False))
-    print("\n[Results saved to ./results/q_vs_pso_schemeA.csv]")
+    print("\n[Results saved to ./results/q_vs_pso_schemeC.csv]")
 
 
 if __name__ == "__main__":
