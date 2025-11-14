@@ -1,48 +1,48 @@
->>> """
-... Continuous Proximal Policy Optimization (PPO) for Algorithmic Pricing - PyTorch
-... Based on "Algorithmic Collusion in Dynamic Pricing with Deep Reinforcement Learning" 
-... by Deng, Schiffer, and Bichler (2024) and original PPO by Schulman et al. (2017)
-... 
-... FRAMEWORK: PyTorch (GPU-enabled)
-... ACTION SPACE: Continuous (direct price values, no discretization)
-... """
-... 
-... import numpy as np
-... import torch
-... import torch.nn as nn
-... import torch.optim as optim
-... import torch.nn.functional as F
-... from torch.distributions import Normal
-... from collections import deque
-... 
-... 
-... class ActorCriticNetwork(nn.Module):
-...     """
-...     Actor-Critic Network for Continuous PPO
-...     
-...     ARCHITECTURE DECISION:
-...     - Hidden layers: [64, 64] - SAME as DQN (from dqn.py)
-...     - Activation: TANH - FROM Algorithm PPO Paper 1, page 6: 
-...       "fully-connected MLP with two hidden layers of 64 units, and tanh nonlinearities"
-...       
-...       WHY TANH instead of ReLU (used in DQN)?
-...       - Paper explicitly specifies tanh for continuous control tasks
-...       - Tanh bounds outputs to [-1, 1], providing natural gradient scaling
-...       - Standard practice for continuous policy networks (confirmed in original PPO paper)
-...       
-...     - State dim: 2 (own_price, competitor_price) - normalized actual prices
-...     - Actor output: mean of Gaussian distribution (log_std learned separately)
-...     - Critic output: state value
-...     """
-...     
-...     def __init__(self, state_dim: int = 2, hidden_units: list = [64, 64]):
-...         super(ActorCriticNetwork, self).__init__()
-...         
-...         self.state_dim = state_dim
-...         self.hidden_units = hidden_units
-...         
-...         # Shared feature extraction layers
-...         # DECISION: Use shared layers between actor and critic
+"""
+Continuous Proximal Policy Optimization (PPO) for Algorithmic Pricing - PyTorch
+Based on "Algorithmic Collusion in Dynamic Pricing with Deep Reinforcement Learning" 
+by Deng, Schiffer, and Bichler (2024) and original PPO by Schulman et al. (2017)
+
+FRAMEWORK: PyTorch (GPU-enabled)
+ACTION SPACE: Continuous (direct price values, no discretization)
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+from torch.distributions import Normal
+from collections import deque
+
+
+class ActorCriticNetwork(nn.Module):
+    """
+    Actor-Critic Network for Continuous PPO
+    
+    ARCHITECTURE DECISION:
+    - Hidden layers: [64, 64] - SAME as DQN (from dqn.py)
+    - Activation: TANH - FROM Algorithm PPO Paper 1, page 6: 
+      "fully-connected MLP with two hidden layers of 64 units, and tanh nonlinearities"
+      
+      WHY TANH instead of ReLU (used in DQN)?
+      - Paper explicitly specifies tanh for continuous control tasks
+      - Tanh bounds outputs to [-1, 1], providing natural gradient scaling
+      - Standard practice for continuous policy networks (confirmed in original PPO paper)
+      
+    - State dim: 2 (own_price, competitor_price) - normalized actual prices
+    - Actor output: mean of Gaussian distribution (log_std learned separately)
+    - Critic output: state value
+    """
+    
+    def __init__(self, state_dim: int = 2, hidden_units: list = [64, 64]):
+        super(ActorCriticNetwork, self).__init__()
+        
+        self.state_dim = state_dim
+        self.hidden_units = hidden_units
+        
+        # Shared feature extraction layers
+        # DECISION: Use shared layers between actor and critic
         # SOURCE: Algorithm PPO Paper 1, page 5, equation (9): 
         # "If using a neural network architecture that shares parameters between 
         # the policy and value function..."
