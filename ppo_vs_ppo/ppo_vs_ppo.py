@@ -1,16 +1,23 @@
 """
-ppo_vs_ppo_schemeA.py
+ppo_vs_ppo.py
 """
 """
-PPO vs PPO with Scheme A Shocks
-Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)
+PPO vs PPO - No Shocks
 """
 
+import sys
+import os
 import numpy as np
 import pandas as pd
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, parent_dir)
+
 from environments import MarketEnvContinuous
 from agents import PPOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
+
+sys.path.pop(0)
 
 SEED = 99
 
@@ -68,22 +75,19 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 
 def main():
     shock_cfg = {
-        'enabled': True,
-        'scheme': 'A',
-        'mode': 'independent'
+        'enabled': False
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("PPO vs PPO - SCHEME A")
-    print("Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)")
+    print("PPO vs PPO - NO SHOCKS")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 50
+    num_runs = 5
     results = {}
     
     for model in models:
@@ -123,13 +127,13 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/ppo_vs_ppo_schemeA.csv", index=False)
+    df.to_csv("./results/ppo_vs_ppo.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
     print("=" * 80)
     print(df.to_string(index=False))
-    print("\n[Results saved to ./results/ppo_vs_ppo_schemeA.csv]")
+    print("\n[Results saved to ./results/ppo_vs_ppo.csv]")
 
 
 if __name__ == "__main__":
