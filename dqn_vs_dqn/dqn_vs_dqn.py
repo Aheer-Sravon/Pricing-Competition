@@ -37,26 +37,40 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         seed=seed
     )
     
-    state = env.reset()
+    shared_state = env.reset()  # Returns shared (price_idx0, price_idx1)
     profits_history = []
     prices_history = []
     
+    # NEW: Define agent-specific states (own, opp)
+    state1 = (shared_state[0], shared_state[1])  # For Agent 1: (own, opp)
+    state2 = (shared_state[1], shared_state[0])  # For Agent 2: (own, opp)
+    
     for t in range(env.horizon):
-        dqn_action1 = dqn_agent1.select_action(state, explore=True)
-        dqn_action2 = dqn_agent2.select_action(state, explore=True)
+        # CHANGED: Pass agent-specific state to each
+        dqn_action1 = dqn_agent1.select_action(state1, explore=True)
+        dqn_action2 = dqn_agent2.select_action(state2, explore=True)
         
         actions = [dqn_action1, dqn_action2]
-        next_state, rewards, done, info = env.step(actions)
+        shared_next_state, rewards, done, info = env.step(actions)
         
-        dqn_agent1.remember(state, dqn_action1, rewards[0], next_state, done)
+        # NEW: Define agent-specific next_states
+        next_state1 = (shared_next_state[0], shared_next_state[1])  # For Agent 1
+        next_state2 = (shared_next_state[1], shared_next_state[0])  # For Agent 2
+        
+        # CHANGED: Use agent-specific state/next_state in remember
+        dqn_agent1.remember(state1, dqn_action1, rewards[0], next_state1, done)
         dqn_agent1.replay()
         dqn_agent1.update_epsilon()
         
-        dqn_agent2.remember(state, dqn_action2, rewards[1], next_state, done)
+        dqn_agent2.remember(state2, dqn_action2, rewards[1], next_state2, done)
         dqn_agent2.replay()
         dqn_agent2.update_epsilon()
         
-        state = next_state
+        # CHANGED: Update current states for next iteration
+        state1 = next_state1
+        state2 = next_state2
+        shared_state = shared_next_state  # Optional, for consistency
+        
         prices_history.append(info['prices'])
         profits_history.append(rewards)
     
@@ -68,15 +82,14 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     avg_profit_dqn1 = np.mean(last_profits[:, 0])
     avg_profit_dqn2 = np.mean(last_profits[:, 1])
     
+    p_n = benchmarks['p_N']
     pi_n = benchmarks['E_pi_N']
     pi_m = benchmarks['E_pi_M']
-    p_n = benchmarks['p_N']
     
-    delta_dqn1 = (avg_profit_dqn1 - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
-    delta_dqn2 = (avg_profit_dqn2 - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
+    delta_dqn1 = (avg_profit_dqn1 - pi_n) / (pi_m - pi_n)
+    delta_dqn2 = (avg_profit_dqn2 - pi_n) / (pi_m - pi_n)
     
     return avg_price_dqn1, avg_price_dqn2, delta_dqn1, delta_dqn2, p_n
-
 
 def main():
     shock_cfg = {
