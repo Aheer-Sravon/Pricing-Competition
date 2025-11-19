@@ -24,8 +24,10 @@ def run_simulation(model, seed):
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
     q_agent = QLearningAgent(env.N, agent_id=0)
     dqn_agent = DQNAgent(agent_id=1, state_dim=2, action_dim=env.N, loss_type='huber', use_double=True, seed=seed)
+    
     state = env.reset()
-    state_dqn = (state[1], state[0])  # own, comp for agent1
+    # CORRECT STATE REPRESENTATION - DQN sees (own_price_idx, competitor_price_idx)
+    state_dqn = (state[1], state[0])  # For agent1: own index is state[1], competitor index is state[0]
     
     profits_history = []
     prices_history = []
@@ -34,11 +36,14 @@ def run_simulation(model, seed):
         q_action = q_agent.choose_action(state)
         dqn_action = dqn_agent.select_action(state_dqn, explore=True)
         
-        actions = [q_action, dqn_action]
+        actions = [q_action, dqn_action]  # agent0 uses q_action, agent1 uses dqn_action
         next_state, rewards, done, info = env.step(actions)
         
+        # Q-learning update (agent0)
         q_agent.update(state, q_action, rewards[0], next_state)
-        next_state_dqn = (next_state[1], next_state[0])
+        
+        # DQN update (agent1) - CORRECT state representation
+        next_state_dqn = (next_state[1], next_state[0])  # For agent1: own index is next_state[1], competitor is next_state[0]
         dqn_agent.remember(state_dqn, dqn_action, rewards[1], next_state_dqn, done)
         dqn_agent.replay()
         dqn_agent.update_epsilon()
@@ -49,6 +54,7 @@ def run_simulation(model, seed):
         prices_history.append(info['prices'])
         profits_history.append(rewards)
     
+    # Calculate Delta metrics CORRECTLY
     last_prices = np.array(prices_history[-1000:])
     avg_price_q = np.mean(last_prices[:, 0])
     avg_price_dqn = np.mean(last_prices[:, 1])
@@ -57,16 +63,21 @@ def run_simulation(model, seed):
     avg_profit_q = np.mean(last_profits[:, 0])
     avg_profit_dqn = np.mean(last_profits[:, 1])
     
+    # Calculate industry profits for Delta
     prices_n = np.array([env.P_N] * 2)
     _, profits_n = env.calculate_demand_and_profit(prices_n, np.zeros(2))
-    pi_n = profits_n[0]
+    pi_n_industry = np.sum(profits_n)  # Total industry profit at Nash
     
-    prices_m = np.array([env.P_M] * 2)
+    prices_m = np.array([env.P_M] * 2)  
     _, profits_m = env.calculate_demand_and_profit(prices_m, np.zeros(2))
-    pi_m = profits_m[0]
+    pi_m_industry = np.sum(profits_m)  # Total industry profit at Monopoly
     
-    delta_q = (avg_profit_q - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
-    delta_dqn = (avg_profit_dqn - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
+    # Calculate actual industry profits in simulation
+    actual_industry_profit_q = avg_profit_q + avg_profit_dqn  # When Q-agent sets price
+    actual_industry_profit_dqn = avg_profit_q + avg_profit_dqn  # Same total industry profit
+    
+    delta_q = (actual_industry_profit_q - pi_n_industry) / (pi_m_industry - pi_n_industry) if (pi_m_industry - pi_n_industry) != 0 else 0
+    delta_dqn = (actual_industry_profit_dqn - pi_n_industry) / (pi_m_industry - pi_n_industry) if (pi_m_industry - pi_n_industry) != 0 else 0
     
     return avg_price_q, avg_price_dqn, delta_q, delta_dqn
 
