@@ -1,60 +1,99 @@
 """
-q_vs_dqn.py
-"""
+q_vs_dqn_fixed.py
 
+Fixed simulation comparing Q-Learning vs DQN with proper state representation.
+The key fix is ensuring DQN sees states correctly as (own_price, competitor_price).
+"""
 
 import sys
 import os
 import numpy as np
 import pandas as pd
 
+# Import the new DQN implementation
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import QLearningAgent, DQNAgent
-
 sys.path.pop(0)
 
-
 SEED = 99
+HORIZON = 10000  # Simulation horizon
 
-def run_simulation(model, seed):
+def run_simulation(model, seed, verbose=True):
+    """Run a single simulation of Q-Learning vs DQN."""
     np.random.seed(seed)
+    
+    # Initialize environment
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
+    
+    # Initialize agents
     q_agent = QLearningAgent(env.N, agent_id=0)
-    dqn_agent = DQNAgent(agent_id=1, state_dim=2, action_dim=env.N, loss_type='huber', use_double=True, seed=seed)
     
+    # Initialize DQN with proper parameters
+    dqn_agent = DQNAgent(
+        agent_id=1, 
+        state_dim=2,  # MUST be 2 for pricing
+        action_dim=env.N,
+        seed=seed
+    )
+    
+    # Reset environment
     state = env.reset()
-    # CORRECT STATE REPRESENTATION - DQN sees (own_price_idx, competitor_price_idx)
-    state_dqn = (state[1], state[0])  # For agent1: own index is state[1], competitor index is state[0]
     
+    # Track metrics
     profits_history = []
     prices_history = []
     
-    for t in range(env.horizon):
+    if verbose:
+        print(f"\nRunning {model.upper()} model simulation...")
+        print(f"Horizon: {HORIZON} steps")
+        print(f"Price grid size: {env.N}")
+        print(f"Nash price: {env.P_N:.3f}")
+        print(f"Monopoly price: {env.P_M:.3f}")
+    
+    # Main simulation loop
+    for t in range(HORIZON):
+        # Q-Learning sees state as tuple of indices
         q_action = q_agent.choose_action(state)
-        dqn_action = dqn_agent.select_action(state_dqn, explore=True)
         
-        actions = [q_action, dqn_action]  # agent0 uses q_action, agent1 uses dqn_action
+        # DQN sees state as (own_price_idx, competitor_price_idx)
+        # For agent 1: own index is state[1], competitor is state[0]
+        dqn_state = (state[1], state[0])
+        dqn_action = dqn_agent.select_action(dqn_state, explore=True)
+        
+        # Execute actions
+        actions = [q_action, dqn_action]
         next_state, rewards, done, info = env.step(actions)
         
-        # Q-learning update (agent0)
+        # Q-Learning update
         q_agent.update(state, q_action, rewards[0], next_state)
         
-        # DQN update (agent1) - CORRECT state representation
-        next_state_dqn = (next_state[1], next_state[0])  # For agent1: own index is next_state[1], competitor is next_state[0]
-        dqn_agent.remember(state_dqn, dqn_action, rewards[1], next_state_dqn, done)
+        # DQN update with correct state representation
+        next_dqn_state = (next_state[1], next_state[0])
+        dqn_agent.remember(dqn_state, dqn_action, rewards[1], next_dqn_state, done)
+        
+        # Train DQN
         dqn_agent.replay()
-        dqn_agent.update_epsilon()
         
+        # Update exploration rate
+        if t % 100 == 0:
+            dqn_agent.update_epsilon()
+        
+        # Store history
         state = next_state
-        state_dqn = next_state_dqn
-        
         prices_history.append(info['prices'])
         profits_history.append(rewards)
+        
+        # Progress update
+        if verbose and (t + 1) % 1000 == 0:
+            recent_prices = np.array(prices_history[-100:])
+            avg_p_q = np.mean(recent_prices[:, 0])
+            avg_p_dqn = np.mean(recent_prices[:, 1])
+            print(f"  Step {t+1}/{HORIZON}: Q price={avg_p_q:.3f}, DQN price={avg_p_dqn:.3f}, ε={dqn_agent.epsilon:.3f}")
     
-    # Calculate Delta metrics CORRECTLY
+    # Calculate final metrics (last 1000 steps)
     last_prices = np.array(prices_history[-1000:])
     avg_price_q = np.mean(last_prices[:, 0])
     avg_price_dqn = np.mean(last_prices[:, 1])
@@ -63,118 +102,162 @@ def run_simulation(model, seed):
     avg_profit_q = np.mean(last_profits[:, 0])
     avg_profit_dqn = np.mean(last_profits[:, 1])
     
-    # Calculate industry profits for Delta
+    # Calculate Nash and Monopoly benchmarks
     prices_n = np.array([env.P_N] * 2)
     _, profits_n = env.calculate_demand_and_profit(prices_n, np.zeros(2))
-    pi_n_industry = np.sum(profits_n)  # Total industry profit at Nash
     
     prices_m = np.array([env.P_M] * 2)  
     _, profits_m = env.calculate_demand_and_profit(prices_m, np.zeros(2))
-    pi_m_industry = np.sum(profits_m)  # Total industry profit at Monopoly
     
-    # Calculate actual industry profits in simulation
-    actual_industry_profit = avg_profit_q + avg_profit_dqn
-    
-    # Calculate Delta (profit-based)
+    # Calculate Delta (profit-based collusion metric)
     delta_q = (avg_profit_q - profits_n[0]) / (profits_m[0] - profits_n[0]) if (profits_m[0] - profits_n[0]) != 0 else 0
     delta_dqn = (avg_profit_dqn - profits_n[1]) / (profits_m[1] - profits_n[1]) if (profits_m[1] - profits_n[1]) != 0 else 0
     
-    # Calculate RPDI (pricing-based)
+    # Calculate RPDI (price-based collusion metric)
     rpdi_q = (avg_price_q - env.P_N) / (env.P_M - env.P_N) if (env.P_M - env.P_N) != 0 else 0
     rpdi_dqn = (avg_price_dqn - env.P_N) / (env.P_M - env.P_N) if (env.P_M - env.P_N) != 0 else 0
     
     return avg_price_q, avg_price_dqn, delta_q, delta_dqn, rpdi_q, rpdi_dqn
 
-models = ['logit', 'hotelling', 'linear']
-num_runs = 5
-results = {}
 
-# Store individual run results for logging
-run_logs = {model: {'delta_q': [], 'delta_dqn': [], 'rpdi_q': [], 'rpdi_dqn': []} for model in models}
-
-for model in models:
-    # Get theo price outside the loop since it's constant per model
-    env_temp = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=SEED)
-    p_n = env_temp.P_N
+def main():
+    """Main simulation runner."""
+    models = ['logit', 'hotelling', 'linear']
+    num_runs = 5
+    results = {}
     
-    avg_prices_q = []
-    avg_prices_dqn = []
-    deltas_q = []
-    deltas_dqn = []
-    rpdis_q = []
-    rpdis_dqn = []
+    # Store individual run results
+    run_logs = {model: {'delta_q': [], 'delta_dqn': [], 'rpdi_q': [], 'rpdi_dqn': []} for model in models}
     
-    print(f"\n{'='*60}")
-    print(f"Model: {model.upper()}")
-    print(f"{'='*60}")
-    
-    for run in range(num_runs):
-        seed = SEED + run
-        apq, apd, dq, dd, rq, rd = run_simulation(model, seed)
-        avg_prices_q.append(apq)
-        avg_prices_dqn.append(apd)
-        deltas_q.append(dq)
-        deltas_dqn.append(dd)
-        rpdis_q.append(rq)
-        rpdis_dqn.append(rd)
+    for model in models:
+        print(f"\n{'='*60}")
+        print(f"Model: {model.upper()}")
+        print(f"{'='*60}")
         
-        # Log individual run results
-        print(f"\nRun {run + 1}:")
-        print(f"  Q-Learning  -> Delta: {dq:.4f}, RPDI: {rq:.4f}")
-        print(f"  DQN         -> Delta: {dd:.4f}, RPDI: {rd:.4f}")
+        # Get theoretical Nash price
+        env_temp = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=SEED)
+        p_n = env_temp.P_N
+        p_m = env_temp.P_M
         
-        # Store for later access
-        run_logs[model]['delta_q'].append(dq)
-        run_logs[model]['delta_dqn'].append(dd)
-        run_logs[model]['rpdi_q'].append(rq)
-        run_logs[model]['rpdi_dqn'].append(rd)
+        print(f"Nash equilibrium price: {p_n:.3f}")
+        print(f"Monopoly price: {p_m:.3f}")
+        
+        avg_prices_q = []
+        avg_prices_dqn = []
+        deltas_q = []
+        deltas_dqn = []
+        rpdis_q = []
+        rpdis_dqn = []
+        
+        for run in range(num_runs):
+            seed = SEED + run
+            print(f"\nRun {run + 1}/{num_runs} (seed={seed})")
+            
+            apq, apd, dq, dd, rq, rd = run_simulation(model, seed, verbose=(run == 0))
+            
+            avg_prices_q.append(apq)
+            avg_prices_dqn.append(apd)
+            deltas_q.append(dq)
+            deltas_dqn.append(dd)
+            rpdis_q.append(rq)
+            rpdis_dqn.append(rd)
+            
+            # Log results
+            print(f"\nResults for Run {run + 1}:")
+            print(f"  Q-Learning  -> Price: {apq:.3f}, Delta: {dq:.4f}, RPDI: {rq:.4f}")
+            print(f"  DQN         -> Price: {apd:.3f}, Delta: {dd:.4f}, RPDI: {rd:.4f}")
+            
+            # Store for analysis
+            run_logs[model]['delta_q'].append(dq)
+            run_logs[model]['delta_dqn'].append(dd)
+            run_logs[model]['rpdi_q'].append(rq)
+            run_logs[model]['rpdi_dqn'].append(rd)
+        
+        # Store average results
+        results[model] = {
+            'Avg Price Q': np.mean(avg_prices_q),
+            'Std Price Q': np.std(avg_prices_q),
+            'Theo Price': p_n,
+            'Avg Price DQN': np.mean(avg_prices_dqn),
+            'Std Price DQN': np.std(avg_prices_dqn),
+            'Delta Q': np.mean(deltas_q),
+            'Std Delta Q': np.std(deltas_q),
+            'Delta DQN': np.mean(deltas_dqn),
+            'Std Delta DQN': np.std(deltas_dqn),
+            'RPDI Q': np.mean(rpdis_q),
+            'Std RPDI Q': np.std(rpdis_q),
+            'RPDI DQN': np.mean(rpdis_dqn),
+            'Std RPDI DQN': np.std(rpdis_dqn)
+        }
     
-    results[model] = {
-        'Avg Price Q': np.mean(avg_prices_q),
-        'Theo Price': p_n,
-        'Avg Price DQN': np.mean(avg_prices_dqn),
-        'Delta Q': np.mean(deltas_q),
-        'Delta DQN': np.mean(deltas_dqn),
-        'RPDI Q': np.mean(rpdis_q),
-        'RPDI DQN': np.mean(rpdis_dqn)
+    # Print summary
+    print(f"\n{'='*80}")
+    print("SUMMARY RESULTS")
+    print(f"{'='*80}\n")
+    
+    # Create summary dataframe
+    summary_data = {
+        'Model': [],
+        'Q-Learning Avg Price': [],
+        'Q-Learning Delta': [],
+        'Q-Learning RPDI': [],
+        'DQN Avg Price': [],
+        'DQN Delta': [],
+        'DQN RPDI': [],
+        'Nash Price': []
     }
+    
+    for model in models:
+        r = results[model]
+        summary_data['Model'].append(model.upper())
+        summary_data['Q-Learning Avg Price'].append(f"{r['Avg Price Q']:.3f} ± {r['Std Price Q']:.3f}")
+        summary_data['Q-Learning Delta'].append(f"{r['Delta Q']:.3f} ± {r['Std Delta Q']:.3f}")
+        summary_data['Q-Learning RPDI'].append(f"{r['RPDI Q']:.3f} ± {r['Std RPDI Q']:.3f}")
+        summary_data['DQN Avg Price'].append(f"{r['Avg Price DQN']:.3f} ± {r['Std Price DQN']:.3f}")
+        summary_data['DQN Delta'].append(f"{r['Delta DQN']:.3f} ± {r['Std Delta DQN']:.3f}")
+        summary_data['DQN RPDI'].append(f"{r['RPDI DQN']:.3f} ± {r['Std RPDI DQN']:.3f}")
+        summary_data['Nash Price'].append(f"{r['Theo Price']:.3f}")
+    
+    df_summary = pd.DataFrame(summary_data)
+    print(df_summary.to_string(index=False))
+    
+    # Save detailed results
+    detailed_data = {
+        'Model': [m.upper() for m in models],
+        'Q Avg. Prices': [round(results[m]['Avg Price Q'], 3) for m in models],
+        'Theo. Prices': [round(results[m]['Theo Price'], 3) for m in models],
+        'DQN Avg. Prices': [round(results[m]['Avg Price DQN'], 3) for m in models],
+        'Q Extra-profits Δ': [round(results[m]['Delta Q'], 3) for m in models],
+        'DQN Extra-profits Δ': [round(results[m]['Delta DQN'], 3) for m in models],
+        'Q RPDI': [round(results[m]['RPDI Q'], 3) for m in models],
+        'DQN RPDI': [round(results[m]['RPDI DQN'], 3) for m in models]
+    }
+    
+    df_detailed = pd.DataFrame(detailed_data)
+    df_detailed.to_csv("results/q_vs_dqn_2.csv", index=False)
+    print(f"\nResults saved to q_vs_dqn_fixed.csv")
+    
+    # Print overall averages
+    print(f"\n{'='*80}")
+    print("OVERALL AVERAGES ACROSS ALL MODELS")
+    print(f"{'='*80}\n")
+    
+    avg_delta_q = np.mean([results[m]['Delta Q'] for m in models])
+    avg_delta_dqn = np.mean([results[m]['Delta DQN'] for m in models])
+    avg_rpdi_q = np.mean([results[m]['RPDI Q'] for m in models])
+    avg_rpdi_dqn = np.mean([results[m]['RPDI DQN'] for m in models])
+    
+    print(f"Q-Learning:")
+    print(f"  Average Delta (Δ): {avg_delta_q:.4f}")
+    print(f"  Average RPDI:      {avg_rpdi_q:.4f}")
+    print(f"\nDQN (Fixed):")
+    print(f"  Average Delta (Δ): {avg_delta_dqn:.4f}")
+    print(f"  Average RPDI:      {avg_rpdi_dqn:.4f}")
+    
+    print(f"\n{'='*80}")
+    print("Analysis Complete!")
+    print(f"{'='*80}\n")
 
-print(f"\n{'='*60}")
-print("SUMMARY TABLE")
-print(f"{'='*60}\n")
 
-# Create DataFrame
-data = {
-    'Model': [m.upper() for m in models],
-    'Q Avg. Prices': [round(results[m]['Avg Price Q'], 2) for m in models],
-    'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
-    'DQN Avg. Prices': [round(results[m]['Avg Price DQN'], 2) for m in models],
-    'Theo. Prices.1': [round(results[m]['Theo Price'], 2) for m in models],  # Repeated for symmetry
-    'Q Extra-profits Δ': [round(results[m]['Delta Q'], 2) for m in models],
-    'DQN Extra-profits Δ': [round(results[m]['Delta DQN'], 2) for m in models],
-    'Q RPDI': [round(results[m]['RPDI Q'], 2) for m in models],
-    'DQN RPDI': [round(results[m]['RPDI DQN'], 2) for m in models]
-}
-
-df = pd.DataFrame(data)
-df.to_csv("./results/q_vs_dqn_2.csv", index=False)
-print(df)
-
-# Calculate and print overall averages across all models
-print(f"\n{'='*60}")
-print("OVERALL AVERAGES ACROSS ALL MODELS")
-print(f"{'='*60}\n")
-
-avg_delta_q = np.mean([results[m]['Delta Q'] for m in models])
-avg_delta_dqn = np.mean([results[m]['Delta DQN'] for m in models])
-avg_rpdi_q = np.mean([results[m]['RPDI Q'] for m in models])
-avg_rpdi_dqn = np.mean([results[m]['RPDI DQN'] for m in models])
-
-print(f"Q-Learning:")
-print(f"  Average Delta (Δ):  {avg_delta_q:.4f}")
-print(f"  Average RPDI:       {avg_rpdi_q:.4f}")
-print(f"\nDQN:")
-print(f"  Average Delta (Δ):  {avg_delta_dqn:.4f}")
-print(f"  Average RPDI:       {avg_rpdi_dqn:.4f}")
-
-print(f"\n{'='*60}\n")
+if __name__ == "__main__":
+    main()
