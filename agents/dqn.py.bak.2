@@ -1,0 +1,294 @@
+"""
+Deep Q-Network (DQN) Implementation for Algorithmic Pricing
+Based on the rlpricing-master implementation from Kastius & Schlosser (2022)
+"Dynamic pricing under competition using reinforcement learning"
+
+This implementation follows the exact architecture from the paper:
+- Single input for combined state representation 
+- Normalization of states by dividing by (n_actions - 1)
+- Reward normalization by factor of 1000
+- Double DQN with target network
+- Dueling architecture
+- 128 units per hidden layer
+- Experience replay with uniform sampling
+"""
+
+import numpy as np
+import random
+from collections import deque, namedtuple
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
+# Experience tuple for replay buffer
+Experience = namedtuple('Experience', ['state', 'action', 'reward', 'next_state', 'done'])
+
+# Key hyperparameters from rlpricing-master
+GAMMA = 0.99
+EPS_START = 1.0
+EPS_END = 0.3
+EPS_DECAY = 0.95
+BATCH_SIZE = 32
+NORM_FACTOR = 1000  # Reward normalization factor
+TARGET_UPDATE_FREQ = 256  # Update target network every N samples
+BUFFER_SIZE = 10000
+LEARNING_RATE = 0.0005
+
+
+class ReplayBuffer:
+    """Experience Replay Buffer with uniform sampling (matching rlpricing-master)."""
+    
+    def __init__(self, capacity: int):
+        self.buffer = deque(maxlen=capacity)
+    
+    def push(self, state: np.ndarray, action: int, reward: float, next_state: np.ndarray, done: bool):
+        experience = Experience(state, action, reward, next_state, done)
+        self.buffer.append(experience)
+    
+    def sample(self, batch_size: int):
+        experiences = random.sample(self.buffer, batch_size)
+        
+        states = torch.FloatTensor([exp.state for exp in experiences])
+        actions = torch.LongTensor([exp.action for exp in experiences])
+        rewards = torch.FloatTensor([exp.reward for exp in experiences])
+        next_states = torch.FloatTensor([exp.next_state for exp in experiences])
+        dones = torch.FloatTensor([exp.done for exp in experiences])
+        
+        return states, actions, rewards, next_states, dones
+    
+    def __len__(self):
+        return len(self.buffer)
+
+
+class DuelingQNetwork(nn.Module):
+    """
+    Dueling Q-Network architecture matching rlpricing-master.
+    Uses separate value and advantage streams.
+    """
+    
+    def __init__(self, state_dim: int, action_dim: int):
+        super(DuelingQNetwork, self).__init__()
+        
+        # Shared layers (128 units each, matching rlpricing-master)
+        self.shared = nn.Sequential(
+            nn.Linear(state_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU()
+        )
+        
+        # Value stream
+        self.value_stream = nn.Sequential(
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 1)
+        )
+        
+        # Advantage stream  
+        self.advantage_stream = nn.Sequential(
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, action_dim)
+        )
+        
+        # Initialize weights using Xavier (glorot_normal in Keras)
+        self._init_weights()
+    
+    def _init_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.xavier_normal_(module.weight)
+                nn.init.zeros_(module.bias)
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        shared_features = self.shared(x)
+        
+        value = self.value_stream(shared_features)
+        advantage = self.advantage_stream(shared_features)
+        
+        # Combine value and advantage (subtracting mean for stability)
+        q_values = value + (advantage - advantage.mean(dim=1, keepdim=True))
+        
+        return q_values
+
+class DQNAgent:
+    def __init__(self, agent_id, state_dim=2, action_dim=15, seed=None):
+        self.agent_id = agent_id
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        
+        # Hyperparameters (aligned with papers)
+        self.gamma = 0.99
+        self.epsilon = 1.0
+        self.epsilon_min = 0.01
+        self.epsilon_decay = 0.995
+        self.learning_rate = 0.0001  # Reduced for stability
+        self.batch_size = 128
+        self.memory_size = 50000
+        self.target_update_freq = 500  # Update target network every 500 steps
+        
+        if seed is not None:
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+        
+        # Neural networks
+        self.network = self._build_network()
+        self.target_network = self._build_network()
+        self.target_network.load_state_dict(self.network.state_dict())
+        self.target_network.eval()  # Set to evaluation mode
+        
+        self.optimizer = optim.Adam(self.network.parameters(), lr=self.learning_rate)
+        self.memory = deque(maxlen=self.memory_size)
+        self.steps = 0
+        
+    def _build_network(self):
+        """Build deeper network for better representation"""
+        return nn.Sequential(
+            nn.Linear(self.state_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, self.action_dim)
+        )
+    
+    def remember(self, state, action, reward, next_state, done):
+        """Store experience as continuous states, not indices"""
+        self.memory.append((state, action, reward, next_state, done))
+        
+    def select_action(self, state, explore=True):
+        """State should be np.array([own_price, opp_price])"""
+        if explore and np.random.random() < self.epsilon:
+            return np.random.randint(self.action_dim)
+        
+        with torch.no_grad():
+            state_tensor = torch.FloatTensor(state).unsqueeze(0)
+            q_values = self.network(state_tensor)
+            return q_values.argmax().item()
+    
+    def replay(self):
+        if len(self.memory) < self.batch_size:
+            return
+            
+        batch = random.sample(self.memory, self.batch_size)
+        states = torch.FloatTensor([e[0] for e in batch])
+        actions = torch.LongTensor([e[1] for e in batch])
+        rewards = torch.FloatTensor([e[2] for e in batch])
+        next_states = torch.FloatTensor([e[3] for e in batch])
+        dones = torch.FloatTensor([e[4] for e in batch])
+        
+        current_q_values = self.network(states).gather(1, actions.unsqueeze(1))
+        
+        # Double DQN: use main network to select actions
+        next_actions = self.network(next_states).argmax(1)
+        # Use target network to evaluate those actions
+        next_q_values = self.target_network(next_states).gather(1, next_actions.unsqueeze(1)).squeeze(1)
+        
+        targets = rewards + (1 - dones) * self.gamma * next_q_values
+        
+        # Huber loss for stability
+        loss = F.smooth_l1_loss(current_q_values.squeeze(), targets.detach())
+        
+        self.optimizer.zero_grad()
+        loss.backward()
+        # Gradient clipping
+        torch.nn.utils.clip_grad_norm_(self.network.parameters(), max_norm=1.0)
+        self.optimizer.step()
+        
+        self.steps += 1
+        
+        # Update target network
+        if self.steps % self.target_update_freq == 0:
+            self.target_network.load_state_dict(self.network.state_dict())
+    
+    def update_epsilon(self):
+        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
+
+
+if __name__ == "__main__":
+    """Test the DQN implementation."""
+    
+    print("="*80)
+    print("DQN AGENT - rlpricing-master Version")
+    print("="*80)
+    
+    # Create price grid (matching paper)
+    n_prices = 15
+    price_nash = 1.47
+    price_monopoly = 2.0
+    
+    prices = np.linspace(
+        price_nash - 0.15 * (price_monopoly - price_nash),
+        price_monopoly + 0.15 * (price_monopoly - price_nash),
+        n_prices
+    )
+    
+    print(f"\nPrice Grid: [{prices[0]:.3f}, {prices[-1]:.3f}]")
+    print(f"Number of Prices: {n_prices}")
+    print(f"Nash Price: {price_nash:.3f}")
+    print(f"Monopoly Price: {price_monopoly:.3f}\n")
+    
+    # Initialize agent
+    agent = DQNAgent(
+        agent_id=0,
+        state_dim=2,
+        action_dim=n_prices,
+        seed=42
+    )
+    
+    # Test basic functionality
+    print("Testing Agent Functionality:")
+    print("-" * 80)
+    
+    # Test state representation
+    state = (7, 7)  # Middle of price grid
+    print(f"State (indices): {state}")
+    
+    state_vec = agent.get_state_representation(state)
+    print(f"Normalized state: {state_vec}")
+    print(f"Expected: [{7/(n_prices-1):.3f}, {7/(n_prices-1):.3f}]")
+    
+    # Test action selection
+    action = agent.select_action(state, explore=False)
+    print(f"\nSelected action (no exploration): {action}")
+    print(f"Corresponding price: ${prices[action]:.3f}")
+    
+    # Test Q-values
+    q_values = agent.get_q_values(state)
+    print(f"\nQ-values shape: {q_values.shape}")
+    print(f"Q-values range: [{q_values.min():.4f}, {q_values.max():.4f}]")
+    
+    # Test memory and training
+    print("\nTesting Memory and Training:")
+    print("-" * 80)
+    
+    # Add some experiences
+    for i in range(50):
+        s = (random.randint(0, n_prices-1), random.randint(0, n_prices-1))
+        a = random.randint(0, n_prices-1)
+        r = random.random() * 100  # Random reward
+        s_next = (random.randint(0, n_prices-1), random.randint(0, n_prices-1))
+        agent.remember(s, a, r, s_next, False)
+    
+    print(f"Memory size: {len(agent.memory)}/{agent.memory.buffer.maxlen}")
+    
+    # Test training
+    loss = agent.replay()
+    print(f"Training loss: {loss:.6f}")
+    
+    # Test epsilon decay
+    initial_eps = agent.epsilon
+    agent.update_epsilon()
+    print(f"\nEpsilon decay: {initial_eps:.4f} -> {agent.epsilon:.4f}")
+    
+    # Network info
+    total_params = sum(p.numel() for p in agent.q_network.parameters())
+    print(f"\nNetwork Parameters: {total_params:,}")
+    
+    print("\n" + "="*80)
+    print("DQN Agent (rlpricing-master version) Ready!")
+    print("="*80)

@@ -1,17 +1,25 @@
+"""
+dqn_vs_dqn_schemeB.py
+"""
+
+"""
+DQN vs DQN with Scheme B Shocks
+Scheme B: ρ=0.7, σ_η=0.3 (high persistence, low variance)
+"""
+
 import sys
 import os
 import numpy as np
 import pandas as pd
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
+sys.path.insert(0, parent_dir)  # Insert at beginning to prioritize it
 
 from environments import MarketEnvContinuous
-from agents import DQNAgent
+from agents import DQNAgent  # Assuming DQNAgent is added to agents or adjust import
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 sys.path.pop(0)
-
 
 SEED = 99
 
@@ -92,13 +100,15 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 
 def main():
     shock_cfg = {
-        'enabled': False
+        'enabled': True,
+        'rho': 0.7,
+        'sigma_eta': 0.3
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("DQN vs DQN - NO SHOCKS")
+    print("DQN vs DQN - SCHEME B SHOCKS")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -176,7 +186,7 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/dqn_vs_dqn_2.csv", index=False)
+    df.to_csv("./results/dqn_vs_dqn_schemeB.csv", index=False)
     print(df.to_string(index=False))
     
     # Calculate and print overall averages across all models
@@ -197,7 +207,7 @@ def main():
     print(f"  Average RPDI:       {avg_rpdi2:.4f}")
     
     print(f"\n{'='*80}")
-    print("[Results saved to ./results/dqn_vs_dqn.csv]")
+    print("[Results saved to ./results/dqn_vs_dqn_schemeB.csv]")
     print(f"{'='*80}\n")
 
 

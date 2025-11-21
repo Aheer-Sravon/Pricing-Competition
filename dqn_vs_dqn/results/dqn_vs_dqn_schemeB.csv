@@ -1,4 +1,4 @@
-Model,DQN1 Avg. Prices,Theo. Prices,DQN2 Avg. Prices,Theo. Prices ,DQN1 Extra-profits Δ,DQN2 Extra-profits Δ
-LOGIT,1.86,1.54,1.87,1.54,0.94,0.9
-HOTELLING,1.19,1.0,1.18,1.0,0.7,0.76
-LINEAR,0.49,0.43,0.49,0.43,0.24,0.29
+Model,DQN1 Avg. Prices,Theo. Prices,DQN2 Avg. Prices,Theo. Prices.1,DQN1 Extra-profits Δ,DQN2 Extra-profits Δ,DQN1 RPDI,DQN2 RPDI
+LOGIT,1.67,1.8,1.69,1.8,-1.11,-1.45,-0.45,-0.37
+HOTELLING,1.21,1.0,1.21,1.0,0.82,0.81,0.83,0.83
+LINEAR,0.46,0.43,0.46,0.43,0.33,0.34,0.45,0.42

@@ -1,0 +1,4 @@
+,Model,Q Avg. Prices,Theo. Prices,PPO Avg. Prices,Q Extra-profits Δ,PPO Extra-profits Δ,PPO Updates
+0,LOGIT,1.69,1.47,1.23,0.28,-4.21,20
+1,HOTELLING,1.2,1.0,1.63,3.02,-2.53,20
+2,LINEAR,0.47,0.43,1.22,23.72,-45.47,20

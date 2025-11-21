@@ -1,19 +1,3 @@
-"""
-Modern Deep Q-Network (DQN) Implementation for Algorithmic Pricing - PyTorch Version
-Based on "Artificial Intelligence, Algorithmic Competition and Market Structures"
-by J. Manuel Sanchez-Cartas and Evangelos Katsamakas (2022)
-
-This implementation follows the modern DQN architecture with:
-- Experience Replay Buffer
-- Target Network for stability
-- Epsilon-greedy exploration with decay
-- 2D state representation (own price + competitor price)
-- Configurable loss function (MSE vs Huber)
-
-FRAMEWORK: PyTorch (GPU-enabled)
-COMPATIBLE WITH: Your existing TensorFlow codebase (same API)
-"""
-
 import numpy as np
 import random
 from collections import deque, namedtuple
@@ -51,10 +35,13 @@ class ReplayBuffer:
 
 
 class QNetwork(nn.Module):
-    """Deep Q-Network using PyTorch."""
+    """Deep Q-Network using PyTorch.
+    Adjusted to match ql.py: 3 shared layers [128,128,128], dueling with additional [128] layer.
+    """
     
-    def __init__(self, state_dim: int, action_dim: int, hidden_units: list = [64, 64], 
-                 activation: str = 'relu', use_dueling: bool = False):
+    def __init__(self, state_dim: int, action_dim: int, hidden_units: list = [128, 128, 128], 
+                 dueling_hidden_units: list = [128],
+                 activation: str = 'relu', use_dueling: bool = True):
         super(QNetwork, self).__init__()
         
         self.state_dim = state_dim
@@ -69,7 +56,7 @@ class QNetwork(nn.Module):
         elif activation == 'elu':
             self.activation = nn.ELU()
         
-        # Build shared layers
+        # Build shared layers (match hidden_structure [128,128,128])
         layers = []
         input_dim = state_dim
         
@@ -81,18 +68,22 @@ class QNetwork(nn.Module):
         self.shared_layers = nn.Sequential(*layers)
         
         if use_dueling:
-            # Dueling architecture
-            self.value_stream = nn.Sequential(
-                nn.Linear(hidden_units[-1], hidden_units[-1]),
-                self.activation,
-                nn.Linear(hidden_units[-1], 1)
-            )
+            # Dueling architecture matching dueling_hidden_layers [128]
+            value_layers = []
+            adv_layers = []
+            input_dim = hidden_units[-1]
+            for hidden_dim in dueling_hidden_units:
+                value_layers.append(nn.Linear(input_dim, hidden_dim))
+                value_layers.append(self.activation)
+                adv_layers.append(nn.Linear(input_dim, hidden_dim))
+                adv_layers.append(self.activation)
+                input_dim = hidden_dim
             
-            self.advantage_stream = nn.Sequential(
-                nn.Linear(hidden_units[-1], hidden_units[-1]),
-                self.activation,
-                nn.Linear(hidden_units[-1], action_dim)
-            )
+            value_layers.append(nn.Linear(input_dim, 1))
+            adv_layers.append(nn.Linear(input_dim, action_dim))
+            
+            self.value_stream = nn.Sequential(*value_layers)
+            self.advantage_stream = nn.Sequential(*adv_layers)
         else:
             # Standard DQN
             self.output_layer = nn.Linear(hidden_units[-1], action_dim)
@@ -103,7 +94,7 @@ class QNetwork(nn.Module):
     def _initialize_weights(self):
         for module in self.modules():
             if isinstance(module, nn.Linear):
-                nn.init.xavier_normal_(module.weight)
+                nn.init.xavier_normal_(module.weight)  # glorot_normal
                 nn.init.constant_(module.bias, 0.0)
     
     def forward(self, state: torch.Tensor) -> torch.Tensor:
@@ -120,175 +111,119 @@ class QNetwork(nn.Module):
 
 
 class DQNAgent:
-    """
-    Deep Q-Network Agent for Algorithmic Pricing - PyTorch Version.
-    
-    CRITICAL: State dimension MUST be 2 (not 1)
-    State = (own_price_index, competitor_price_index)
+    """DQN Agent for Pricing Competition.
+    Adjusted to match ql.py logic where possible.
     """
     
-    def __init__(
-        self,
-        agent_id: int,
-        state_dim: int = 2,
-        action_dim: int = 15,
-        learning_rate: float = 0.0001,
-        gamma: float = 0.95,
-        epsilon_start: float = 1.0,
-        epsilon_end: float = 0.01,
-        epsilon_decay: float = 0.995,
-        batch_size: int = 32,
-        buffer_size: int = 10000,
-        target_update_freq: int = 100,
-        hidden_units: list = None,
-        activation: str = 'relu',
-        use_double: bool = True,
-        use_dueling: bool = False,
-        loss_type: str = 'huber',
-        gradient_clip: float = None,
-        device: str = None,
-        seed: int = None
-    ):
-        """Initialize DQN Agent (PyTorch)."""
+    def __init__(self,
+                 agent_id: int,
+                 state_dim: int,
+                 action_dim: int,
+                 hidden_units: list = [128, 128, 128],
+                 dueling_hidden_units: list = [128],
+                 replay_capacity: int = 10000,
+                 batch_size: int = 32,
+                 gamma: float = 0.99,
+                 epsilon: float = 1.0,
+                 epsilon_decay: float = 0.95,
+                 epsilon_end: float = 0.3,
+                 learning_rate: float = 0.001,
+                 target_update_freq: int = 1000,
+                 loss_type: str = 'mse',  # 'mse' or 'huber'
+                 use_double: bool = True,
+                 use_dueling: bool = True,
+                 gradient_clip: float = None,
+                 device: str = 'cuda' if torch.cuda.is_available() else 'cpu',
+                 seed: int = None):
         
-        # Validate critical parameter
-        assert state_dim == 2, "CRITICAL: state_dim MUST be 2!"
-        
-        # Set device
-        if device is None:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = torch.device(device)
-        
-        # Store hyperparameters
         self.agent_id = agent_id
         self.state_dim = state_dim
         self.action_dim = action_dim
-        self.learning_rate = learning_rate
         self.gamma = gamma
+        self.epsilon = epsilon
+        self.epsilon_decay = epsilon_decay
+        self.epsilon_end = epsilon_end
         self.batch_size = batch_size
-        self.target_update_freq = target_update_freq
+        self.device = torch.device(device)
         self.gradient_clip = gradient_clip
         self.use_double = use_double
-        self.use_dueling = use_dueling
-        self.loss_type = loss_type
+        self.target_update_freq = target_update_freq
+        self.loss_history = []
+        self.epsilon_history = []
+        self.train_steps = 0
+        self.episodes = 0
+        self.norm_fact = 1000.0  # Match NORM_FACT
         
-        # Exploration
-        self.epsilon = epsilon_start
-        self.epsilon_start = epsilon_start
-        self.epsilon_end = epsilon_end
-        self.epsilon_decay = epsilon_decay
-        
-        # Hidden layers
-        if hidden_units is None:
-            hidden_units = [64, 64]
-        self.hidden_units = hidden_units
-        
-        # Set seeds
         if seed is not None:
             random.seed(seed)
             np.random.seed(seed)
             torch.manual_seed(seed)
             if torch.cuda.is_available():
-                torch.cuda.manual_seed(seed)
+                torch.cuda.manual_seed_all(seed)
         
         # Initialize networks
-        self.q_network = QNetwork(
-            state_dim, action_dim, hidden_units, activation, use_dueling
-        ).to(self.device)
-        
-        self.target_network = QNetwork(
-            state_dim, action_dim, hidden_units, activation, use_dueling
-        ).to(self.device)
-        
+        self.q_network = QNetwork(state_dim, action_dim, hidden_units, dueling_hidden_units,
+                                  use_dueling=use_dueling).to(self.device)
+        self.target_network = QNetwork(state_dim, action_dim, hidden_units, dueling_hidden_units,
+                                       use_dueling=use_dueling).to(self.device)
         self.target_network.load_state_dict(self.q_network.state_dict())
-        self.target_network.eval()
         
-        # Optimizer
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=learning_rate)
         
-        # Memory
-        self.memory = ReplayBuffer(buffer_size)
+        self.memory = ReplayBuffer(replay_capacity)
         
-        # Counters
-        self.train_steps = 0
-        self.episodes = 0
-        
-        # History
-        self.loss_history = []
-        self.epsilon_history = []
-        
-        print(f"\n{'='*70}")
-        print(f"Initialized DQN Agent {agent_id} (PyTorch)")
-        print(f"{'='*70}")
-        print(f"State Dim: {state_dim} | Action Dim: {action_dim}")
-        print(f"Hidden Units: {hidden_units}")
-        print(f"Loss: {loss_type.upper()} | Double DQN: {use_double}")
-        print(f"Device: {self.device}")
-        print(f"{'='*70}\n")
+        if loss_type == 'huber':
+            self._compute_loss = F.smooth_l1_loss
+        else:
+            self._compute_loss = F.mse_loss
     
-    def get_state_representation(self, price_indices: tuple) -> np.ndarray:
-        """Convert price indices to normalized 2D state."""
-        state = np.array(price_indices, dtype=np.float32) / (self.action_dim - 1)
-        assert state.shape == (2,), f"State must be 2D! Got {state.shape}"
-        return state
+    def get_state_representation(self, state: tuple) -> np.ndarray:
+        """Normalize state to [0,1] range."""
+        return np.array([state[0] / (self.action_dim - 1), state[1] / (self.action_dim - 1)])
     
     def select_action(self, state: tuple, explore: bool = True) -> int:
-        """Epsilon-greedy action selection."""
+        """Epsilon-greedy action selection. Match ql.py random uniform round."""
         if explore and random.random() < self.epsilon:
-            return random.randint(0, self.action_dim - 1)
-        
-        with torch.no_grad():
-            state_vec = self.get_state_representation(state)
-            state_tensor = torch.FloatTensor(state_vec).unsqueeze(0).to(self.device)
-            q_values = self.q_network(state_tensor)
-            return q_values.argmax(dim=1).item()
+            return round(random.uniform(0, self.action_dim - 1))
+        else:
+            with torch.no_grad():
+                state_vec = self.get_state_representation(state)
+                state_tensor = torch.FloatTensor(state_vec).unsqueeze(0).to(self.device)
+                q_values = self.q_network(state_tensor)
+                return q_values.argmax().item()
     
     def remember(self, state: tuple, action: int, reward: float, next_state: tuple, done: bool):
         """Store experience in replay buffer."""
         self.memory.push(state, action, reward, next_state, done)
     
-    def _compute_loss(self, target_q: torch.Tensor, current_q: torch.Tensor) -> torch.Tensor:
-        """Compute loss (MSE or Huber)."""
-        if self.loss_type == 'mse':
-            return F.mse_loss(current_q, target_q)
-        elif self.loss_type == 'huber':
-            return F.smooth_l1_loss(current_q, target_q)
-        else:
-            raise ValueError(f"Unknown loss type: {self.loss_type}")
-    
-    def replay(self) -> float:
-        """Training step with experience replay."""
+    def replay(self):
+        """Perform training on batch from replay buffer.
+        To match ql.py, if buffer large enough, sample batch_size.
+        Note: ql.py trains on all recent tuples in shuffled batches, but here we keep standard sampling.
+        For closer match, could process multiple batches or all buffer in shuffled order.
+        """
         if len(self.memory) < self.batch_size:
-            return 0.0
+            return None
         
-        # Sample batch
         states, actions, rewards, next_states, dones = self.memory.sample(self.batch_size)
         
-        # Move to device
         states = states.to(self.device)
         actions = actions.to(self.device)
-        rewards = rewards.to(self.device)
+        rewards = (rewards / self.norm_fact).to(self.device)  # Normalize reward
         next_states = next_states.to(self.device)
         dones = dones.to(self.device)
         
-        # Current Q-values
-        current_q_values = self.q_network(states)
-        current_q = current_q_values.gather(1, actions.unsqueeze(1)).squeeze(1)
+        # Compute current Q
+        current_q = self.q_network(states).gather(1, actions.unsqueeze(1)).squeeze(1)
         
-        # Target Q-values
+        # Compute target Q
         with torch.no_grad():
             if self.use_double:
-                # Double DQN
-                next_q_online = self.q_network(next_states)
-                next_actions = next_q_online.argmax(dim=1)
-                
-                next_q_target = self.target_network(next_states)
-                next_q = next_q_target.gather(1, next_actions.unsqueeze(1)).squeeze(1)
+                # DDQN: actions from q_network, values from target
+                next_actions = self.q_network(next_states).argmax(dim=1)
+                next_q = self.target_network(next_states).gather(1, next_actions.unsqueeze(1)).squeeze(1)
             else:
-                # Standard DQN
-                next_q_values = self.target_network(next_states)
-                next_q = next_q_values.max(dim=1)[0]
+                next_q = self.target_network(next_states).max(dim=1)[0]
             
             target_q = rewards + self.gamma * next_q * (1 - dones)
         
@@ -315,7 +250,7 @@ class DQNAgent:
         return loss_value
     
     def update_epsilon(self):
-        """Decay exploration rate."""
+        """Decay exploration rate. Match ql.py decay."""
         self.epsilon = max(self.epsilon_end, self.epsilon * self.epsilon_decay)
         self.epsilon_history.append(self.epsilon)
     
@@ -356,7 +291,7 @@ if __name__ == "__main__":
     """Test the PyTorch DQN implementation."""
     
     print("="*80)
-    print("DQN AGENT - PyTorch Version")
+    print("DQN AGENT - PyTorch Version (Matched to ql.py)")
     print("="*80)
     
     # Create price grid
@@ -373,13 +308,14 @@ if __name__ == "__main__":
     print(f"\nPrice Grid: [{prices[0]:.3f}, {prices[-1]:.3f}]")
     print(f"Number of Prices: {n_prices}\n")
     
-    # Initialize agent
+    # Initialize agent with matched params
     agent = DQNAgent(
         agent_id=0,
         state_dim=2,
         action_dim=n_prices,
-        loss_type='huber',
-        use_double=True
+        loss_type='mse',  # Match MSE in ql.py
+        use_double=True,
+        use_dueling=True
     )
     
     # Test interaction
