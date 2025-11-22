@@ -66,8 +66,8 @@ class PSOAgent:
             # Keep g_best to remember best ever found
             self.stuck_counter = 0
             self.restart_count += 1
-            if self.restart_count <= 10:  # Only print first 10
-                print(f"      [PSO RESTART #{self.restart_count} at t={self.t}]")
+            # if self.restart_count <= 10:  # Only print first 10
+                # print(f"      [PSO RESTART #{self.restart_count} at t={self.t}]")
         
         # Update velocities and positions
         r1 = np.random.uniform(0, 1, self.num_particles)

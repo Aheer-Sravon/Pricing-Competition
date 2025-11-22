@@ -98,112 +98,104 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     
     return avg_price_ddpg1, avg_price_ddpg2, delta_ddpg1, delta_ddpg2, rpdi_ddpg1, rpdi_ddpg2, p_n
 
-def main():
-    shock_cfg = {
-        'enabled': False
+shock_cfg = {
+    'enabled': False
+}
+
+benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+
+print("=" * 80)
+print("DDPG vs DDPG - NO SHOCKS")
+print("=" * 80)
+
+all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
+
+models = ['logit', 'hotelling', 'linear']
+num_runs = 5
+results = {}
+
+run_logs = {model: {'delta1': [], 'delta2': [], 'rpdi1': [], 'rpdi2': []} for model in models}
+
+for model in models:
+    print(f"\n{'='*60}")
+    print(f"Model: {model.upper()}")
+    print(f"{'='*60}")
+    
+    model_benchmarks = all_benchmarks[model]
+    
+    avg_prices_ddpg1 = []
+    avg_prices_ddpg2 = []
+    deltas_ddpg1 = []
+    deltas_ddpg2 = []
+    rpdis_ddpg1 = []
+    rpdis_ddpg2 = []
+    theo_prices = []
+    
+    for run in range(num_runs):
+        seed = SEED + run
+        apddpg1, apddpg2, dddpg1, dddpg2, rddpg1, rddpg2, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+        avg_prices_ddpg1.append(apddpg1)
+        avg_prices_ddpg2.append(apddpg2)
+        deltas_ddpg1.append(dddpg1)
+        deltas_ddpg2.append(dddpg2)
+        rpdis_ddpg1.append(rddpg1)
+        rpdis_ddpg2.append(rddpg2)
+        theo_prices.append(p_n)
+        
+        print(f"\nRun {run + 1}:")
+        print(f"  DDPG 1  -> Delta: {dddpg1:.4f}, RPDI: {rddpg1:.4f}")
+        print(f"  DDPG 2  -> Delta: {dddpg2:.4f}, RPDI: {rddpg2:.4f}")
+        
+        run_logs[model]['delta1'].append(dddpg1)
+        run_logs[model]['delta2'].append(dddpg2)
+        run_logs[model]['rpdi1'].append(rddpg1)
+        run_logs[model]['rpdi2'].append(rddpg2)
+    
+    results[model] = {
+        'Avg Price DDPG1': np.mean(avg_prices_ddpg1),
+        'Theo Price': np.mean(theo_prices),
+        'Avg Price DDPG2': np.mean(avg_prices_ddpg2),
+        'Delta DDPG1': np.mean(deltas_ddpg1),
+        'Delta DDPG2': np.mean(deltas_ddpg2),
+        'RPDI DDPG1': np.mean(rpdis_ddpg1),
+        'RPDI DDPG2': np.mean(rpdis_ddpg2)
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
-    
-    print("=" * 80)
-    print("DDPG vs DDPG - NO SHOCKS")
-    print("=" * 80)
-    
-    all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
-    
-    models = ['logit', 'hotelling', 'linear']
-    num_runs = 5
-    results = {}
-    
-    run_logs = {model: {'delta1': [], 'delta2': [], 'rpdi1': [], 'rpdi2': []} for model in models}
-    
-    for model in models:
-        print(f"\n{'='*60}")
-        print(f"Model: {model.upper()}")
-        print(f"{'='*60}")
-        
-        model_benchmarks = all_benchmarks[model]
-        
-        avg_prices_ddpg1 = []
-        avg_prices_ddpg2 = []
-        deltas_ddpg1 = []
-        deltas_ddpg2 = []
-        rpdis_ddpg1 = []
-        rpdis_ddpg2 = []
-        theo_prices = []
-        
-        for run in range(num_runs):
-            seed = SEED + run
-            apddpg1, apddpg2, dddpg1, dddpg2, rddpg1, rddpg2, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
-            avg_prices_ddpg1.append(apddpg1)
-            avg_prices_ddpg2.append(apddpg2)
-            deltas_ddpg1.append(dddpg1)
-            deltas_ddpg2.append(dddpg2)
-            rpdis_ddpg1.append(rddpg1)
-            rpdis_ddpg2.append(rddpg2)
-            theo_prices.append(p_n)
-            
-            print(f"\nRun {run + 1}:")
-            print(f"  DDPG 1  -> Delta: {dddpg1:.4f}, RPDI: {rddpg1:.4f}")
-            print(f"  DDPG 2  -> Delta: {dddpg2:.4f}, RPDI: {rddpg2:.4f}")
-            
-            run_logs[model]['delta1'].append(dddpg1)
-            run_logs[model]['delta2'].append(dddpg2)
-            run_logs[model]['rpdi1'].append(rddpg1)
-            run_logs[model]['rpdi2'].append(rddpg2)
-        
-        results[model] = {
-            'Avg Price DDPG1': np.mean(avg_prices_ddpg1),
-            'Theo Price': np.mean(theo_prices),
-            'Avg Price DDPG2': np.mean(avg_prices_ddpg2),
-            'Delta DDPG1': np.mean(deltas_ddpg1),
-            'Delta DDPG2': np.mean(deltas_ddpg2),
-            'RPDI DDPG1': np.mean(rpdis_ddpg1),
-            'RPDI DDPG2': np.mean(rpdis_ddpg2)
-        }
-        
-        print(f"\n  Model Average: DDPG1 Δ = {results[model]['Delta DDPG1']:.3f}, DDPG2 Δ = {results[model]['Delta DDPG2']:.3f}")
-    
-    print(f"\n{'='*80}")
-    print("SUMMARY TABLE")
-    print(f"{'='*80}\n")
-    
-    data = {
-        'Model': [m.upper() for m in models],
-        'DDPG1 Avg. Prices': [round(results[m]['Avg Price DDPG1'], 2) for m in models],
-        'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
-        'DDPG2 Avg. Prices': [round(results[m]['Avg Price DDPG2'], 2) for m in models],
-        'Theo. Prices.1': [round(results[m]['Theo Price'], 2) for m in models],
-        'DDPG1 Extra-profits Δ': [round(results[m]['Delta DDPG1'], 2) for m in models],
-        'DDPG2 Extra-profits Δ': [round(results[m]['Delta DDPG2'], 2) for m in models],
-        'DDPG1 RPDI': [round(results[m]['RPDI DDPG1'], 2) for m in models],
-        'DDPG2 RPDI': [round(results[m]['RPDI DDPG2'], 2) for m in models]
-    }
-    
-    df = pd.DataFrame(data)
-    df.to_csv("./results/ddpg_vs_ddpg_2.csv", index=False)
-    print(df.to_string(index=False))
-    
-    print(f"\n{'='*80}")
-    print("OVERALL AVERAGES ACROSS ALL MODELS")
-    print(f"{'='*80}\n")
-    
-    avg_delta1 = np.mean([results[m]['Delta DDPG1'] for m in models])
-    avg_delta2 = np.mean([results[m]['Delta DDPG2'] for m in models])
-    avg_rpdi1 = np.mean([results[m]['RPDI DDPG1'] for m in models])
-    avg_rpdi2 = np.mean([results[m]['RPDI DDPG2'] for m in models])
-    
-    print(f"DDPG Agent 1:")
-    print(f"  Average Delta (Δ):  {avg_delta1:.4f}")
-    print(f"  Average RPDI:       {avg_rpdi1:.4f}")
-    print(f"\nDDPG Agent 2:")
-    print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
-    print(f"  Average RPDI:       {avg_rpdi2:.4f}")
-    
-    print(f"\n{'='*80}")
-    print("[Results saved to ./results/ddpg_vs_ddpg_2.csv]")
-    print(f"{'='*80}\n")
+    print(f"\n  Model Average: DDPG1 Δ = {results[model]['Delta DDPG1']:.3f}, DDPG2 Δ = {results[model]['Delta DDPG2']:.3f}")
 
+print(f"\n{'='*80}")
+print("SUMMARY TABLE")
+print(f"{'='*80}\n")
 
-if __name__ == "__main__":
-    main()
+data = {
+    'Model': [m.upper() for m in models],
+    'DDPG1 Avg. Prices': [round(results[m]['Avg Price DDPG1'], 2) for m in models],
+    'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
+    'DDPG2 Avg. Prices': [round(results[m]['Avg Price DDPG2'], 2) for m in models],
+    'Theo. Prices.1': [round(results[m]['Theo Price'], 2) for m in models],
+    'DDPG1 Extra-profits Δ': [round(results[m]['Delta DDPG1'], 2) for m in models],
+    'DDPG2 Extra-profits Δ': [round(results[m]['Delta DDPG2'], 2) for m in models],
+    'DDPG1 RPDI': [round(results[m]['RPDI DDPG1'], 2) for m in models],
+    'DDPG2 RPDI': [round(results[m]['RPDI DDPG2'], 2) for m in models]
+}
+
+df = pd.DataFrame(data)
+df.to_csv("./results/ddpg_vs_ddpg_2.csv", index=False)
+print("[Results saved to ./results/ddpg_vs_ddpg_2.csv]")
+print(df.to_string(index=False))
+
+print(f"\n{'='*80}")
+print("OVERALL AVERAGES ACROSS ALL MODELS")
+print(f"{'='*80}\n")
+
+avg_delta1 = np.mean([results[m]['Delta DDPG1'] for m in models])
+avg_delta2 = np.mean([results[m]['Delta DDPG2'] for m in models])
+avg_rpdi1 = np.mean([results[m]['RPDI DDPG1'] for m in models])
+avg_rpdi2 = np.mean([results[m]['RPDI DDPG2'] for m in models])
+
+print(f"DDPG Agent 1:")
+print(f"  Average Delta (Δ):  {avg_delta1:.4f}")
+print(f"  Average RPDI:       {avg_rpdi1:.4f}")
+print(f"\nDDPG Agent 2:")
+print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
+print(f"  Average RPDI:       {avg_rpdi2:.4f}")
