@@ -1,0 +1,4 @@
+Model,DDPG1 Avg. Prices,Theo. Prices,DDPG2 Avg. Prices,Theo. Prices.1,DDPG1 Extra-profits Δ,DDPG2 Extra-profits Δ,DDPG1 RPDI,DDPG2 RPDI
+LOGIT,1.52,1.47,1.52,1.47,-0.01,-0.01,0.1,0.1
+HOTELLING,1.21,1.0,0.96,1.0,-0.42,0.79,0.82,-0.15
+LINEAR,0.44,0.43,0.44,0.43,-0.01,-0.01,0.1,0.1

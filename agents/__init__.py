@@ -4,6 +4,7 @@ from .mod_qlearner import ModifiedQLearningAgent
 from .mod_pso import ModifiedPSOAgent
 from .dqn import DQNAgent
 from .continuousppo import PPOAgent
+from .ddpg import DDPGAgent
 
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
         'ModifiedQLearningAgent',
         'ModifiedPSOAgent',
         'DQNAgent',
-        'PPOAgent'
+        'PPOAgent',
+        'DDPGAgent'
 ]
