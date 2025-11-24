@@ -1,9 +1,3 @@
-"""
-ddpg_vs_ddpg_2.py
-
-Simulation comparing DDPG vs DDPG agents.
-"""
-
 import sys
 import os
 import numpy as np
@@ -25,17 +19,26 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     np.random.seed(seed)
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+
+    # Get bounds from env
+    price_min = env.price_grid.min()
+    price_max = env.price_grid.max()
+
     ddpg_agent1 = DDPGAgent(
         agent_id=0,
         state_dim=2,
         action_dim=1,
-        seed=seed
+        seed=seed,
+        price_min=price_min,
+        price_max=price_max
     )
     ddpg_agent2 = DDPGAgent(
         agent_id=1,
         state_dim=2,
         action_dim=1,
-        seed=seed+1000
+        seed=seed+1000,
+        price_min=price_min,
+        price_max=price_max
     )
     
     shared_state = env.reset()
@@ -46,27 +49,20 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     state2 = np.array([shared_state[1], shared_state[0]], dtype=np.float32)
     
     for t in range(env.horizon):
-        ddpg_action1_raw = ddpg_agent1.select_action(state1, explore=True)
-        ddpg_action2_raw = ddpg_agent2.select_action(state2, explore=True)
+        price1, norm_action1 = ddpg_agent1.select_action(state1, explore=True)
+        price2, norm_action2 = ddpg_agent2.select_action(state2, explore=True)
         
-        # Map continuous actions to discrete indices
-        ddpg_action1 = int((ddpg_action1_raw[0] + 1) / 2 * (env.N - 1))
-        ddpg_action1 = np.clip(ddpg_action1, 0, env.N - 1)
-        
-        ddpg_action2 = int((ddpg_action2_raw[0] + 1) / 2 * (env.N - 1))
-        ddpg_action2 = np.clip(ddpg_action2, 0, env.N - 1)
-        
-        actions = [ddpg_action1, ddpg_action2]
+        actions = [price1, price2]
         shared_next_state, rewards, done, info = env.step(actions)
         
         next_state1 = np.array([shared_next_state[0], shared_next_state[1]], dtype=np.float32)
         next_state2 = np.array([shared_next_state[1], shared_next_state[0]], dtype=np.float32)
         
-        ddpg_agent1.remember(state1, ddpg_action1_raw, rewards[0], next_state1, done)
+        ddpg_agent1.remember(state1, norm_action1, rewards[0], next_state1, done)
         ddpg_agent1.replay()
         ddpg_agent1.update_epsilon()
         
-        ddpg_agent2.remember(state2, ddpg_action2_raw, rewards[1], next_state2, done)
+        ddpg_agent2.remember(state2, norm_action2, rewards[1], next_state2, done)
         ddpg_agent2.replay()
         ddpg_agent2.update_epsilon()
         
@@ -98,22 +94,14 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     
     return avg_price_ddpg1, avg_price_ddpg2, delta_ddpg1, delta_ddpg2, rpdi_ddpg1, rpdi_ddpg2, p_n
 
-shock_cfg = {
-    'enabled': False
-}
-
-benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
-
-print("=" * 80)
-print("DDPG vs DDPG - NO SHOCKS")
-print("=" * 80)
-
-all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
-
 models = ['logit', 'hotelling', 'linear']
-num_runs = 5
+num_runs = 2
+shock_cfg = None
+tb_calculator = TheoreticalBenchmarks()
+all_benchmarks = tb_calculator.calculate_all_benchmarks(shock_cfg)
 results = {}
 
+# Store individual run results for logging
 run_logs = {model: {'delta1': [], 'delta2': [], 'rpdi1': [], 'rpdi2': []} for model in models}
 
 for model in models:
@@ -193,9 +181,9 @@ avg_delta2 = np.mean([results[m]['Delta DDPG2'] for m in models])
 avg_rpdi1 = np.mean([results[m]['RPDI DDPG1'] for m in models])
 avg_rpdi2 = np.mean([results[m]['RPDI DDPG2'] for m in models])
 
-print(f"DDPG Agent 1:")
+print("DDPG Agent 1:")
 print(f"  Average Delta (Δ):  {avg_delta1:.4f}")
 print(f"  Average RPDI:       {avg_rpdi1:.4f}")
-print(f"\nDDPG Agent 2:")
+print("\nDDPG Agent 2:")
 print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
 print(f"  Average RPDI:       {avg_rpdi2:.4f}")

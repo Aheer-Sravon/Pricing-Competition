@@ -28,8 +28,11 @@ class Actor(nn.Module):
     """Actor network for DDPG"""
     def __init__(self, state_dim, action_dim, hidden_dim=400):
         super(Actor, self).__init__()
+        self.bn_input = nn.BatchNorm1d(state_dim)
         self.fc1 = nn.Linear(state_dim, hidden_dim)
+        self.bn1 = nn.BatchNorm1d(hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, 300)
+        self.bn2 = nn.BatchNorm1d(300)
         self.fc3 = nn.Linear(300, action_dim)
        
         # Initialize weights
@@ -41,8 +44,9 @@ class Actor(nn.Module):
         nn.init.uniform_(self.fc3.weight, -3e-3, 3e-3)
    
     def forward(self, state):
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
+        x = self.bn_input(state)
+        x = F.relu(self.bn1(self.fc1(x)))
+        x = F.relu(self.bn2(self.fc2(x)))
         x = torch.tanh(self.fc3(x))
         return x
 
@@ -50,7 +54,9 @@ class Critic(nn.Module):
     """Critic network for DDPG"""
     def __init__(self, state_dim, action_dim, hidden_dim=400):
         super(Critic, self).__init__()
+        self.bn_input = nn.BatchNorm1d(state_dim)
         self.fc1 = nn.Linear(state_dim, hidden_dim)
+        self.bn1 = nn.BatchNorm1d(hidden_dim)
         self.fc2 = nn.Linear(hidden_dim + action_dim, 300)
         self.fc3 = nn.Linear(300, 1)
        
@@ -63,7 +69,8 @@ class Critic(nn.Module):
         nn.init.uniform_(self.fc3.weight, -3e-3, 3e-3)
    
     def forward(self, state, action):
-        x = F.relu(self.fc1(state))
+        x = self.bn_input(state)
+        x = F.relu(self.bn1(self.fc1(x)))
         x = torch.cat([x, action], dim=1)
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -83,9 +90,10 @@ class OUNoise:
         self.state = np.ones(self.action_dim) * self.mu
    
     def sample(self):
-        dx = self.theta * (self.mu - self.state) + self.sigma * np.random.randn(self.action_dim)
+        dx = self.theta * (self.mu - self.state)
+        dx += self.sigma * np.random.randn(self.action_dim)
         self.state += dx
-        return self.state
+        return self.state.copy()
 
 class DDPGAgent:
     """Deep Deterministic Policy Gradient Agent for pricing competition simulation"""
@@ -101,7 +109,9 @@ class DDPGAgent:
         tau=0.001,
         buffer_size=1000000,
         batch_size=64,
-        seed=None
+        seed=None,
+        price_min=0.0,
+        price_max=2.0
     ):
         self.agent_id = agent_id
         self.state_dim = state_dim
@@ -109,39 +119,41 @@ class DDPGAgent:
         self.gamma = gamma
         self.tau = tau
         self.batch_size = batch_size
-       
+        self.price_min = price_min
+        self.price_max = price_max
+        
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-       
+        
         if seed is not None:
             torch.manual_seed(seed)
             if self.device.type == 'cuda':
                 torch.cuda.manual_seed(seed)
             np.random.seed(seed)
             random.seed(seed)
-       
+        
         # For deterministic behavior on GPU
         if self.device.type == 'cuda':
             torch.backends.cudnn.deterministic = True
             torch.backends.cudnn.benchmark = False
-       
+        
         # Actor networks
         self.actor = Actor(state_dim, action_dim, hidden_dim).to(self.device)
         self.actor_target = Actor(state_dim, action_dim, hidden_dim).to(self.device)
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=actor_lr)
-       
+        
         # Critic networks
         self.critic = Critic(state_dim, action_dim, hidden_dim).to(self.device)
         self.critic_target = Critic(state_dim, action_dim, hidden_dim).to(self.device)
         self.critic_target.load_state_dict(self.critic.state_dict())
         self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=critic_lr, weight_decay=1e-2)
-       
+        
         # Replay buffer
         self.replay_buffer = ReplayBuffer(buffer_size)
-       
+        
         # Noise process
         self.noise = OUNoise(action_dim)
-       
+        
         # Exploration parameters
         self.epsilon = 1.0
         self.epsilon_min = 0.01
@@ -154,13 +166,18 @@ class DDPGAgent:
         with torch.no_grad():
             action = self.actor(state).cpu().numpy()[0]
         self.actor.train()
-       
+        
         if explore:
             noise = self.noise.sample() * self.epsilon
-            action = action + noise
+            action += noise
             action = np.clip(action, -1, 1)
-       
-        return action
+        
+        normalized_action = action.copy()  # For remember/replay (normalized [-1,1])
+        
+        # Scale to [price_min, price_max]
+        scaled_price = self.price_min + (self.price_max - self.price_min) * (action[0] + 1) / 2
+        
+        return scaled_price, normalized_action
    
     def remember(self, state, action, reward, next_state, done):
         """Store experience in replay buffer"""

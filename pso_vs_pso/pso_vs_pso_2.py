@@ -16,7 +16,10 @@ SEED = 99
 def run_simulation(model, seed):
     np.random.seed(seed)
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
-    agents = [PSOAgent(env, agent_id=0), PSOAgent(env, agent_id=1)]
+    agents = [
+        PSOAgent(env, agent_id=0, price_min=env.price_grid.min(), price_max=env.price_grid.max()),
+        PSOAgent(env, agent_id=1, price_min=env.price_grid.min(), price_max=env.price_grid.max()),
+    ]
     state = env.reset()
     profits_history = []
     prices_history = []
@@ -59,7 +62,7 @@ def run_simulation(model, seed):
     return avg_price1, avg_price2, delta1, delta2, rpdi1, rpdi2
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 50
+num_runs = 10
 results = {}
 
 # Store individual run results for logging

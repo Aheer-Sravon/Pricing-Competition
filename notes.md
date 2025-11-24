@@ -1,22 +1,11 @@
 # PSO vs PSO
-
-- Linear Extra profit, RPDI
-
+- Linear Extra profit, RPDI - Fixed!
 
 # Run
-
 - DQN vs DQN
 - DDPG vs DDPG - Delta issue
-
-- PSO and DDPG continous - remove discretization, give range
-    change in driver code
-
-- PSO issue
-
-# shock
-
-
-# no shock
+- PSO and DDPG continuous - remove discretization, give range
+    change in driver code - Fixed!
 
 # Create doc for the paper
 
@@ -27,5 +16,3 @@
     - equation
     - Hyperparameter
     - update rule
-
-
