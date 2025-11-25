@@ -17,17 +17,17 @@ pdf-engine: lualatex
 
 ## PSO vs Others
 
-1. [PSO vs PSO]()
-2. [PSO vs DQN]()
-3. [PSO vs DDPG]()
+1. [PSO vs PSO](https://www.kaggle.com/code/aheersrabon/pricing-competition-pso-vs-pso-no-shock)
+2. [PSO vs DQN](https://www.kaggle.com/code/aheersrabon/pricing-competition-pso-vs-dqn-no-shock)
+3. [PSO vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-pso-vs-ddpg-no-shock)
 
 ## DDPG vs Others
 
-1. [DQN vs DQN]()
-2. [DQN vs DDPG]()
+1. [DQN vs DQN](https://www.kaggle.com/code/aheersrabon/pricing-competition-dqn-vs-dqn-no-shock)
+2. [DQN vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-dqn-vs-ddpg-no-shock)
 
 ## DDPG vs Others
 
-1. [DDPG vs DDPG]()
+1. [DDPG vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-ddpg-vs-ddpg-no-shock)
 
 # With Shock
