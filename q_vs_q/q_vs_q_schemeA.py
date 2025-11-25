@@ -1,13 +1,18 @@
-"""
-Q-Learning vs Q-Learning with Scheme A Shocks
-Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)
-"""
 
 import numpy as np
 import pandas as pd
+import os
+import sys
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, parent_dir)
+
 from environments import MarketEnvContinuous
 from agents import QLearningAgent
+
 from theoretical_benchmarks import TheoreticalBenchmarks
+
+sys.path.pop(0)
 
 SEED = 99
 

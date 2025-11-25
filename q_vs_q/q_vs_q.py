@@ -132,7 +132,7 @@ data = {
 }
 
 df = pd.DataFrame(data)
-df.to_csv("./results/q_vs_q_2.csv", index=False)
+df.to_csv("./results/q_vs_q.csv", index=False)
 print(df)
 
 # Calculate and print overall averages across all models
@@ -145,10 +145,10 @@ avg_delta2 = np.mean([results[m]['Delta 2'] for m in models])
 avg_rpdi1 = np.mean([results[m]['RPDI 1'] for m in models])
 avg_rpdi2 = np.mean([results[m]['RPDI 2'] for m in models])
 
-print(f"Firm 1 (Q-Learning):")
+print("Firm 1 (Q-Learning):")
 print(f"  Average Delta (Δ):  {avg_delta1:.4f}")
 print(f"  Average RPDI:       {avg_rpdi1:.4f}")
-print(f"\nFirm 2 (Q-Learning):")
+print("\nFirm 2 (Q-Learning):")
 print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
 print(f"  Average RPDI:       {avg_rpdi2:.4f}")
 
