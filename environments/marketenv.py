@@ -108,7 +108,7 @@ class MarketEnv:
         self.reset()
    
     def reset(self):
-        """Reset environment - returns single state tuple"""
+        """Reset environment - returns state as actual prices"""
         self.t = 0
        
         # Reset shocks
@@ -127,7 +127,11 @@ class MarketEnv:
         return self._get_state()
    
     def _get_state(self):
-        """Get current state (price indices as tuple)"""
+        """Get current state as actual prices (numpy array)"""
+        return self.price_grid[self.current_price_idx].copy()
+    
+    def _get_state_indices(self):
+        """Get current state as price indices (for Q-learning compatibility)"""
         return tuple(self.current_price_idx)
    
     def _generate_shocks(self):
@@ -210,7 +214,17 @@ class MarketEnv:
         return demands, profits
    
     def step(self, action_indices):
-        """Execute one step - returns 4 values (verified API)"""
+        """Execute one step - returns (state_prices, profits, done, info)
+        
+        Args:
+            action_indices: Array of price indices for each agent
+            
+        Returns:
+            next_state: Numpy array of actual prices (not indices)
+            profits: Numpy array of profits for each agent
+            done: Episode termination flag
+            info: Dictionary with prices, demands, and shocks
+        """
         action_indices = np.asarray(action_indices, dtype=int)
        
         # Update price indices
@@ -226,7 +240,7 @@ class MarketEnv:
         # Update time
         self.t += 1
        
-        # Get next state
+        # Get next state (actual prices, not indices)
         next_state = self._get_state()
        
         # Episode termination
@@ -236,34 +250,72 @@ class MarketEnv:
         info = {
             'prices': prices.copy(),
             'demands': demands.copy(),
-            'shocks': self.current_shocks.copy()
+            'shocks': self.current_shocks.copy(),
+            'price_indices': self.current_price_idx.copy()  # Include indices for Q-learning
         }
        
-        # Return 4 values
         return next_state, profits, done, info
 
 class MarketEnvContinuous(MarketEnv):
-    def step(self, action_indices):
+    """Market environment that accepts both discrete indices and continuous prices as actions"""
+    
+    def step(self, actions):
+        """Execute one step with flexible action handling
+        
+        Args:
+            actions: List/array where each element can be:
+                     - int/np.integer: discrete price index
+                     - float: continuous price value
+                     
+        Returns:
+            next_state: Numpy array of actual prices
+            profits: Numpy array of profits
+            done: Episode termination flag
+            info: Dictionary with prices, demands, shocks, and indices
+        """
         prices = []
         indices = []
-        for a in action_indices:
+        
+        for a in actions:
             if isinstance(a, (int, np.integer)):
+                # Discrete action: use price from grid
                 prices.append(self.price_grid[a])
                 indices.append(a)
             else:
-                prices.append(float(a))
-                indices.append(np.argmin(np.abs(self.price_grid - a)))
+                # Continuous action: use actual price value
+                price = float(a)
+                prices.append(price)
+                # Find closest grid index for tracking
+                indices.append(np.argmin(np.abs(self.price_grid - price)))
+        
         prices = np.array(prices)
         self.current_price_idx = np.array(indices)
         
+        # Generate shocks
         self.current_shocks = self._generate_shocks()
+        
+        # Calculate demands and profits
         demands, profits = self.calculate_demand_and_profit(prices, self.current_shocks)
+        
+        # Update time
         self.t += 1
+        
+        # Get next state (actual prices)
         next_state = self._get_state()
+        
+        # Episode termination
         done = False
+        
+        # Info dictionary
         info = {
             'prices': prices.copy(),
             'demands': demands.copy(),
-            'shocks': self.current_shocks.copy()
+            'shocks': self.current_shocks.copy(),
+            'price_indices': self.current_price_idx.copy()
         }
+        
         return next_state, profits, done, info
+
+    def get_state_prices(self):
+        """Get current state as actual prices (same as _get_state)"""
+        return self._get_state()

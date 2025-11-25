@@ -8,22 +8,32 @@ sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import DDPGAgent
-from theoretical_benchmarks import TheoreticalBenchmarks
 
 sys.path.pop(0)
 
 SEED = 99
 
-def run_simulation(model, seed, shock_cfg, benchmarks):
+def run_simulation(model, seed, shock_cfg):
     """Run DDPG vs DDPG simulation"""
     np.random.seed(seed)
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
-
-    # Get bounds from env
+    
+    # Compute theoretical benchmarks directly
+    p_n = env.P_N
+    p_m = env.P_M
+    prices_n = np.array([p_n, p_n])
+    _, profits_n = env.calculate_demand_and_profit(prices_n, np.zeros(2))
+    pi_n = profits_n[0]
+    prices_m = np.array([p_m, p_m])
+    _, profits_m = env.calculate_demand_and_profit(prices_m, np.zeros(2))
+    pi_m = profits_m[0]
+    
+    # Get price bounds
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
-
+    
+    # Initialize DDPG agents
     ddpg_agent1 = DDPGAgent(
         agent_id=0,
         state_dim=2,
@@ -32,47 +42,54 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         price_min=price_min,
         price_max=price_max
     )
+    
     ddpg_agent2 = DDPGAgent(
         agent_id=1,
         state_dim=2,
         action_dim=1,
-        seed=seed+1000,
+        seed=seed + 1000,  # Different seed for diversity
         price_min=price_min,
         price_max=price_max
     )
     
-    shared_state = env.reset()
+    # Reset environment - state is actual prices
+    state = env.reset()
     profits_history = []
     prices_history = []
     
-    state1 = np.array([shared_state[0], shared_state[1]], dtype=np.float32)
-    state2 = np.array([shared_state[1], shared_state[0]], dtype=np.float32)
-    
     for t in range(env.horizon):
-        price1, norm_action1 = ddpg_agent1.select_action(state1, explore=True)
-        price2, norm_action2 = ddpg_agent2.select_action(state2, explore=True)
+        # Both agents select continuous prices
+        price1, norm_action1 = ddpg_agent1.select_action(state.astype(np.float32), explore=True)
+        price2, norm_action2 = ddpg_agent2.select_action(state.astype(np.float32), explore=True)
         
+        # Execute actions (both continuous prices)
         actions = [price1, price2]
-        shared_next_state, rewards, done, info = env.step(actions)
+        next_state, rewards, done, info = env.step(actions)
         
-        next_state1 = np.array([shared_next_state[0], shared_next_state[1]], dtype=np.float32)
-        next_state2 = np.array([shared_next_state[1], shared_next_state[0]], dtype=np.float32)
+        # Convert states to float32 for PyTorch
+        state_float = state.astype(np.float32)
+        next_state_float = next_state.astype(np.float32)
         
-        ddpg_agent1.remember(state1, norm_action1, rewards[0], next_state1, done)
+        # Update both agents
+        ddpg_agent1.remember(state_float, norm_action1, rewards[0], next_state_float, done)
         ddpg_agent1.replay()
-        ddpg_agent1.update_epsilon()
         
-        ddpg_agent2.remember(state2, norm_action2, rewards[1], next_state2, done)
+        ddpg_agent2.remember(state_float, norm_action2, rewards[1], next_state_float, done)
         ddpg_agent2.replay()
-        ddpg_agent2.update_epsilon()
         
-        state1 = next_state1
-        state2 = next_state2
-        shared_state = shared_next_state
+        # Decay exploration
+        if t % 100 == 0:
+            ddpg_agent1.update_epsilon()
+            ddpg_agent2.update_epsilon()
         
+        # Update state
+        state = next_state
+        
+        # Record history
         prices_history.append(info['prices'])
         profits_history.append(rewards)
     
+    # Calculate averages over last 1000 steps
     last_prices = np.array(prices_history[-1000:])
     avg_price_ddpg1 = np.mean(last_prices[:, 0])
     avg_price_ddpg2 = np.mean(last_prices[:, 1])
@@ -81,24 +98,26 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     avg_profit_ddpg1 = np.mean(last_profits[:, 0])
     avg_profit_ddpg2 = np.mean(last_profits[:, 1])
     
-    p_n = benchmarks['p_N']
-    p_m = benchmarks['p_M']
-    pi_n = benchmarks['E_pi_N']
-    pi_m = benchmarks['E_pi_M']
-    
+    # Calculate Delta (profit-based)
     delta_ddpg1 = (avg_profit_ddpg1 - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
     delta_ddpg2 = (avg_profit_ddpg2 - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
     
+    # Calculate RPDI (pricing-based)
     rpdi_ddpg1 = (avg_price_ddpg1 - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
     rpdi_ddpg2 = (avg_price_ddpg2 - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
     
     return avg_price_ddpg1, avg_price_ddpg2, delta_ddpg1, delta_ddpg2, rpdi_ddpg1, rpdi_ddpg2, p_n
 
+shock_cfg = {
+    'enabled': False
+}
+
+print("=" * 80)
+print("DDPG vs DDPG - NO SHOCKS")
+print("=" * 80)
+
 models = ['logit', 'hotelling', 'linear']
-num_runs = 2
-shock_cfg = None
-tb_calculator = TheoreticalBenchmarks()
-all_benchmarks = tb_calculator.calculate_all_benchmarks(shock_cfg)
+num_runs = 1
 results = {}
 
 # Store individual run results for logging
@@ -108,8 +127,6 @@ for model in models:
     print(f"\n{'='*60}")
     print(f"Model: {model.upper()}")
     print(f"{'='*60}")
-    
-    model_benchmarks = all_benchmarks[model]
     
     avg_prices_ddpg1 = []
     avg_prices_ddpg2 = []
@@ -121,23 +138,25 @@ for model in models:
     
     for run in range(num_runs):
         seed = SEED + run
-        apddpg1, apddpg2, dddpg1, dddpg2, rddpg1, rddpg2, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
-        avg_prices_ddpg1.append(apddpg1)
-        avg_prices_ddpg2.append(apddpg2)
-        deltas_ddpg1.append(dddpg1)
-        deltas_ddpg2.append(dddpg2)
-        rpdis_ddpg1.append(rddpg1)
-        rpdis_ddpg2.append(rddpg2)
+        ap1, ap2, d1, d2, r1, r2, p_n = run_simulation(model, seed, shock_cfg)
+        avg_prices_ddpg1.append(ap1)
+        avg_prices_ddpg2.append(ap2)
+        deltas_ddpg1.append(d1)
+        deltas_ddpg2.append(d2)
+        rpdis_ddpg1.append(r1)
+        rpdis_ddpg2.append(r2)
         theo_prices.append(p_n)
         
+        # Log individual run results
         print(f"\nRun {run + 1}:")
-        print(f"  DDPG 1  -> Delta: {dddpg1:.4f}, RPDI: {rddpg1:.4f}")
-        print(f"  DDPG 2  -> Delta: {dddpg2:.4f}, RPDI: {rddpg2:.4f}")
+        print(f"  DDPG 1 -> Delta: {d1:.4f}, RPDI: {r1:.4f}")
+        print(f"  DDPG 2 -> Delta: {d2:.4f}, RPDI: {r2:.4f}")
         
-        run_logs[model]['delta1'].append(dddpg1)
-        run_logs[model]['delta2'].append(dddpg2)
-        run_logs[model]['rpdi1'].append(rddpg1)
-        run_logs[model]['rpdi2'].append(rddpg2)
+        # Store for later access
+        run_logs[model]['delta1'].append(d1)
+        run_logs[model]['delta2'].append(d2)
+        run_logs[model]['rpdi1'].append(r1)
+        run_logs[model]['rpdi2'].append(r2)
     
     results[model] = {
         'Avg Price DDPG1': np.mean(avg_prices_ddpg1),
@@ -169,9 +188,9 @@ data = {
 
 df = pd.DataFrame(data)
 df.to_csv("./results/ddpg_vs_ddpg_2.csv", index=False)
-print("[Results saved to ./results/ddpg_vs_ddpg_2.csv]")
 print(df.to_string(index=False))
 
+# Calculate and print overall averages across all models
 print(f"\n{'='*80}")
 print("OVERALL AVERAGES ACROSS ALL MODELS")
 print(f"{'='*80}\n")
@@ -187,3 +206,7 @@ print(f"  Average RPDI:       {avg_rpdi1:.4f}")
 print("\nDDPG Agent 2:")
 print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
 print(f"  Average RPDI:       {avg_rpdi2:.4f}")
+
+print(f"\n{'='*80}")
+print("[Results saved to ./results/ddpg_vs_ddpg_2.csv]")
+print(f"{'='*80}\n")

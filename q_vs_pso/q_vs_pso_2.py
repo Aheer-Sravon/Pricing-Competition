@@ -16,15 +16,14 @@ SEED = 99
 def run_simulation(model, seed):
     np.random.seed(seed)
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
-    q_agent = QLearningAgent(env.N, agent_id=0)
-    pso_agent = PSOAgent(env, agent_id=1)
+    q_agent = QLearningAgent(env.N, agent_id=0, price_grid=env.price_grid)
+    pso_agent = PSOAgent(env, agent_id=1, price_min=env.price_grid.min(), price_max=env.price_grid.max())
     state = env.reset()
     profits_history = []
     prices_history = []
-    current_prices = [env.price_grid[state[0]], env.price_grid[state[1]]]  # Initial from state
     for t in range(env.horizon):
         q_action = q_agent.choose_action(state)  # int index
-        pso_agent.update(current_prices[0])  # Update PSO with Q's last price
+        pso_agent.update(state[0])  # Update PSO with Q's last price
         pso_price = pso_agent.choose_price()  # float
         actions = [q_action, pso_price]
         next_state, rewards, done, info = env.step(actions)
@@ -32,7 +31,6 @@ def run_simulation(model, seed):
         state = next_state
         prices_history.append(info['prices'])
         profits_history.append(rewards)
-        current_prices = info['prices']
     
     last_prices = np.array(prices_history[-1000:])
     avg_price1 = np.mean(last_prices[:, 0])
@@ -63,7 +61,7 @@ def run_simulation(model, seed):
     return avg_price1, avg_price2, delta1, delta2, rpdi1, rpdi2
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 50
+num_runs = 5
 results = {}
 
 # Store individual run results for logging
@@ -134,7 +132,7 @@ data = {
 }
 
 df = pd.DataFrame(data)
-df.to_csv("./results/q_vs_pso.csv", index=False)
+df.to_csv("./results/q_vs_pso_2.csv", index=False)
 print(df)
 
 # Calculate and print overall averages across all models
@@ -147,10 +145,10 @@ avg_delta2 = np.mean([results[m]['Delta 2'] for m in models])
 avg_rpdi1 = np.mean([results[m]['RPDI 1'] for m in models])
 avg_rpdi2 = np.mean([results[m]['RPDI 2'] for m in models])
 
-print(f"Firm 1 (Q-Learning):")
+print("Firm 1 (Q-Learning):")
 print(f"  Average Delta (Δ):  {avg_delta1:.4f}")
 print(f"  Average RPDI:       {avg_rpdi1:.4f}")
-print(f"\nFirm 2 (PSO):")
+print("\nFirm 2 (PSO):")
 print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
 print(f"  Average RPDI:       {avg_rpdi2:.4f}")
 

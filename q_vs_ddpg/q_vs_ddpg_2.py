@@ -11,7 +11,6 @@ from agents import QLearningAgent, DDPGAgent
 sys.path.pop(0)
 
 SEED = 99
-HORIZON = 10000
 
 def run_simulation(model, seed, verbose=True):
     """Run a single simulation of Q-Learning vs DDPG."""
@@ -19,13 +18,22 @@ def run_simulation(model, seed, verbose=True):
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
     
-    q_agent = QLearningAgent(env.N, agent_id=0)
+    price_min = env.price_grid.min()
+    price_max = env.price_grid.max()
+    
+    q_agent = QLearningAgent(
+        env.N,
+        agent_id=0,
+        price_grid=env.price_grid
+    )
     
     ddpg_agent = DDPGAgent(
         agent_id=1,
         state_dim=2,
         action_dim=1,
-        seed=seed
+        seed=seed,
+        price_min=price_min,
+        price_max=price_max
     )
     
     state = env.reset()
@@ -35,29 +43,26 @@ def run_simulation(model, seed, verbose=True):
     
     if verbose:
         print(f"\nRunning {model.upper()} model simulation...")
-        print(f"Horizon: {HORIZON} steps")
+        print(f"Horizon: {env.horizon} steps")
         print(f"Price grid size: {env.N}")
         print(f"Nash price: {env.P_N:.3f}")
         print(f"Monopoly price: {env.P_M:.3f}")
     
-    for t in range(HORIZON):
-        q_action = q_agent.choose_action(state)
+    for t in range(env.horizon):
+
+        q_action_idx = q_agent.choose_action(state)
+        q_price = env.price_grid[q_action_idx]
         
-        # DDPG state: (own_price_idx, competitor_price_idx)
-        ddpg_state = np.array([state[1], state[0]], dtype=np.float32)
-        ddpg_action_raw = ddpg_agent.select_action(ddpg_state, explore=True)
+        ddpg_state = state.astype(np.float32)
+        ddpg_price, ddpg_norm = ddpg_agent.select_action(ddpg_state, explore=True)
         
-        # Map continuous action [-1, 1] to discrete price index
-        ddpg_action = int((ddpg_action_raw[0] + 1) / 2 * (env.N - 1))
-        ddpg_action = np.clip(ddpg_action, 0, env.N - 1)
-        
-        actions = [q_action, ddpg_action]
+        actions = [q_price, ddpg_price]
         next_state, rewards, done, info = env.step(actions)
         
-        q_agent.update(state, q_action, rewards[0], next_state)
+        q_agent.update(state, q_action_idx, rewards[0], next_state)
         
-        next_ddpg_state = np.array([next_state[1], next_state[0]], dtype=np.float32)
-        ddpg_agent.remember(ddpg_state, ddpg_action_raw, rewards[1], next_ddpg_state, done)
+        next_ddpg_state = next_state.astype(np.float32)
+        ddpg_agent.remember(ddpg_state, ddpg_norm, rewards[1], next_ddpg_state, done)
         ddpg_agent.replay()
         
         if t % 100 == 0:
@@ -71,7 +76,7 @@ def run_simulation(model, seed, verbose=True):
             recent_prices = np.array(prices_history[-100:])
             avg_p_q = np.mean(recent_prices[:, 0])
             avg_p_ddpg = np.mean(recent_prices[:, 1])
-            print(f"  Step {t+1}/{HORIZON}: Q price={avg_p_q:.3f}, DDPG price={avg_p_ddpg:.3f}, ε={ddpg_agent.epsilon:.3f}")
+            print(f"  Step {t+1}/{env.horizon}: Q price={avg_p_q:.3f}, DDPG price={avg_p_ddpg:.3f}, ε={ddpg_agent.epsilon:.3f}")
     
     last_prices = np.array(prices_history[-1000:])
     avg_price_q = np.mean(last_prices[:, 0])
@@ -97,7 +102,7 @@ def run_simulation(model, seed, verbose=True):
 
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 5
+num_runs = 1
 results = {}
 
 run_logs = {model: {'delta_q': [], 'delta_ddpg': [], 'rpdi_q': [], 'rpdi_ddpg': []} for model in models}
@@ -177,12 +182,12 @@ summary_data = {
 for model in models:
     r = results[model]
     summary_data['Model'].append(model.upper())
-    summary_data['Q-Learning Avg Price'].append(f"{r['Avg Price Q']:.3f} ± {r['Std Price Q']:.3f}")
-    summary_data['Q-Learning Delta'].append(f"{r['Delta Q']:.3f} ± {r['Std Delta Q']:.3f}")
-    summary_data['Q-Learning RPDI'].append(f"{r['RPDI Q']:.3f} ± {r['Std RPDI Q']:.3f}")
-    summary_data['DDPG Avg Price'].append(f"{r['Avg Price DDPG']:.3f} ± {r['Std Price DDPG']:.3f}")
-    summary_data['DDPG Delta'].append(f"{r['Delta DDPG']:.3f} ± {r['Std Delta DDPG']:.3f}")
-    summary_data['DDPG RPDI'].append(f"{r['RPDI DDPG']:.3f} ± {r['Std RPDI DDPG']:.3f}")
+    summary_data['Q-Learning Avg Price'].append(f"{r['Avg Price Q']:.3f}")
+    summary_data['Q-Learning Delta'].append(f"{r['Delta Q']:.3f}")
+    summary_data['Q-Learning RPDI'].append(f"{r['RPDI Q']:.3f}")
+    summary_data['DDPG Avg Price'].append(f"{r['Avg Price DDPG']:.3f}")
+    summary_data['DDPG Delta'].append(f"{r['Delta DDPG']:.3f}")
+    summary_data['DDPG RPDI'].append(f"{r['RPDI DDPG']:.3f}")
     summary_data['Nash Price'].append(f"{r['Theo Price']:.3f}")
 
 df_summary = pd.DataFrame(summary_data)
@@ -201,7 +206,7 @@ detailed_data = {
 
 df_detailed = pd.DataFrame(detailed_data)
 df_detailed.to_csv("results/q_vs_ddpg_2.csv", index=False)
-print(f"\nResults saved to q_vs_ddpg_2.csv")
+print("\nResults saved to q_vs_ddpg_2.csv")
 
 print(f"\n{'='*80}")
 print("OVERALL AVERAGES ACROSS ALL MODELS")
@@ -212,9 +217,9 @@ avg_delta_ddpg = np.mean([results[m]['Delta DDPG'] for m in models])
 avg_rpdi_q = np.mean([results[m]['RPDI Q'] for m in models])
 avg_rpdi_ddpg = np.mean([results[m]['RPDI DDPG'] for m in models])
 
-print(f"Q-Learning:")
+print("Q-Learning:")
 print(f"  Average Delta (Δ): {avg_delta_q:.4f}")
 print(f"  Average RPDI:      {avg_rpdi_q:.4f}")
-print(f"\nDDPG:")
+print("\nDDPG:")
 print(f"  Average Delta (Δ): {avg_delta_ddpg:.4f}")
 print(f"  Average RPDI:      {avg_rpdi_ddpg:.4f}")

@@ -16,7 +16,10 @@ SEED = 99
 def run_simulation(model, seed):
     np.random.seed(seed)
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
-    agents = [QLearningAgent(env.N, agent_id=0), QLearningAgent(env.N, agent_id=1)]
+    agents = [
+        QLearningAgent(env.N, agent_id=0, price_grid=env.price_grid),
+        QLearningAgent(env.N, agent_id=1, price_grid=env.price_grid)
+    ]
     state = env.reset()
     profits_history = []
     prices_history = []
@@ -58,7 +61,7 @@ def run_simulation(model, seed):
     return avg_price1, avg_price2, delta1, delta2, rpdi1, rpdi2
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 50
+num_runs = 5
 results = {}
 
 # Store individual run results for logging

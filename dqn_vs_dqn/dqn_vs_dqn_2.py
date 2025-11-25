@@ -12,7 +12,6 @@ from theoretical_benchmarks import TheoreticalBenchmarks
 
 sys.path.pop(0)
 
-
 SEED = 99
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
@@ -37,31 +36,16 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     profits_history = []
     prices_history = []
     
-    # Define agent-specific states (own, opp)
-    state1 = (shared_state[0], shared_state[1])
-    state2 = (shared_state[1], shared_state[0])
-    
     for t in range(env.horizon):
-        dqn_action1 = dqn_agent1.select_action(state1, explore=True)
-        dqn_action2 = dqn_agent2.select_action(state2, explore=True)
-        
+        dqn_action1 = dqn_agent1.select_action(shared_state, explore=True)
+        dqn_action2 = dqn_agent2.select_action(shared_state, explore=True)
+
         actions = [dqn_action1, dqn_action2]
         shared_next_state, rewards, done, info = env.step(actions)
-        
-        # Define agent-specific next_states
-        next_state1 = (shared_next_state[0], shared_next_state[1])
-        next_state2 = (shared_next_state[1], shared_next_state[0])
-        
-        dqn_agent1.remember(state1, dqn_action1, rewards[0], next_state1, done)
-        dqn_agent1.replay()
-        dqn_agent1.update_epsilon()
-        
-        dqn_agent2.remember(state2, dqn_action2, rewards[1], next_state2, done)
-        dqn_agent2.replay()
-        dqn_agent2.update_epsilon()
-        
-        state1 = next_state1
-        state2 = next_state2
+
+        dqn_agent1.remember(shared_state, dqn_action1, rewards[0], shared_next_state, done)
+        dqn_agent2.remember(shared_state, dqn_action2, rewards[1], shared_next_state, done)
+
         shared_state = shared_next_state
         
         prices_history.append(info['prices'])

@@ -46,16 +46,12 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     profits_history = []
     prices_history = []
     
-    # Initial prices from environment (continuous)
-    current_prices = [env.price_grid[shared_state[0]], env.price_grid[shared_state[1]]]
-    
-    # Use continuous prices for states
-    state_pso = np.array([current_prices[0], current_prices[1]], dtype=np.float32)
-    state_ddpg = np.array([current_prices[1], current_prices[0]], dtype=np.float32)
+    state_pso = shared_state[0]  # PSO only needs opponent's price
+    state_ddpg = shared_state.astype(np.float32)
     
     for t in range(env.horizon):
         # PSO updates with DDPG's last price
-        pso_agent.update(current_prices[1])
+        pso_agent.update(shared_state[1])
         pso_price = pso_agent.choose_price()  # float
         
         # DDPG selects action
@@ -67,10 +63,8 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         # Step environment
         shared_next_state, rewards, done, info = env.step(actions)
         
-        # Update states with continuous prices
-        current_prices = info['prices']
-        next_state_pso = np.array([current_prices[0], current_prices[1]], dtype=np.float32)
-        next_state_ddpg = np.array([current_prices[1], current_prices[0]], dtype=np.float32)
+        next_state_pso = shared_next_state[0]
+        next_state_ddpg = shared_next_state.astype(np.float32)
         
         # DDPG remembers and replays
         ddpg_agent.remember(state_ddpg, ddpg_norm_action, rewards[1], next_state_ddpg, done)
@@ -82,7 +76,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         state_ddpg = next_state_ddpg
         
         # Record
-        prices_history.append(current_prices)
+        prices_history.append(info['prices'])
         profits_history.append(rewards)
     
     # Compute averages over last 1000 steps
@@ -111,7 +105,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     return avg_price_pso, avg_price_ddpg, delta_pso, delta_ddpg, rpdi_pso, rpdi_ddpg, p_n
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 2
+num_runs = 1
 shock_cfg = None
 tb_calculator = TheoreticalBenchmarks()
 all_benchmarks = tb_calculator.calculate_all_benchmarks(shock_cfg)

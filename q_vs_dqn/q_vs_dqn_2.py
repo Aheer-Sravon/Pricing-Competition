@@ -1,10 +1,3 @@
-"""
-q_vs_dqn_fixed.py
-
-Fixed simulation comparing Q-Learning vs DQN with proper state representation.
-The key fix is ensuring DQN sees states correctly as (own_price, competitor_price).
-"""
-
 import sys
 import os
 import numpy as np
@@ -19,7 +12,6 @@ from agents import QLearningAgent, DQNAgent
 sys.path.pop(0)
 
 SEED = 99
-HORIZON = 10000  # Simulation horizon
 
 def run_simulation(model, seed, verbose=True):
     """Run a single simulation of Q-Learning vs DQN."""
@@ -29,7 +21,11 @@ def run_simulation(model, seed, verbose=True):
     env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
     
     # Initialize agents
-    q_agent = QLearningAgent(env.N, agent_id=0)
+    q_agent = QLearningAgent(
+        env.N,
+        agent_id=0,
+        price_grid=env.price_grid
+    )
     
     # Initialize DQN with proper parameters
     dqn_agent = DQNAgent(
@@ -48,31 +44,24 @@ def run_simulation(model, seed, verbose=True):
     
     if verbose:
         print(f"\nRunning {model.upper()} model simulation...")
-        print(f"Horizon: {HORIZON} steps")
+        print(f"Horizon: {env.horizon} steps")
         print(f"Price grid size: {env.N}")
         print(f"Nash price: {env.P_N:.3f}")
         print(f"Monopoly price: {env.P_M:.3f}")
     
     # Main simulation loop
-    for t in range(HORIZON):
-        # Q-Learning sees state as tuple of indices
+    for t in range(env.horizon):
         q_action = q_agent.choose_action(state)
         
-        # DQN sees state as (own_price_idx, competitor_price_idx)
-        # For agent 1: own index is state[1], competitor is state[0]
-        dqn_state = (state[1], state[0])
-        dqn_action = dqn_agent.select_action(dqn_state, explore=True)
+        dqn_action = dqn_agent.select_action(state, explore=True)
         
         # Execute actions
         actions = [q_action, dqn_action]
         next_state, rewards, done, info = env.step(actions)
         
-        # Q-Learning update
+        # Both agents use same state representation
         q_agent.update(state, q_action, rewards[0], next_state)
-        
-        # DQN update with correct state representation
-        next_dqn_state = (next_state[1], next_state[0])
-        dqn_agent.remember(dqn_state, dqn_action, rewards[1], next_dqn_state, done)
+        dqn_agent.remember(state, dqn_action, rewards[1], next_state, done)
         
         # Train DQN
         dqn_agent.replay()
@@ -91,7 +80,7 @@ def run_simulation(model, seed, verbose=True):
             recent_prices = np.array(prices_history[-100:])
             avg_p_q = np.mean(recent_prices[:, 0])
             avg_p_dqn = np.mean(recent_prices[:, 1])
-            print(f"  Step {t+1}/{HORIZON}: Q price={avg_p_q:.3f}, DQN price={avg_p_dqn:.3f}, ε={dqn_agent.epsilon:.3f}")
+            print(f"  Step {t+1}/{env.horizon}: Q price={avg_p_q:.3f}, DQN price={avg_p_dqn:.3f}, ε={dqn_agent.epsilon:.3f}")
     
     # Calculate final metrics (last 1000 steps)
     last_prices = np.array(prices_history[-1000:])
@@ -121,7 +110,7 @@ def run_simulation(model, seed, verbose=True):
 
 
 models = ['logit', 'hotelling', 'linear']
-num_runs = 5
+num_runs = 1
 results = {}
 
 # Store individual run results
@@ -208,12 +197,12 @@ summary_data = {
 for model in models:
     r = results[model]
     summary_data['Model'].append(model.upper())
-    summary_data['Q-Learning Avg Price'].append(f"{r['Avg Price Q']:.3f} ± {r['Std Price Q']:.3f}")
-    summary_data['Q-Learning Delta'].append(f"{r['Delta Q']:.3f} ± {r['Std Delta Q']:.3f}")
-    summary_data['Q-Learning RPDI'].append(f"{r['RPDI Q']:.3f} ± {r['Std RPDI Q']:.3f}")
-    summary_data['DQN Avg Price'].append(f"{r['Avg Price DQN']:.3f} ± {r['Std Price DQN']:.3f}")
-    summary_data['DQN Delta'].append(f"{r['Delta DQN']:.3f} ± {r['Std Delta DQN']:.3f}")
-    summary_data['DQN RPDI'].append(f"{r['RPDI DQN']:.3f} ± {r['Std RPDI DQN']:.3f}")
+    summary_data['Q-Learning Avg Price'].append(f"{r['Avg Price Q']:.3f}")
+    summary_data['Q-Learning Delta'].append(f"{r['Delta Q']:.3f}")
+    summary_data['Q-Learning RPDI'].append(f"{r['RPDI Q']:.3f}")
+    summary_data['DQN Avg Price'].append(f"{r['Avg Price DQN']:.3f}")
+    summary_data['DQN Delta'].append(f"{r['Delta DQN']:.3f}")
+    summary_data['DQN RPDI'].append(f"{r['RPDI DQN']:.3f}")
     summary_data['Nash Price'].append(f"{r['Theo Price']:.3f}")
 
 df_summary = pd.DataFrame(summary_data)
