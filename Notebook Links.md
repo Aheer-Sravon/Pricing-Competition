@@ -24,7 +24,7 @@ pdf-engine: lualatex
 ## DDPG vs Others
 
 1. [DQN vs DQN](https://www.kaggle.com/code/aheersrabon/pricing-competition-dqn-vs-dqn-no-shock)
-2. [DQN vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-dqn-vs-ddpg-no-shock)
+2. [DQN vs DDPG](https://www.kaggle.com/code/devdyutimazumder/pricing-competition-dqn-vs-ddpg-no-shock)
 
 ## DDPG vs Others
 
