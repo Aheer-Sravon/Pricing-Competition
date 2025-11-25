@@ -30,4 +30,53 @@ pdf-engine: lualatex
 
 1. [DDPG vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-ddpg-vs-ddpg-no-shock)
 
-# With Shock
+
+
+# With Shock - A
+
+## Q Learning vs Others
+
+1. [Q vs Q]()
+2. [Q vs PSO]()
+3. [Q vs DQN]()
+4. [Q vs DDPG]()
+
+## PSO vs Others
+
+1. [PSO vs PSO]()
+2. [PSO vs DQN]()
+3. [PSO vs DDPG]()
+
+## DDPG vs Others
+
+1. [DQN vs DQN]()
+2. [DQN vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-dqn-vs-ddpg-with-shock-a)
+
+## DDPG vs Others
+
+1. [DDPG vs DDPG]()
+
+
+# With Shock - B
+
+## Q Learning vs Others
+
+1. [Q vs Q]()
+2. [Q vs PSO]()
+3. [Q vs DQN]()
+4. [Q vs DDPG]()
+
+## PSO vs Others
+
+1. [PSO vs PSO]()
+2. [PSO vs DQN]()
+3. [PSO vs DDPG]()
+
+## DDPG vs Others
+
+1. [DQN vs DQN]()
+2. [DQN vs DDPG](https://www.kaggle.com/code/aheersrabon/pricing-competition-dqn-vs-ddpg-with-shock-b)
+
+## DDPG vs Others
+
+1. [DDPG vs DDPG]()

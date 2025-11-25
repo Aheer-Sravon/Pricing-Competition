@@ -1,8 +1,8 @@
 """
-ddpg_vs_ddpg_schemeA.py
+ddpg_vs_ddpg_schemeB.py
 
-DDPG vs DDPG with Scheme A Shocks
-Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)
+DDPG vs DDPG with Scheme B Shocks
+Scheme B: ρ=0.95, σ_η=0.05 (high persistence, low variance)
 """
 
 import sys
@@ -20,7 +20,6 @@ from theoretical_benchmarks import TheoreticalBenchmarks
 sys.path.pop(0)
 
 SEED = 99
-
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run DDPG vs DDPG simulation"""
@@ -138,19 +137,19 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 
 
 def main():
-    # Scheme A: Low persistence, high variance
+    # Scheme B: High persistence, low variance
     shock_cfg = {
         'enabled': True,
-        'scheme': 'A',
-        'rho': 0.3,
-        'sigma_eta': 0.5,
+        'scheme': 'B',
+        'rho': 0.95,
+        'sigma_eta': 0.05,
         'mode': 'independent'
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("DDPG vs DDPG - SCHEME A SHOCKS (ρ=0.3, σ_η=0.5)")
+    print("DDPG vs DDPG - SCHEME B SHOCKS (ρ=0.95, σ_η=0.05)")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -232,7 +231,7 @@ def main():
     
     # Save results
     os.makedirs("./results", exist_ok=True)
-    df.to_csv("./results/ddpg_vs_ddpg_schemeA.csv", index=False)
+    df.to_csv("./results/ddpg_vs_ddpg_schemeB.csv", index=False)
     print(df.to_string(index=False))
     
     # Overall averages
@@ -253,7 +252,7 @@ def main():
     print(f"  Average RPDI:       {avg_rpdi2:.4f}")
     
     print(f"\n{'='*80}")
-    print("[Results saved to ./results/ddpg_vs_ddpg_schemeA.csv]")
+    print("[Results saved to ./results/ddpg_vs_ddpg_schemeB.csv]")
     print(f"{'='*80}\n")
 
 
