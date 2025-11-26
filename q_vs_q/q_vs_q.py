@@ -1,7 +1,7 @@
-import sys
-import os
 import numpy as np
 import pandas as pd
+import os
+import sys
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
@@ -9,25 +9,31 @@ sys.path.insert(0, parent_dir)
 from environments import MarketEnvContinuous
 from agents import QLearningAgent
 
+from theoretical_benchmarks import TheoreticalBenchmarks
+
 sys.path.pop(0)
 
 SEED = 99
+NUM_RUNS = 50
 
-def run_simulation(model, seed):
+def run_simulation(model, seed, shock_cfg, benchmarks):
+    """Run Q vs Q simulation"""
     np.random.seed(seed)
-    env = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=seed)
-    agents = [
-        QLearningAgent(env.N, agent_id=0, price_grid=env.price_grid),
-        QLearningAgent(env.N, agent_id=1, price_grid=env.price_grid)
-    ]
+    
+    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    agents = [QLearningAgent(env.N, agent_id=0), QLearningAgent(env.N, agent_id=1)]
+    
     state = env.reset()
     profits_history = []
     prices_history = []
+    
     for t in range(env.horizon):
         actions = [agents[0].choose_action(state), agents[1].choose_action(state)]
         next_state, rewards, done, info = env.step(actions)
+        
         agents[0].update(state, actions[0], rewards[0], next_state)
         agents[1].update(state, actions[1], rewards[1], next_state)
+        
         state = next_state
         prices_history.append(info['prices'])
         profits_history.append(rewards)
@@ -37,119 +43,78 @@ def run_simulation(model, seed):
     avg_price2 = np.mean(last_prices[:, 1])
     
     last_profits = np.array(profits_history[-1000:])
-    avg_profit1 = np.mean(last_profits[:, 0])
-    avg_profit2 = np.mean(last_profits[:, 1])
+    avg_profit = np.mean(last_profits[:, 0])
     
-    prices_n = np.array([env.P_N] * 2)
-    _, profits_n = env.calculate_demand_and_profit(prices_n, np.zeros(2))
-    pi_n1 = profits_n[0]
-    pi_n2 = profits_n[1]
+    pi_n = benchmarks['E_pi_N']
+    pi_m = benchmarks['E_pi_M']
+    p_n = benchmarks['p_N']
     
-    prices_m = np.array([env.P_M] * 2)
-    _, profits_m = env.calculate_demand_and_profit(prices_m, np.zeros(2))
-    pi_m1 = profits_m[0]
-    pi_m2 = profits_m[1]
+    delta = (avg_profit - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
     
-    # Calculate Delta (profit-based)
-    delta1 = (avg_profit1 - pi_n1) / (pi_m1 - pi_n1) if (pi_m1 - pi_n1) != 0 else 0
-    delta2 = (avg_profit2 - pi_n2) / (pi_m2 - pi_n2) if (pi_m2 - pi_n2) != 0 else 0
-    
-    # Calculate RPDI (pricing-based)
-    rpdi1 = (avg_price1 - env.P_N) / (env.P_M - env.P_N) if (env.P_M - env.P_N) != 0 else 0
-    rpdi2 = (avg_price2 - env.P_N) / (env.P_M - env.P_N) if (env.P_M - env.P_N) != 0 else 0
-    
-    return avg_price1, avg_price2, delta1, delta2, rpdi1, rpdi2
+    return avg_price1, avg_price2, delta, p_n
 
-models = ['logit', 'hotelling', 'linear']
-num_runs = 5
-results = {}
 
-# Store individual run results for logging
-run_logs = {model: {'delta1': [], 'delta2': [], 'rpdi1': [], 'rpdi2': []} for model in models}
-
-for model in models:
-    # Get theo price outside the loop since it's constant per model
-    env_temp = MarketEnvContinuous(market_model=model, shock_cfg=None, seed=SEED)
-    p_n = env_temp.P_N
-    
-    avg_prices1 = []
-    avg_prices2 = []
-    deltas1 = []
-    deltas2 = []
-    rpdis1 = []
-    rpdis2 = []
-    
-    print(f"\n{'='*60}")
-    print(f"Model: {model.upper()}")
-    print(f"{'='*60}")
-    
-    for run in range(num_runs):
-        seed = SEED + run
-        ap1, ap2, d1, d2, r1, r2 = run_simulation(model, seed)
-        avg_prices1.append(ap1)
-        avg_prices2.append(ap2)
-        deltas1.append(d1)
-        deltas2.append(d2)
-        rpdis1.append(r1)
-        rpdis2.append(r2)
-        
-        # Log individual run results
-        print(f"\nRun {run + 1}:")
-        print(f"  Firm 1  -> Delta: {d1:.4f}, RPDI: {r1:.4f}")
-        print(f"  Firm 2  -> Delta: {d2:.4f}, RPDI: {r2:.4f}")
-        
-        # Store for later access
-        run_logs[model]['delta1'].append(d1)
-        run_logs[model]['delta2'].append(d2)
-        run_logs[model]['rpdi1'].append(r1)
-        run_logs[model]['rpdi2'].append(r2)
-    
-    results[model] = {
-        'Avg Price Firm 1': np.mean(avg_prices1),
-        'Theo Price': p_n,
-        'Avg Price Firm 2': np.mean(avg_prices2),
-        'Delta 1': np.mean(deltas1),
-        'Delta 2': np.mean(deltas2),
-        'RPDI 1': np.mean(rpdis1),
-        'RPDI 2': np.mean(rpdis2)
+def main():
+    shock_cfg = {
+        'enabled': False
     }
+    
+    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    
+    print("=" * 80)
+    print("Q-LEARNING vs Q-LEARNING - SCHEME NONE")
+    print("=" * 80)
+    
+    all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
+    
+    models = ['logit', 'hotelling', 'linear']
+    results = {}
+    
+    for model in models:
+        print(f"\nRunning {model.upper()} simulations...")
+        
+        model_benchmarks = all_benchmarks[model]
+        
+        avg_prices1 = []
+        avg_prices2 = []
+        deltas = []
+        theo_prices = []
+        
+        for run in range(NUM_RUNS):
+            seed = SEED + run
+            ap1, ap2, d, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            avg_prices1.append(ap1)
+            avg_prices2.append(ap2)
+            deltas.append(d)
+            theo_prices.append(p_n)
+        
+        results[model] = {
+            'Avg Price Firm 1': np.mean(avg_prices1),
+            'Theo Price': np.mean(theo_prices),
+            'Avg Price Firm 2': np.mean(avg_prices2),
+            'Delta': np.mean(deltas)
+        }
+        
+        print(f"  Completed: Δ = {results[model]['Delta']:.3f}")
+    
+    data = {
+        'Model': [m.upper() for m in models],
+        'Firm 1 Avg. Prices': [round(results[m]['Avg Price Firm 1'], 2) for m in models],
+        'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
+        'Firm 2 Avg. Prices': [round(results[m]['Avg Price Firm 2'], 2) for m in models],
+        'Theo. Prices ': [round(results[m]['Theo Price'], 2) for m in models],
+        'Extra-profits Δ': [round(results[m]['Delta'], 2) for m in models]
+    }
+    
+    df = pd.DataFrame(data)
+    df.to_csv("./results/q_vs_q.csv", index=False)
+    
+    print("\n" + "=" * 80)
+    print("FINAL RESULTS")
+    print("=" * 80)
+    print(df.to_string(index=False))
+    print("\n[Results saved to ./results/q_vs_q.csv]")
 
-print(f"\n{'='*60}")
-print("SUMMARY TABLE")
-print(f"{'='*60}\n")
 
-# Create DataFrame
-data = {
-    'Model': [m.upper() for m in models],
-    'Firm 1 Avg. Prices': [round(results[m]['Avg Price Firm 1'], 2) for m in models],
-    'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
-    'Firm 2 Avg. Prices': [round(results[m]['Avg Price Firm 2'], 2) for m in models],
-    'Theo. Prices.1': [round(results[m]['Theo Price'], 2) for m in models],
-    'Firm 1 Extra-profits Δ': [round(results[m]['Delta 1'], 2) for m in models],
-    'Firm 2 Extra-profits Δ': [round(results[m]['Delta 2'], 2) for m in models],
-    'Firm 1 RPDI': [round(results[m]['RPDI 1'], 2) for m in models],
-    'Firm 2 RPDI': [round(results[m]['RPDI 2'], 2) for m in models]
-}
-
-df = pd.DataFrame(data)
-df.to_csv("./results/q_vs_q.csv", index=False)
-print(df)
-
-# Calculate and print overall averages across all models
-print(f"\n{'='*60}")
-print("OVERALL AVERAGES ACROSS ALL MODELS")
-print(f"{'='*60}\n")
-
-avg_delta1 = np.mean([results[m]['Delta 1'] for m in models])
-avg_delta2 = np.mean([results[m]['Delta 2'] for m in models])
-avg_rpdi1 = np.mean([results[m]['RPDI 1'] for m in models])
-avg_rpdi2 = np.mean([results[m]['RPDI 2'] for m in models])
-
-print("Firm 1 (Q-Learning):")
-print(f"  Average Delta (Δ):  {avg_delta1:.4f}")
-print(f"  Average RPDI:       {avg_rpdi1:.4f}")
-print("\nFirm 2 (Q-Learning):")
-print(f"  Average Delta (Δ):  {avg_delta2:.4f}")
-print(f"  Average RPDI:       {avg_rpdi2:.4f}")
-
-print(f"\n{'='*60}\n")
+if __name__ == "__main__":
+    main()

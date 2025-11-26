@@ -78,15 +78,13 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 
 def main():
     shock_cfg = {
-        'enabled': True,
-        'scheme': 'A',
-        'mode': 'independent'
+        'enabled': False
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("PSO vs PSO - SCHEME A")
+    print("PSO vs PSO - SCHEME NONE")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -143,7 +141,7 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/pso_vs_pso_schemeA.csv", index=False)
+    df.to_csv("./results/pso_vs_pso.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -167,7 +165,7 @@ def main():
     print(f"  Average Delta (Δ): {avg_delta2:.4f}")
     print(f"  Average RPDI:      {avg_rpdi2:.4f}")
     
-    print("\n[Results saved to ./results/pso_vs_pso_schemeA.csv]")
+    print("\n[Results saved to ./results/pso_vs_pso.csv]")
 
 
 if __name__ == "__main__":

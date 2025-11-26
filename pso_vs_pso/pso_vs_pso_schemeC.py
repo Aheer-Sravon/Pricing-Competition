@@ -1,54 +1,79 @@
-"""
-PSO vs PSO with Scheme C Shocks
-Uses theoretical_benchmarks.py for proper benchmark calculations
-"""
-
 import numpy as np
 import pandas as pd
+import os
+import sys
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, parent_dir)
+
 from environments import MarketEnvContinuous
 from agents import PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
+sys.path.pop(0)
+
 SEED = 99
+NUM_RUNS = 50
+
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run PSO vs PSO simulation"""
     np.random.seed(seed)
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
-    agents = [PSOAgent(env, agent_id=0), PSOAgent(env, agent_id=1)]
+    
+    price_min = env.price_grid.min()
+    price_max = env.price_grid.max()
+    
+    agents = [
+        PSOAgent(env, agent_id=0, price_min=price_min, price_max=price_max),
+        PSOAgent(env, agent_id=1, price_min=price_min, price_max=price_max)
+    ]
     
     state = env.reset()
     profits_history = []
     prices_history = []
     
+    # Initialize prices
     current_prices = [agents[0].choose_price(), agents[1].choose_price()]
     
     for t in range(env.horizon):
+        # Each agent updates with opponent's last price
         agents[0].update(current_prices[1])
         agents[1].update(current_prices[0])
+        
         current_prices = [agents[0].choose_price(), agents[1].choose_price()]
         
         next_state, rewards, done, info = env.step(current_prices)
-        state = next_state
         
+        state = next_state
         prices_history.append(current_prices)
         profits_history.append(rewards)
     
+    # Calculate averages over last 1000 steps
     last_prices = np.array(prices_history[-1000:])
     avg_price1 = np.mean(last_prices[:, 0])
     avg_price2 = np.mean(last_prices[:, 1])
     
     last_profits = np.array(profits_history[-1000:])
-    avg_profit = np.mean(last_profits[:, 0])
+    avg_profit1 = np.mean(last_profits[:, 0])
+    avg_profit2 = np.mean(last_profits[:, 1])
     
+    # Get benchmarks
     pi_n = benchmarks['E_pi_N']
     pi_m = benchmarks['E_pi_M']
     p_n = benchmarks['p_N']
+    p_m = benchmarks['p_M']
     
-    delta = (avg_profit - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
+    # Calculate Delta (profit-based)
+    delta1 = (avg_profit1 - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
+    delta2 = (avg_profit2 - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
     
-    return avg_price1, avg_price2, delta, p_n
+    # Calculate RPDI (pricing-based)
+    rpdi1 = (avg_price1 - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
+    rpdi2 = (avg_price2 - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
+    
+    return avg_price1, avg_price2, delta1, delta2, rpdi1, rpdi2, p_n
 
 
 def main():
@@ -61,13 +86,12 @@ def main():
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("PSO vs PSO - SCHEME C (INDEPENDENT SHOCKS)")
+    print("PSO vs PSO - SCHEME C")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 50
     results = {}
     
     for model in models:
@@ -77,25 +101,34 @@ def main():
         
         avg_prices1 = []
         avg_prices2 = []
-        deltas = []
+        deltas1 = []
+        deltas2 = []
+        rpdis1 = []
+        rpdis2 = []
         theo_prices = []
         
-        for run in range(num_runs):
+        for run in range(NUM_RUNS):
             seed = SEED + run
-            ap1, ap2, d, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            ap1, ap2, d1, d2, r1, r2, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
             avg_prices1.append(ap1)
             avg_prices2.append(ap2)
-            deltas.append(d)
+            deltas1.append(d1)
+            deltas2.append(d2)
+            rpdis1.append(r1)
+            rpdis2.append(r2)
             theo_prices.append(p_n)
         
         results[model] = {
             'Avg Price Firm 1': np.mean(avg_prices1),
             'Theo Price': np.mean(theo_prices),
             'Avg Price Firm 2': np.mean(avg_prices2),
-            'Delta': np.mean(deltas)
+            'Delta 1': np.mean(deltas1),
+            'Delta 2': np.mean(deltas2),
+            'RPDI 1': np.mean(rpdis1),
+            'RPDI 2': np.mean(rpdis2)
         }
         
-        print(f"  Completed: Δ = {results[model]['Delta']:.3f}")
+        print(f"  Completed: Firm 1 Δ = {results[model]['Delta 1']:.3f}, Firm 2 Δ = {results[model]['Delta 2']:.3f}")
     
     data = {
         'Model': [m.upper() for m in models],
@@ -103,7 +136,10 @@ def main():
         'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
         'Firm 2 Avg. Prices': [round(results[m]['Avg Price Firm 2'], 2) for m in models],
         'Theo. Prices ': [round(results[m]['Theo Price'], 2) for m in models],
-        'Extra-profits Δ': [round(results[m]['Delta'], 2) for m in models]
+        'Firm 1 Extra-profits Δ': [round(results[m]['Delta 1'], 2) for m in models],
+        'Firm 2 Extra-profits Δ': [round(results[m]['Delta 2'], 2) for m in models],
+        'Firm 1 RPDI': [round(results[m]['RPDI 1'], 2) for m in models],
+        'Firm 2 RPDI': [round(results[m]['RPDI 2'], 2) for m in models]
     }
     
     df = pd.DataFrame(data)
@@ -113,6 +149,24 @@ def main():
     print("FINAL RESULTS")
     print("=" * 80)
     print(df.to_string(index=False))
+    
+    # Overall averages
+    print("\n" + "=" * 80)
+    print("OVERALL AVERAGES ACROSS ALL MODELS")
+    print("=" * 80)
+    
+    avg_delta1 = np.mean([results[m]['Delta 1'] for m in models])
+    avg_delta2 = np.mean([results[m]['Delta 2'] for m in models])
+    avg_rpdi1 = np.mean([results[m]['RPDI 1'] for m in models])
+    avg_rpdi2 = np.mean([results[m]['RPDI 2'] for m in models])
+    
+    print("\nFirm 1 (PSO):")
+    print(f"  Average Delta (Δ): {avg_delta1:.4f}")
+    print(f"  Average RPDI:      {avg_rpdi1:.4f}")
+    print("\nFirm 2 (PSO):")
+    print(f"  Average Delta (Δ): {avg_delta2:.4f}")
+    print(f"  Average RPDI:      {avg_rpdi2:.4f}")
+    
     print("\n[Results saved to ./results/pso_vs_pso_schemeC.csv]")
 
 

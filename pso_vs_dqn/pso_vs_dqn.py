@@ -7,7 +7,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
-from agents import QLearningAgent, PSOAgent
+from agents import PSOAgent, DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 sys.path.pop(0)
@@ -17,7 +17,7 @@ NUM_RUNS = 50
 
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
-    """Run Q-Learning vs PSO simulation"""
+    """Run PSO vs DQN simulation"""
     np.random.seed(seed)
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
@@ -25,30 +25,35 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
     
-    # Initialize Q-Learning agent (agent 0)
-    q_agent = QLearningAgent(env.N, agent_id=0, price_grid=env.price_grid)
+    # Initialize PSO agent (agent 0)
+    pso_agent = PSOAgent(env, agent_id=0, price_min=price_min, price_max=price_max)
     
-    # Initialize PSO agent (agent 1)
-    pso_agent = PSOAgent(env, agent_id=1, price_min=price_min, price_max=price_max)
+    # Initialize DQN agent (agent 1)
+    dqn_agent = DQNAgent(agent_id=1, state_dim=2, action_dim=env.N, seed=seed)
     
     state = env.reset()
     profits_history = []
     prices_history = []
     
     for t in range(env.horizon):
-        # Q-Learning selects discrete action index
-        q_action = q_agent.choose_action(state)  # int index
+        # PSO updates with DQN's last price (state[1])
+        pso_agent.update(state[1])
+        pso_price = pso_agent.choose_price()  # Continuous price
         
-        # PSO updates with Q's last price (state[0])
-        pso_agent.update(state[0])
-        pso_price = pso_agent.choose_price()  # float
+        # DQN selects action based on state (prices)
+        dqn_action = dqn_agent.select_action(state, explore=True)  # Discrete index
         
-        # Execute actions (discrete index + continuous price)
-        actions = [q_action, pso_price]
+        # Execute actions (continuous price + discrete index)
+        actions = [pso_price, dqn_action]
         next_state, rewards, done, info = env.step(actions)
         
-        # Update Q-Learning
-        q_agent.update(state, q_action, rewards[0], next_state)
+        # Update DQN
+        dqn_agent.remember(state, dqn_action, rewards[1], next_state, done)
+        dqn_agent.replay()
+        
+        # Decay exploration
+        if t % 100 == 0:
+            dqn_agent.update_epsilon()
         
         state = next_state
         prices_history.append(info['prices'])
@@ -56,12 +61,12 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     
     # Calculate averages over last 1000 steps
     last_prices = np.array(prices_history[-1000:])
-    avg_price_q = np.mean(last_prices[:, 0])
-    avg_price_pso = np.mean(last_prices[:, 1])
+    avg_price_pso = np.mean(last_prices[:, 0])
+    avg_price_dqn = np.mean(last_prices[:, 1])
     
     last_profits = np.array(profits_history[-1000:])
-    avg_profit_q = np.mean(last_profits[:, 0])
-    avg_profit_pso = np.mean(last_profits[:, 1])
+    avg_profit_pso = np.mean(last_profits[:, 0])
+    avg_profit_dqn = np.mean(last_profits[:, 1])
     
     # Get benchmarks
     pi_n = benchmarks['E_pi_N']
@@ -70,27 +75,25 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     p_m = benchmarks['p_M']
     
     # Calculate Delta (profit-based)
-    delta_q = (avg_profit_q - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
     delta_pso = (avg_profit_pso - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
+    delta_dqn = (avg_profit_dqn - pi_n) / (pi_m - pi_n) if (pi_m - pi_n) != 0 else 0
     
     # Calculate RPDI (pricing-based)
-    rpdi_q = (avg_price_q - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
     rpdi_pso = (avg_price_pso - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
+    rpdi_dqn = (avg_price_dqn - p_n) / (p_m - p_n) if (p_m - p_n) != 0 else 0
     
-    return avg_price_q, avg_price_pso, delta_q, delta_pso, rpdi_q, rpdi_pso, p_n
+    return avg_price_pso, avg_price_dqn, delta_pso, delta_dqn, rpdi_pso, rpdi_dqn, p_n
 
 
 def main():
     shock_cfg = {
-        'enabled': True,
-        'scheme': 'C',
-        'mode': 'independent'
+        'enabled': False
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("Q-LEARNING vs PSO - SCHEME C")
+    print("PSO vs DQN - SCHEME NONE")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -103,51 +106,51 @@ def main():
         
         model_benchmarks = all_benchmarks[model]
         
-        avg_prices_q = []
         avg_prices_pso = []
-        deltas_q = []
+        avg_prices_dqn = []
         deltas_pso = []
-        rpdis_q = []
+        deltas_dqn = []
         rpdis_pso = []
+        rpdis_dqn = []
         theo_prices = []
         
         for run in range(NUM_RUNS):
             seed = SEED + run
-            ap_q, ap_pso, d_q, d_pso, r_q, r_pso, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
-            avg_prices_q.append(ap_q)
+            ap_pso, ap_dqn, d_pso, d_dqn, r_pso, r_dqn, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
             avg_prices_pso.append(ap_pso)
-            deltas_q.append(d_q)
+            avg_prices_dqn.append(ap_dqn)
             deltas_pso.append(d_pso)
-            rpdis_q.append(r_q)
+            deltas_dqn.append(d_dqn)
             rpdis_pso.append(r_pso)
+            rpdis_dqn.append(r_dqn)
             theo_prices.append(p_n)
         
         results[model] = {
-            'Avg Price Q': np.mean(avg_prices_q),
-            'Theo Price': np.mean(theo_prices),
             'Avg Price PSO': np.mean(avg_prices_pso),
-            'Delta Q': np.mean(deltas_q),
+            'Theo Price': np.mean(theo_prices),
+            'Avg Price DQN': np.mean(avg_prices_dqn),
             'Delta PSO': np.mean(deltas_pso),
-            'RPDI Q': np.mean(rpdis_q),
-            'RPDI PSO': np.mean(rpdis_pso)
+            'Delta DQN': np.mean(deltas_dqn),
+            'RPDI PSO': np.mean(rpdis_pso),
+            'RPDI DQN': np.mean(rpdis_dqn)
         }
         
-        print(f"  Completed: Q Δ = {results[model]['Delta Q']:.3f}, PSO Δ = {results[model]['Delta PSO']:.3f}")
+        print(f"  Completed: PSO Δ = {results[model]['Delta PSO']:.3f}, DQN Δ = {results[model]['Delta DQN']:.3f}")
     
     data = {
         'Model': [m.upper() for m in models],
-        'Q Avg. Prices': [round(results[m]['Avg Price Q'], 2) for m in models],
-        'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
         'PSO Avg. Prices': [round(results[m]['Avg Price PSO'], 2) for m in models],
+        'Theo. Prices': [round(results[m]['Theo Price'], 2) for m in models],
+        'DQN Avg. Prices': [round(results[m]['Avg Price DQN'], 2) for m in models],
         'Theo. Prices ': [round(results[m]['Theo Price'], 2) for m in models],
-        'Q Extra-profits Δ': [round(results[m]['Delta Q'], 2) for m in models],
         'PSO Extra-profits Δ': [round(results[m]['Delta PSO'], 2) for m in models],
-        'Q RPDI': [round(results[m]['RPDI Q'], 2) for m in models],
-        'PSO RPDI': [round(results[m]['RPDI PSO'], 2) for m in models]
+        'DQN Extra-profits Δ': [round(results[m]['Delta DQN'], 2) for m in models],
+        'PSO RPDI': [round(results[m]['RPDI PSO'], 2) for m in models],
+        'DQN RPDI': [round(results[m]['RPDI DQN'], 2) for m in models]
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/q_vs_pso_schemeC.csv", index=False)
+    df.to_csv("./results/pso_vs_dqn.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -159,19 +162,19 @@ def main():
     print("OVERALL AVERAGES ACROSS ALL MODELS")
     print("=" * 80)
     
-    avg_delta_q = np.mean([results[m]['Delta Q'] for m in models])
     avg_delta_pso = np.mean([results[m]['Delta PSO'] for m in models])
-    avg_rpdi_q = np.mean([results[m]['RPDI Q'] for m in models])
+    avg_delta_dqn = np.mean([results[m]['Delta DQN'] for m in models])
     avg_rpdi_pso = np.mean([results[m]['RPDI PSO'] for m in models])
+    avg_rpdi_dqn = np.mean([results[m]['RPDI DQN'] for m in models])
     
-    print("\nQ-Learning:")
-    print(f"  Average Delta (Δ): {avg_delta_q:.4f}")
-    print(f"  Average RPDI:      {avg_rpdi_q:.4f}")
-    print("\nPSO:")
+    print("\nPSO Agent:")
     print(f"  Average Delta (Δ): {avg_delta_pso:.4f}")
     print(f"  Average RPDI:      {avg_rpdi_pso:.4f}")
+    print("\nDQN Agent:")
+    print(f"  Average Delta (Δ): {avg_delta_dqn:.4f}")
+    print(f"  Average RPDI:      {avg_rpdi_dqn:.4f}")
     
-    print("\n[Results saved to ./results/q_vs_pso_schemeC.csv]")
+    print("\n[Results saved to ./results/pso_vs_dqn.csv]")
 
 
 if __name__ == "__main__":

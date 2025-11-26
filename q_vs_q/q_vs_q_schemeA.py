@@ -15,6 +15,7 @@ from theoretical_benchmarks import TheoreticalBenchmarks
 sys.path.pop(0)
 
 SEED = 99
+NUM_RUNS = 50
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run Q vs Q simulation"""
@@ -71,7 +72,6 @@ def main():
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 50
     results = {}
     
     for model in models:
@@ -84,7 +84,7 @@ def main():
         deltas = []
         theo_prices = []
         
-        for run in range(num_runs):
+        for run in range(NUM_RUNS):
             seed = SEED + run
             ap1, ap2, d, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
             avg_prices1.append(ap1)

@@ -18,6 +18,7 @@ from theoretical_benchmarks import TheoreticalBenchmarks
 sys.path.pop(0)
 
 SEED = 99
+NUM_RUNS = 50
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     np.random.seed(seed)
@@ -76,7 +77,6 @@ def main():
     print("=" * 80)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 5
     results = {}
     run_logs = {model: {'delta1': [], 'delta2': [], 'rpdi1': [], 'rpdi2': []} for model in models}
     
@@ -151,7 +151,7 @@ def main():
     
     print(f"Q-Agent 1: Avg Δ = {avg_delta1:.4f}, Avg RPDI = {avg_rpdi1:.4f}")
     print(f"Q-Agent 2: Avg Δ = {avg_delta2:.4f}, Avg RPDI = {avg_rpdi2:.4f}")
-    print(f"\n[Results saved to ./results/q_vs_q_schemeC.csv]")
+    print("\n[Results saved to ./results/q_vs_q_schemeC.csv]")
 
 
 if __name__ == "__main__":
