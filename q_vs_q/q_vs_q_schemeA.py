@@ -66,7 +66,6 @@ def main():
     
     print("=" * 80)
     print("Q-LEARNING vs Q-LEARNING - SCHEME A")
-    print("Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance)")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)

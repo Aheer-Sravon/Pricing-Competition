@@ -73,7 +73,7 @@ def main():
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     print("=" * 80)
-    print("Q-LEARNING vs Q-LEARNING - SCHEME C SHOCKS (ρ=0.9, σ_η=0.3, Independent)")
+    print("Q-LEARNING vs Q-LEARNING - SCHEME C")
     print("=" * 80)
     
     models = ['logit', 'hotelling', 'linear']
@@ -91,7 +91,7 @@ def main():
         deltas1, deltas2 = [], []
         rpdis1, rpdis2 = [], []
         
-        for run in range(num_runs):
+        for run in range(NUM_RUNS):
             seed = SEED + run
             ap1, ap2, d1, d2, r1, r2, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
             avg_prices1.append(ap1)
