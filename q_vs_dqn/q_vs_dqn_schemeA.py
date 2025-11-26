@@ -18,6 +18,7 @@ from theoretical_benchmarks import TheoreticalBenchmarks
 sys.path.pop(0)
 
 SEED = 99
+NUM_RUNS = 50
 
 def run_simulation(model, seed, shock_cfg, benchmarks, verbose=True):
     """Run a single simulation of Q-Learning vs DQN."""
@@ -93,11 +94,10 @@ def main():
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     print("=" * 80)
-    print("Q-LEARNING vs DQN - SCHEME A SHOCKS (ρ=0.3, σ_η=0.5, Independent)")
+    print("Q-LEARNING vs DQN - SCHEME A")
     print("=" * 80)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 5
     results = {}
     run_logs = {model: {'delta_q': [], 'delta_dqn': [], 'rpdi_q': [], 'rpdi_dqn': []} for model in models}
     
@@ -113,7 +113,7 @@ def main():
         deltas_q, deltas_dqn = [], []
         rpdis_q, rpdis_dqn = [], []
         
-        for run in range(num_runs):
+        for run in range(NUM_RUNS):
             seed = SEED + run
             apq, apd, dq, dd, rq, rd, p_n = run_simulation(
                 model, seed, shock_cfg, model_benchmarks, verbose=(run == 0)

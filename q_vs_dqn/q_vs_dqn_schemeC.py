@@ -93,7 +93,7 @@ def main():
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     print("=" * 80)
-    print("Q-LEARNING vs DQN - SCHEME C SHOCKS (ρ=0.9, σ_η=0.3, Independent)")
+    print("Q-LEARNING vs DQN - SCHEME C")
     print("=" * 80)
     
     models = ['logit', 'hotelling', 'linear']
