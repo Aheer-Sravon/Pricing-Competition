@@ -7,9 +7,8 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
-from agents import DQNAgent
+from agents import DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
-from shocks import AR1_Shock
 
 sys.path.pop(0)
 
@@ -18,38 +17,59 @@ NUM_RUNS = 50
 
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
-    """Run DQN vs DQN simulation"""
+    """Run DDPG vs DDPG simulation"""
     np.random.seed(seed)
     
     env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
     
-    # Initialize DQN agents
-    dqn_agent1 = DQNAgent(agent_id=0, state_dim=2, action_dim=env.N, seed=seed)
-    dqn_agent2 = DQNAgent(agent_id=1, state_dim=2, action_dim=env.N, seed=seed + 1000)
+    price_min = env.price_grid.min()
+    price_max = env.price_grid.max()
+    
+    # Initialize DDPG agents
+    ddpg_agent1 = DDPGAgent(
+        agent_id=0,
+        state_dim=2,
+        action_dim=1,
+        seed=seed,
+        price_min=price_min,
+        price_max=price_max
+    )
+    
+    ddpg_agent2 = DDPGAgent(
+        agent_id=1,
+        state_dim=2,
+        action_dim=1,
+        seed=seed + 1000,  # Different seed for diversity
+        price_min=price_min,
+        price_max=price_max
+    )
     
     state = env.reset()
     profits_history = []
     prices_history = []
     
     for t in range(env.horizon):
-        # Both agents select discrete action indices
-        dqn_action1 = dqn_agent1.select_action(state, explore=True)
-        dqn_action2 = dqn_agent2.select_action(state, explore=True)
+        # Both agents select continuous prices
+        state_float = state.astype(np.float32)
+        price1, norm_action1 = ddpg_agent1.select_action(state_float, explore=True)
+        price2, norm_action2 = ddpg_agent2.select_action(state_float, explore=True)
         
-        actions = [dqn_action1, dqn_action2]
+        actions = [price1, price2]
         next_state, rewards, done, info = env.step(actions)
         
         # Update both agents
-        dqn_agent1.remember(state, dqn_action1, rewards[0], next_state, done)
-        dqn_agent1.replay()
+        next_state_float = next_state.astype(np.float32)
         
-        dqn_agent2.remember(state, dqn_action2, rewards[1], next_state, done)
-        dqn_agent2.replay()
+        ddpg_agent1.remember(state_float, norm_action1, rewards[0], next_state_float, done)
+        ddpg_agent1.replay()
+        
+        ddpg_agent2.remember(state_float, norm_action2, rewards[1], next_state_float, done)
+        ddpg_agent2.replay()
         
         # Decay exploration
         if t % 100 == 0:
-            dqn_agent1.update_epsilon()
-            dqn_agent2.update_epsilon()
+            ddpg_agent1.update_epsilon()
+            ddpg_agent2.update_epsilon()
         
         state = next_state
         prices_history.append(info['prices'])
@@ -83,13 +103,15 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 
 def main():
     shock_cfg = {
-        'enabled': False
+        'enabled': True,
+        'scheme': 'C',
+        'mode': 'independent'
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("DQN vs DQN - SCHEME NONE")
+    print("DDPG vs DDPG - SCHEME C")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -146,7 +168,7 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/dqn_vs_dqn.csv", index=False)
+    df.to_csv("./results/ddpg_vs_ddpg_schemeC.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -163,14 +185,14 @@ def main():
     avg_rpdi1 = np.mean([results[m]['RPDI 1'] for m in models])
     avg_rpdi2 = np.mean([results[m]['RPDI 2'] for m in models])
     
-    print("\nFirm 1 (DQN):")
+    print("\nFirm 1 (DDPG):")
     print(f"  Average Delta (Δ): {avg_delta1:.4f}")
     print(f"  Average RPDI:      {avg_rpdi1:.4f}")
-    print("\nFirm 2 (DQN):")
+    print("\nFirm 2 (DDPG):")
     print(f"  Average Delta (Δ): {avg_delta2:.4f}")
     print(f"  Average RPDI:      {avg_rpdi2:.4f}")
     
-    print("\n[Results saved to ./results/dqn_vs_dqn.csv]")
+    print("\n[Results saved to ./results/ddpg_vs_ddpg_schemeC.csv]")
 
 
 if __name__ == "__main__":

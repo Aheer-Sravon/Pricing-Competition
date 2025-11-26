@@ -9,7 +9,6 @@ sys.path.insert(0, parent_dir)
 from environments import MarketEnvContinuous
 from agents import DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
-from shocks import AR1_Shock
 
 sys.path.pop(0)
 
@@ -83,13 +82,15 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 
 def main():
     shock_cfg = {
-        'enabled': False
+        'enabled': True,
+        'scheme': 'B',
+        'mode': 'independent'
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("DQN vs DQN - SCHEME NONE")
+    print("DQN vs DQN - SCHEME B")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -146,7 +147,7 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/dqn_vs_dqn.csv", index=False)
+    df.to_csv("./results/dqn_vs_dqn_schemeB.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -170,7 +171,7 @@ def main():
     print(f"  Average Delta (Δ): {avg_delta2:.4f}")
     print(f"  Average RPDI:      {avg_rpdi2:.4f}")
     
-    print("\n[Results saved to ./results/dqn_vs_dqn.csv]")
+    print("\n[Results saved to ./results/dqn_vs_dqn_schemeB.csv]")
 
 
 if __name__ == "__main__":
