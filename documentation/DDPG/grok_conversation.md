@@ -108,3 +108,49 @@ The DDPGAgent class implements a DDPG algorithm adapted for pricing competition:
 - **Methods**: select_action (actor forward + noise if explore, scale price); remember (push to buffer); replay
     (sample batch, compute target $Q = r + \gamma(1-d)Q'(s',\mu'(s'))$, critic MSE loss, actor -mean(Q) loss, Adam steps,
     soft target updates); update_epsilon; reset_noise.
+
+# Question 5
+
+# Answer 5
+DDPG is a model-free, off-policy actor-critic reinforcement learning algorithm for continuous action spaces,
+combining deterministic policy gradient with deep Q-network techniques.
+
+### Background
+Consider a Markov decision process with state space $\mathcal{S}$, continuous action space
+$\mathcal{A} = \mathbb{R}^N$, transition dynamics $p(s_{t+1} | s_t, a_t)$, reward function
+$r(s_t, a_t)$, and discount factor $\gamma \in [0,1]$. The goal is to maximize expected return
+$J = \mathbb{E}_{r_i, s_i \sim E, a_i \sim \pi} [R_1]$, where $R_t = \sum_{i=t}^T \gamma^{i-t} r(s_i, a_i)$.
+
+The action-value function is $Q^\pi(s_t, a_t) = \mathbb{E}_{r_{i \geq t}, s_{i > t} \sim E, a_{i > t} \sim \pi} [R_t | s_t, a_t]$.
+
+The deterministic policy $\mu: \mathcal{S} \to \mathcal{A}$ maps states to actions. The performance objective is
+$J(\mu) = \mathbb{E}_{s \sim \rho^\mu} [Q^\mu(s, \mu(s))]$, where $\rho^\mu$ is the discounted state visitation distribution.
+
+### Deterministic Policy Gradient
+The gradient of the objective is
+
+$$
+\nabla_{\theta^\mu} J \approx \mathbb{E}_{s \sim \rho^\mu} [\nabla_a Q(s, a | \theta^Q)|_{a=\mu(s)} \nabla_{\theta^\mu} \mu(s | \theta^\mu)]
+$$
+
+where $\theta^\mu$ and $\theta^Q$ are parameters of actor and critic networks.
+
+### Algorithm Components
+- **Actor Network**: Parameterized as $\mu(s | \theta^\mu)$, outputs action $a = \mu(s) + \mathcal{N}$,
+    where $\mathcal{N}$ is exploration noise (e.g., Ornstein-Uhlenbeck process: $dx_t = \theta (\mu - x_t) dt + \sigma dW_t$,
+    discretized as $dx = \theta (\mu - x) + \sigma \mathcal{N}(0,1)$; $x \leftarrow x + dx$).
+
+- **Critic Network**: Approximates $Q(s, a | \theta^Q)$.
+
+- **Target Networks**: $\mu'(s | \theta^{\mu'})$ and $Q'(s, a | \theta^{Q'})$,
+    softly updated: $\theta' \leftarrow \tau \theta + (1 - \tau) \theta'$.
+
+- **Replay Buffer**: Stores transitions $(s, a, r, s', d)$; sample minibatch of size $N$.
+
+### Updates
+- Critic loss (MSE): $L = \frac{1}{N} \sum_i (y_i - Q(s_i, a_i | \theta^Q))^2$,
+  where target $y_i = r_i + \gamma (1 - d_i) Q'(s_i', \mu'(s_i' | \theta^{\mu'}) | \theta^{Q'})$.
+
+- Actor loss: $J = -\frac{1}{N} \sum_i Q(s_i, \mu(s_i | \theta^\mu) | \theta^Q)$ (gradient ascent on Q).
+
+Optimize via Adam; apply noise scaling and action rescaling for domain (e.g., $p = p_{\min} + (p_{\max} - p_{\min}) \frac{a + 1}{2}$).
