@@ -1,7 +1,7 @@
 [project]
 name = "pricing-competition"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simulating Price Setting Under Uncertainty using RL Agent: Q, PSO, DQN, DDPG"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
