@@ -1,11 +1,3 @@
-# =============================================================================
-# FIGURE 3: Price Stability vs Benchmark Shift - LOGIT Model Only
-# =============================================================================
-# Single panel showing actual algorithm prices vs theoretical Nash prices
-# Explains counterintuitive negative indicators despite supra-competitive pricing
-# With legend on the right
-# =============================================================================
-
 # Load required libraries
 library(tidyverse)
 library(ggplot2)
@@ -16,17 +8,13 @@ library(cowplot)
 # Set seed for reproducibility
 set.seed(42)
 
-# =============================================================================
 # DATA LOADING AND PREPARATION
-# =============================================================================
-
-# Read the data
 data <- read.csv("all_tables.csv", stringsAsFactors = FALSE)
 
-# Filter for LOGIT model only
+# Filter for LOGIT model
 logit_data <- data %>% filter(Model == "LOGIT")
 
-# Create long format for both agents
+# Create long format
 logit_long <- logit_data %>%
   pivot_longer(
     cols = c(Agent1_Delta, Agent2_Delta, Agent1_RPDI, Agent2_RPDI, 
@@ -36,7 +24,7 @@ logit_long <- logit_data %>%
   ) %>%
   rename(Delta = Delta, RPDI = RPDI, Avg_Prices = Avg_Prices)
 
-# Extract algorithm from Matchup
+# Extract algorithm
 logit_long <- logit_long %>%
   mutate(
     Algorithm = case_when(
@@ -50,6 +38,7 @@ logit_long <- logit_long %>%
       Algorithm == "DDPG" ~ "DDPG",
       TRUE ~ Algorithm
     ),
+    Algorithm = factor(Algorithm, levels = c("Q-learning", "DQN", "PSO", "DDPG")),
     Shock_Condition = case_when(
       Shock == "0" ~ "No Shock",
       Shock == "A" ~ "Shock A",
@@ -60,15 +49,12 @@ logit_long <- logit_long %>%
                               levels = c("No Shock", "Shock A", "Shock B", "Shock C"))
   )
 
-# =============================================================================
 # PREPARE PRICE DATA
-# =============================================================================
-
-# Aggregate price data by algorithm and shock condition
 price_data <- logit_long %>%
   group_by(Algorithm, Shock_Condition) %>%
   summarise(
     Mean_Price = mean(Avg_Prices, na.rm = TRUE),
+    SE_Price = sd(Avg_Prices, na.rm = TRUE) / sqrt(n()),
     .groups = "drop"
   )
 
@@ -79,143 +65,204 @@ theo_nash <- data.frame(
   Nash_Price = c(1.47, 1.80, 1.54, 1.91)
 )
 
-# =============================================================================
-# DEFINE AESTHETICS
-# =============================================================================
+# Q1 JOURNAL COLOR PALETTE (Colorblind-friendly)
+algo_colors <- c(
+  "Q-learning" = "#1B9E77",
+  "DQN"        = "#D95F02",
+  "PSO"        = "#7570B3", 
+  "DDPG"       = "#E7298A"
+)
 
-# Color palette for algorithms
-algo_colors <- c("Q-learning" = "#1B9E77",
-                 "DQN" = "#D95F02",
-                 "PSO" = "#7570B3", 
-                 "DDPG" = "#E7298A")
+algo_shapes <- c(
+  "Q-learning" = 16,
+  "DQN"        = 15,
+  "PSO"        = 17,
+  "DDPG"       = 18
+)
 
-# Shape palette for algorithms
-algo_shapes <- c("Q-learning" = 16,  # Circle (filled)
-                 "DQN" = 15,          # Square (filled)
-                 "PSO" = 17,          # Triangle (filled)
-                 "DDPG" = 18)         # Diamond (filled)
+algo_linetypes <- c(
+  "Q-learning" = "solid",
+  "DQN"        = "solid",
+  "PSO"        = "solid",
+  "DDPG"       = "solid"
+)
 
-# Common theme for publication quality
-theme_publication <- theme_bw(base_size = 12) +
-  theme(
-    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 11, hjust = 0.5, color = "gray40"),
-    axis.title = element_text(size = 11),
-    axis.text = element_text(size = 10),
-    legend.title = element_text(size = 11, face = "bold"),
-    legend.text = element_text(size = 10),
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
-    plot.margin = margin(10, 10, 10, 10)
-  )
+# Q1 JOURNAL THEME (Cross-platform compatible)
+theme_q1_journal <- function(base_size = 11) {
+  theme_bw(base_size = base_size) +
+    theme(
+      text = element_text(family = 'serif'),
+      plot.title = element_text(
+        size = rel(1.2), 
+        face = "bold", 
+        hjust = 0.5,
+        margin = margin(b = 6)
+      ),
+      plot.subtitle = element_text(
+        size = rel(0.9),
+        hjust = 0.5,
+        margin = margin(b = 10),
+        color = "gray35",
+        face = "italic"
+      ),
+      axis.title = element_text(size = rel(1.0), face = "plain"),
+      axis.title.x = element_text(margin = margin(t = 10)),
+      axis.title.y = element_text(margin = margin(r = 10)),
+      axis.text = element_text(size = rel(0.95), color = "black"),
+      panel.grid.major = element_line(color = "gray88", linewidth = 0.35),
+      panel.grid.minor = element_blank(),
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 0.6),
+      legend.title = element_text(size = rel(0.95), face = "bold"),
+      legend.text = element_text(size = rel(0.9)),
+      legend.key.size = unit(1.1, "lines"),
+      legend.key.width = unit(2.0, "lines"),
+      legend.background = element_rect(fill = "white", color = "gray80", linewidth = 0.3),
+      legend.key = element_rect(fill = "white", color = NA),
+      legend.position = "right",
+      legend.box = "vertical",
+      legend.margin = margin(t = 5, r = 5, b = 5, l = 5),
+      plot.margin = margin(t = 12, r = 12, b = 12, l = 12)
+    )
+}
 
-# =============================================================================
-# CREATE MAIN PLOT
-# =============================================================================
-
+# CREATE MAIN FIGURE
 p_main <- ggplot() +
-  # Shaded region between actual prices and Nash under Shock C
-  annotate("rect", xmin = 3.7, xmax = 4.3, ymin = 1.55, ymax = 1.91,
-           fill = "#FFE4E1", alpha = 0.8) +
   
-  # Theoretical Nash line (thick dashed black)
+  # Shaded region: Gap between actual and Nash under Shock C
+  annotate("rect", xmin = 3.75, xmax = 4.25, ymin = 1.58, ymax = 1.88,
+           fill = "#FFE4E1", alpha = 0.7) +
+  
+  # Reference: No-Shock Nash horizontal line
+  geom_hline(yintercept = 1.47, linetype = "dotted", 
+             color = "gray55", linewidth = 0.6) +
+  
+  # Theoretical Nash prices (Black dashed line with X markers)
   geom_line(data = theo_nash, 
             aes(x = Shock_Condition, y = Nash_Price, group = 1),
-            linetype = "dashed", linewidth = 1.8, color = "black") +
+            linetype = "longdash", linewidth = 1.3, color = "black") +
   geom_point(data = theo_nash,
              aes(x = Shock_Condition, y = Nash_Price),
-             size = 5, shape = 4, stroke = 2, color = "black") +
+             size = 4, shape = 4, stroke = 1.8, color = "black") +
   
-  # Algorithm actual prices - lines
+  # Algorithm actual prices
   geom_line(data = price_data, 
             aes(x = Shock_Condition, y = Mean_Price, 
-                color = Algorithm, group = Algorithm),
-            linewidth = 1.2) +
-  
-  # Algorithm actual prices - points
+                color = Algorithm, group = Algorithm, linetype = Algorithm),
+            linewidth = 0.95) +
   geom_point(data = price_data,
              aes(x = Shock_Condition, y = Mean_Price, 
                  color = Algorithm, shape = Algorithm),
-             size = 4) +
+             size = 3, stroke = 0.4) +
   
   # Scales
   scale_color_manual(values = algo_colors, name = "Algorithm") +
   scale_shape_manual(values = algo_shapes, name = "Algorithm") +
-  scale_y_continuous(limits = c(1.35, 2.05), 
-                     breaks = seq(1.4, 2.0, by = 0.1)) +
+  scale_linetype_manual(values = algo_linetypes, name = "Algorithm") +
+  scale_y_continuous(
+    limits = c(1.38, 2.00),
+    breaks = seq(1.4, 2.0, by = 0.1),
+    minor_breaks = NULL,
+    expand = expansion(mult = c(0.02, 0.02))
+  ) +
   
   # Labels
   labs(
-    title = "LOGIT Model: Price Stability vs Benchmark Shift",
-    subtitle = "Algorithms maintain stable prices while Nash equilibrium shifts upward",
+    title = "Logit Model: Price Stability vs Shifting Benchmark",
+    subtitle = "Algorithms maintain stable prices (~1.65) while Nash equilibrium rises to 1.91 under Shock C",
     x = "Shock Condition",
     y = "Price"
   ) +
   
-  # Annotation: Gap arrow under Shock C
-  annotate("segment", x = 4.15, xend = 4.15, y = 1.58, yend = 1.88,
-           arrow = arrow(ends = "both", length = unit(0.15, "inches")),
-           color = "#E41A1C", linewidth = 1) +
-  annotate("text", x = 4.35, y = 1.73, label = "Gap ≈ 0.25", 
-           size = 3.5, color = "#E41A1C", fontface = "bold", hjust = 0) +
+  # Annotations
   
-  # Annotation: Theoretical Nash label
-  annotate("text", x = 1.3, y = 1.98, label = "Theoretical Nash", 
-           size = 3.5, color = "black", fontface = "bold") +
-  annotate("segment", x = 1.15, xend = 1.0, y = 1.95, yend = 1.82,
-           arrow = arrow(length = unit(0.1, "inches")),
-           color = "black", linewidth = 0.5) +
+  # Gap arrow (Shock C)
+  annotate("segment", x = 4.18, xend = 4.18, y = 1.60, yend = 1.86,
+           arrow = arrow(ends = "both", length = unit(0.12, "inches"), type = "closed"),
+           color = "#C41E3A", linewidth = 0.8) +
+  annotate("text", x = 4.32, y = 1.73, label = "Gap", 
+           size = 3.2, color = "#C41E3A", fontface = "bold", hjust = 0) +
   
-  # Annotation: Algorithm prices label
-  annotate("text", x = 2.7, y = 1.45, 
-           label = "Algorithm prices\nremain near ~1.65", 
-           size = 3.2, color = "#1B9E77", fontface = "italic") +
+  # Theoretical Nash label
+  annotate("text", x = 1.0, y = 1.96, 
+           label = "Theoretical\nNash", 
+           size = 3.0, color = "black", fontface = "bold", hjust = 0.5,
+           lineheight = 0.85) +
   
-  # Annotation: Original no-shock Nash reference
-  geom_hline(yintercept = 1.47, linetype = "dotted", 
-             color = "gray50", linewidth = 0.8) +
-  annotate("text", x = 4.5, y = 1.44, 
-           label = "No-shock Nash (1.47)", 
-           size = 2.8, color = "gray50", hjust = 1) +
+  # No-shock Nash reference label
+  annotate("text", x = 4.5, y = 1.445, 
+           label = "No-shock Nash", 
+           size = 2.6, color = "gray55", hjust = 1, fontface = "italic") +
   
-  # Annotation box explaining the key insight
- annotate("label", x = 2.5, y = 2.02, 
-           label = "Key: Prices stay above original Nash (1.47)\nbut below shifted Nash → Negative RPDI",
-           size = 3, fill = "#FFFACD", color = "gray30",
-           label.padding = unit(0.4, "lines"),
-           label.r = unit(0.15, "lines")) +
+  # Algorithm prices annotation
+  annotate("text", x = 2.5, y = 1.53, 
+           label = "Algorithm prices cluster\naround 1.55-1.70", 
+           size = 2.8, color = "#1B9E77", fontface = "italic",
+           lineheight = 0.9, hjust = 0.5) +
+  
+  # Key insight box
+  annotate("label", x = 2.5, y = 1.97, 
+           label = "Negative RPDI occurs because prices remain\nbelow the shifted Nash benchmark (1.91)",
+           size = 2.8, fill = "#FFFACD", color = "gray25",
+           label.padding = unit(0.35, "lines"),
+           label.r = unit(0.2, "lines"),
+           lineheight = 0.9) +
   
   # Theme
-  theme_publication +
-  theme(
-    legend.position = "right",
-    legend.box = "vertical",
-    axis.text.x = element_text(size = 10)
-  ) +
+  theme_q1_journal() +
   guides(
-    color = guide_legend(title.position = "top", order = 1),
-    shape = guide_legend(title.position = "top", order = 1)
+    color = guide_legend(order = 1, override.aes = list(linewidth = 1.2)),
+    shape = guide_legend(order = 1),
+    linetype = guide_legend(order = 1)
   )
 
-# =============================================================================
-# SAVE THE FIGURE
-# =============================================================================
+# SAVE FIGURES (Q1 Journal Standards)
+ggsave(
+  filename = "Figure3_Price_vs_Benchmark_LOGIT.png",
+  plot = p_main,
+  width = 160,
+  height = 100,
+  units = "mm",
+  dpi = 600,
+  bg = "white"
+)
 
-# Save as high-resolution PNG
-ggsave("Figure3_Price_vs_Benchmark_LOGIT.png", 
-       plot = p_main,
-       width = 10, 
-       height = 6,
-       dpi = 600,
-       bg = "white")
+ggsave(
+  filename = "Figure3_Price_vs_Benchmark_LOGIT.pdf",
+  plot = p_main,
+  width = 160,
+  height = 100,
+  units = "mm",
+  device = "pdf"
+)
 
-# Save as PDF (vector format for publication)
-ggsave("Figure3_Price_vs_Benchmark_LOGIT.pdf", 
-       plot = p_main,
-       width = 10, 
-       height = 6,
-       device = cairo_pdf)
+# ggsave(
+#   filename = "Figure3_Price_vs_Benchmark_LOGIT.tiff",
+#   plot = p_main,
+#   width = 160,
+#   height = 100,
+#   units = "mm",
+#   dpi = 600,
+#   compression = "lzw"
+# )
 
-# Display message
-cat("Figure 3: Price vs Benchmark (LOGIT) saved successfully!\n")
-cat("Files created: Figure3_Price_vs_Benchmark_LOGIT.png, Figure3_Price_vs_Benchmark_LOGIT.pdf\n")
+cat("\n")
+cat("============================================================\n")
+cat("  FIGURE 3: Price Stability vs Benchmark Shift (LOGIT)\n")
+cat("  Q1 JOURNAL PUBLICATION STANDARD\n")
+cat("============================================================\n")
+cat("\n")
+cat("Files created:\n")
+cat("  - Figure3_Price_vs_Benchmark_LOGIT.png  (600 DPI)\n")
+cat("  - Figure3_Price_vs_Benchmark_LOGIT.pdf  (Vector)\n")
+# cat("  - Figure3_Price_vs_Benchmark_LOGIT.tiff (600 DPI, LZW)\n")
+cat("\n")
+cat("Key visual elements:\n")
+cat("  - Black dashed line: Theoretical Nash prices (1.47 -> 1.91)\n")
+cat("  - Colored lines: Algorithm actual prices (~1.55-1.70)\n")
+cat("  - Pink shaded region: Gap between actual and Nash under Shock C\n")
+cat("  - Dotted horizontal: No-shock Nash reference (1.47)\n")
+cat("\n")
+cat("Key insight communicated:\n")
+cat("  Algorithms maintain stable prices above the original Nash (1.47)\n")
+cat("  but below the shifted Nash (1.91), creating negative RPDI values.\n")
+cat("\n")

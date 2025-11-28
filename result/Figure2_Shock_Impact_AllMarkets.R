@@ -1,10 +1,3 @@
-# =============================================================================
-# FIGURE 2: Shock Impact Across Market Structures
-# =============================================================================
-# Three panels side-by-side: LOGIT | HOTELLING | LINEAR
-# Shows divergent responses to demand shocks across market structures
-# With shared legend on the right
-# =============================================================================
 
 # Load required libraries
 library(tidyverse)
@@ -16,14 +9,9 @@ library(cowplot)
 # Set seed for reproducibility
 set.seed(42)
 
-# =============================================================================
 # DATA LOADING AND PREPARATION
-# =============================================================================
-
-# Read the data
 data <- read.csv("all_tables.csv", stringsAsFactors = FALSE)
 
-# Create long format for both agents
 data_long <- data %>%
   pivot_longer(
     cols = c(Agent1_Delta, Agent2_Delta, Agent1_RPDI, Agent2_RPDI, 
@@ -33,7 +21,6 @@ data_long <- data %>%
   ) %>%
   rename(Delta = Delta, RPDI = RPDI, Avg_Prices = Avg_Prices)
 
-# Extract algorithm from Matchup
 data_long <- data_long %>%
   mutate(
     Algorithm = case_when(
@@ -47,6 +34,7 @@ data_long <- data_long %>%
       Algorithm == "DDPG" ~ "DDPG",
       TRUE ~ Algorithm
     ),
+    Algorithm = factor(Algorithm, levels = c("Q-learning", "DQN", "PSO", "DDPG")),
     Shock_Condition = case_when(
       Shock == "0" ~ "No Shock",
       Shock == "A" ~ "Shock A",
@@ -62,265 +50,296 @@ data_long <- data_long %>%
 data_clean <- data_long %>%
   filter(Delta > -8 & Delta < 3)
 
-# =============================================================================
-# DEFINE COMMON AESTHETICS
-# =============================================================================
+# Q1 JOURNAL COLOR PALETTE (Colorblind-friendly)
+algo_colors <- c(
+  "Q-learning" = "#1B9E77",
+  "DQN"        = "#D95F02",
+  "PSO"        = "#7570B3", 
+  "DDPG"       = "#E7298A"
+)
 
-# Color palette for algorithms (consistent with your style)
-algo_colors <- c("Q-learning" = "#1B9E77",
-                 "DQN" = "#D95F02",
-                 "PSO" = "#7570B3", 
-                 "DDPG" = "#E7298A")
+algo_shapes <- c(
+  "Q-learning" = 21,
+  "DQN"        = 22,
+  "PSO"        = 24,
+  "DDPG"       = 23
+)
 
-# Shape palette for algorithms
-algo_shapes <- c("Q-learning" = 16,  # Circle (filled)
-                 "DQN" = 15,          # Square (filled)
-                 "PSO" = 17,          # Triangle (filled)
-                 "DDPG" = 18)         # Diamond (filled)
+algo_linetypes <- c(
+  "Q-learning" = "solid",
+  "DQN"        = "solid",
+  "PSO"        = "solid",
+  "DDPG"       = "solid"
+)
 
-# Common theme for publication quality
-theme_publication <- theme_bw(base_size = 11) +
-  theme(
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-    axis.title = element_text(size = 10),
-    axis.text = element_text(size = 9),
-    legend.title = element_text(size = 10, face = "bold"),
-    legend.text = element_text(size = 9),
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
-    plot.margin = margin(5, 5, 5, 5)
-  )
+# Q1 JOURNAL THEME (Cross-platform compatible)
+theme_q1_journal <- function(base_size = 10) {
+  theme_bw(base_size = base_size) +
+    theme(
+      text = element_text(family = 'serif'),
+      plot.title = element_text(
+        size = rel(1.15), 
+        face = "bold", 
+        hjust = 0.5,
+        margin = margin(b = 4)
+      ),
+      plot.subtitle = element_text(
+        size = rel(0.9),
+        hjust = 0.5,
+        margin = margin(b = 6),
+        color = "gray40"
+      ),
+      axis.title = element_text(size = rel(1.0), face = "plain"),
+      axis.title.x = element_text(margin = margin(t = 8)),
+      axis.title.y = element_text(margin = margin(r = 8)),
+      axis.text = element_text(size = rel(0.9), color = "black"),
+      axis.text.x = element_text(angle = 0, hjust = 0.5),
+      panel.grid.major = element_line(color = "gray88", linewidth = 0.35),
+      panel.grid.minor = element_blank(),
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 0.6),
+      legend.title = element_text(size = rel(0.95), face = "bold"),
+      legend.text = element_text(size = rel(0.85)),
+      legend.key.size = unit(1.0, "lines"),
+      legend.key.width = unit(1.5, "lines"),
+      legend.background = element_rect(fill = "white", color = NA),
+      legend.key = element_rect(fill = "white", color = NA),
+      plot.margin = margin(t = 8, r = 8, b = 8, l = 8)
+    )
+}
 
-# =============================================================================
-# PANEL 1: LOGIT - Shock Impact
-# =============================================================================
-
-logit_shock <- data_clean %>% 
-  filter(Model == "LOGIT") %>%
-  group_by(Algorithm, Shock_Condition) %>%
+# PREPARE AGGREGATED DATA
+shock_data <- data_clean %>%
+  group_by(Model, Algorithm, Shock_Condition) %>%
   summarise(
     Mean_Delta = mean(Delta, na.rm = TRUE),
+    SE_Delta = sd(Delta, na.rm = TRUE) / sqrt(n()),
     .groups = "drop"
   )
+
+# PANEL 1: LOGIT - Shock Impact
+logit_shock <- shock_data %>% filter(Model == "LOGIT")
 
 p1_logit <- ggplot(logit_shock, 
                    aes(x = Shock_Condition, y = Mean_Delta, 
                        color = Algorithm, group = Algorithm)) +
-  # Shaded region for sub-Nash performance
   annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0,
-           fill = "#FFCCCC", alpha = 0.3) +
-  # Reference lines
-  geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.6) +
-  geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 0.6) +
-  # Lines and points
-  geom_line(linewidth = 1.2) +
-  geom_point(aes(shape = Algorithm), size = 3.5) +
-  # Scales
+           fill = "#FFEEEE", alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_hline(yintercept = 1, linetype = "dotted", color = "gray40", linewidth = 0.5) +
+  # geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
+  geom_point(aes(shape = Algorithm), size = 2.5, stroke = 1) +
   scale_color_manual(values = algo_colors) +
   scale_shape_manual(values = algo_shapes) +
-  scale_y_continuous(limits = c(-7, 1.5), breaks = seq(-6, 1, by = 1)) +
-  # Labels
-  labs(
-    title = "LOGIT Model",
-    subtitle = "Catastrophic Collapse",
-    x = "Shock Condition",
-    y = "Delta (Δ)"
+  scale_linetype_manual(values = algo_linetypes) +
+  scale_y_continuous(
+    limits = c(-7, 1.5),
+    breaks = seq(-6, 1, by = 1),
+    minor_breaks = NULL
   ) +
-  # Annotations
-  annotate("text", x = 0.55, y = 0.2, label = "Nash", 
-           size = 2.5, color = "black", hjust = 0, fontface = "italic") +
-  annotate("text", x = 0.55, y = 1.2, label = "Monopoly", 
-           size = 2.5, color = "red", hjust = 0, fontface = "italic") +
-  annotate("text", x = 3, y = -5.5, label = "All algorithms\ncollapse", 
-           size = 2.8, color = "#E41A1C", fontface = "bold") +
-  # Theme
-  theme_publication +
+  labs(
+    title = "Logit",
+    # subtitle = "Collapse under shocks",
+    x = NULL,
+    y = "Delta"
+  ) +
+  # annotate("text", x = 0.55, y = 0.25, label = "Delta = 0", 
+  #          size = 2.3, color = "gray40", hjust = 0) +
+  # annotate("text", x = 0.55, y = 1.25, label = "Delta = 1", 
+  #          size = 2.3, color = "gray40", hjust = 0) +
+  theme_q1_journal() +
   theme(
     legend.position = "none",
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.subtitle = element_text(size = 10, hjust = 0.5, color = "#E41A1C")
+    plot.subtitle = element_text(color = "#D55E00", face = "italic"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
   )
 
-# =============================================================================
 # PANEL 2: HOTELLING - Shock Impact
-# =============================================================================
-
-hotelling_shock <- data_clean %>% 
-  filter(Model == "HOTELLING") %>%
-  group_by(Algorithm, Shock_Condition) %>%
-  summarise(
-    Mean_Delta = mean(Delta, na.rm = TRUE),
-    .groups = "drop"
-  )
+hotelling_shock <- shock_data %>% filter(Model == "HOTELLING")
 
 p2_hotelling <- ggplot(hotelling_shock, 
                        aes(x = Shock_Condition, y = Mean_Delta, 
                            color = Algorithm, group = Algorithm)) +
-  # Shaded region for sub-Nash performance
   annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0,
-           fill = "#FFCCCC", alpha = 0.3) +
-  # Reference lines
-  geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.6) +
-  geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 0.6) +
-  # Lines and points
-  geom_line(linewidth = 1.2) +
-  geom_point(aes(shape = Algorithm), size = 3.5) +
-  # Scales
+           fill = "#FFEEEE", alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_hline(yintercept = 1, linetype = "dotted", color = "gray40", linewidth = 0.5) +
+  #geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
+  geom_point(aes(shape = Algorithm), size = 2.5, stroke = 1) +
   scale_color_manual(values = algo_colors) +
   scale_shape_manual(values = algo_shapes) +
-  scale_y_continuous(limits = c(-0.3, 1.2), breaks = seq(0, 1, by = 0.25)) +
-  # Labels
-  labs(
-    title = "HOTELLING Model",
-    subtitle = "Remarkable Stability",
-    x = "Shock Condition",
-    y = "Delta (Δ)"
+  scale_linetype_manual(values = algo_linetypes) +
+  scale_y_continuous(
+    limits = c(-0.3, 1.2),
+    breaks = seq(0, 1, by = 0.25),
+    minor_breaks = NULL
   ) +
-  # Annotations
-  annotate("text", x = 0.55, y = 0.08, label = "Nash", 
-           size = 2.5, color = "black", hjust = 0, fontface = "italic") +
-  annotate("text", x = 0.55, y = 1.08, label = "Monopoly", 
-           size = 2.5, color = "red", hjust = 0, fontface = "italic") +
-  annotate("text", x = 2.5, y = 0.85, label = "Lines remain\nnearly flat", 
-           size = 2.8, color = "#1B9E77", fontface = "bold") +
-  # Theme
-  theme_publication +
+  labs(
+    title = "Hotelling",
+    # subtitle = "Stable across shocks",
+    x = NULL,
+    y = "Delta"
+  ) +
+  # annotate("text", x = 0.55, y = 0.08, label = "Delta = 0", 
+  #          size = 2.3, color = "gray40", hjust = 0) +
+  # annotate("text", x = 0.55, y = 1.08, label = "Delta = 1", 
+  #          size = 2.3, color = "gray40", hjust = 0) +
+  theme_q1_journal() +
   theme(
     legend.position = "none",
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.subtitle = element_text(size = 10, hjust = 0.5, color = "#4DAF4A")
+    plot.subtitle = element_text(color = "#009E73", face = "italic"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
   )
 
-# =============================================================================
 # PANEL 3: LINEAR - Shock Impact
-# =============================================================================
-
-linear_shock <- data_clean %>% 
-  filter(Model == "LINEAR") %>%
-  group_by(Algorithm, Shock_Condition) %>%
-  summarise(
-    Mean_Delta = mean(Delta, na.rm = TRUE),
-    .groups = "drop"
-  )
+linear_shock <- shock_data %>% filter(Model == "LINEAR")
 
 p3_linear <- ggplot(linear_shock, 
                     aes(x = Shock_Condition, y = Mean_Delta, 
                         color = Algorithm, group = Algorithm)) +
-  # Shaded regions
   annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0,
-           fill = "#FFCCCC", alpha = 0.3) +
+           fill = "#FFEEEE", alpha = 0.6) +
   annotate("rect", xmin = -Inf, xmax = Inf, ymin = 1, ymax = Inf,
-           fill = "#FFFFCC", alpha = 0.3) +
-  # Reference lines
-  geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.6) +
-  geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 0.6) +
-  # Lines and points
-  geom_line(linewidth = 1.2) +
-  geom_point(aes(shape = Algorithm), size = 3.5) +
-  # Scales
+           fill = "#FFFACD", alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+  geom_hline(yintercept = 1, linetype = "dotted", color = "gray40", linewidth = 0.5) +
+  #geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
+  geom_point(aes(shape = Algorithm), size = 2.5, stroke = 1) +
   scale_color_manual(values = algo_colors) +
   scale_shape_manual(values = algo_shapes) +
-  scale_y_continuous(limits = c(-0.3, 1.6), breaks = seq(0, 1.5, by = 0.5)) +
-  # Labels
-  labs(
-    title = "LINEAR Model",
-    subtitle = "Profit Inflation",
-    x = "Shock Condition",
-    y = "Delta (Δ)"
+  scale_linetype_manual(values = algo_linetypes) +
+  scale_y_continuous(
+    limits = c(-0.3, 1.6),
+    breaks = seq(0, 1.5, by = 0.5),
+    minor_breaks = NULL
   ) +
-  # Annotations
-  annotate("text", x = 0.55, y = 0.08, label = "Nash", 
-           size = 2.5, color = "black", hjust = 0, fontface = "italic") +
-  annotate("text", x = 0.55, y = 1.08, label = "Monopoly", 
-           size = 2.5, color = "red", hjust = 0, fontface = "italic") +
-  annotate("text", x = 3.5, y = 1.45, label = "Supra-\nMonopoly", 
-           size = 2.8, color = "#984EA3", fontface = "bold") +
-  # Theme
-  theme_publication +
+  labs(
+    title = "Linear",
+    # subtitle = "Supra-monopoly profits",
+    x = NULL,
+    y = "Delta"
+  ) +
+  # annotate("text", x = 0.55, y = 0.08, label = "Delta = 0", 
+  #          size = 2.3, color = "gray40", hjust = 0) +
+  # annotate("text", x = 0.55, y = 1.08, label = "Delta = 1", 
+  #          size = 2.3, color = "gray40", hjust = 0) +
+  theme_q1_journal() +
   theme(
     legend.position = "none",
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.subtitle = element_text(size = 10, hjust = 0.5, color = "#984EA3")
+    plot.subtitle = element_text(color = "#CC79A7", face = "italic"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
   )
 
-# =============================================================================
 # CREATE SHARED LEGEND
-# =============================================================================
-
-# Create a dummy plot for extracting legend
-p_legend <- ggplot(data_clean, aes(x = Shock_Condition, y = Delta)) +
-  geom_line(aes(color = Algorithm, group = Algorithm), linewidth = 1.2) +
-  geom_point(aes(color = Algorithm, shape = Algorithm), size = 4) +
+p_legend <- ggplot(shock_data, aes(x = Shock_Condition, y = Mean_Delta)) +
+  # geom_line(aes(color = Algorithm, group = Algorithm, linetype = Algorithm), 
+  #           linewidth = 0.9) +
+  geom_point(aes(color = Algorithm, shape = Algorithm), size = 2.5) +
   scale_color_manual(values = algo_colors, name = "Algorithm") +
   scale_shape_manual(values = algo_shapes, name = "Algorithm") +
+  scale_linetype_manual(values = algo_linetypes, name = "Algorithm") +
   guides(
-    color = guide_legend(title.position = "top"),
-    shape = guide_legend(title.position = "top")
+    color = guide_legend(
+         title.position = "top",
+         ncol = 1,
+         order = 1,
+         override.aes = list(
+                stroke = 0.8,
+                color = algo_colors
+         )
+    ),
+    shape = guide_legend(title.position = "top", ncol = 1, order = 1),
+    linetype = guide_legend(title.position = "top", ncol = 1, order = 1)
   ) +
-  theme_publication +
+  theme_q1_journal() +
   theme(
-    legend.box = "vertical",
-    legend.spacing.y = unit(0.3, "cm"),
-    legend.title = element_text(size = 11, face = "bold"),
-    legend.text = element_text(size = 10)
+    legend.title = element_text(size = 9, face = "bold"),
+    legend.text = element_text(size = 8),
+    legend.margin = margin(t = 0, r = 0, b = 0, l = 0)
   )
 
-# Extract legend
 legend_grob <- get_legend(p_legend)
 
-# =============================================================================
-# COMBINE ALL PANELS WITH SHARED LEGEND
-# =============================================================================
+# COMBINE ALL PANELS
+x_label <- ggdraw() +
+  draw_label("Shock Condition", size = 10, fontfamily = 'serif')
 
-# Combine the three plots
-combined_plots <- p1_logit + p2_hotelling + p3_linear +
+combined_plots <- (p1_logit | p2_hotelling | p3_linear) +
   plot_layout(ncol = 3, widths = c(1, 1, 1))
 
-# Final assembly with legend on the right
-final_figure <- plot_grid(
+plots_with_xlabel <- plot_grid(
   combined_plots,
+  x_label,
+  ncol = 1,
+  rel_heights = c(1, 0.05)
+)
+
+final_figure <- plot_grid(
+  plots_with_xlabel,
   legend_grob,
   ncol = 2,
-  rel_widths = c(3, 0.35)
+  rel_widths = c(1, 0.12),
+  align = "h",
+  axis = "tb"
 )
 
-# Add overall title
-title <- ggdraw() + 
+title_grob <- ggdraw() + 
   draw_label(
-    "Shock Impact Across Market Structures",
+    "Shock Impact on Delta Across Market Structures",
     fontface = 'bold',
-    size = 14,
-    x = 0.5,
-    hjust = 0.5
+    fontfamily = 'serif',
+    size = 12
   )
 
-# Final plot with title
 final_plot <- plot_grid(
-  title,
+  title_grob,
   final_figure,
   ncol = 1,
-  rel_heights = c(0.05, 1)
+  rel_heights = c(0.06, 1)
+) + theme(plot.margin = margin(5, 10, 5, 5))
+
+# SAVE FIGURES (Q1 Journal Standards)
+ggsave(
+  filename = "./figures/Figure2_Shock_Impact_AllMarkets.png",
+  plot = final_plot,
+  width = 200,
+  height = 100,
+  units = "mm",
+  dpi = 600,
+  bg = "white"
 )
 
-# =============================================================================
-# SAVE THE FIGURE
-# =============================================================================
+ggsave(
+  filename = "./figures/Figure2_Shock_Impact_AllMarkets.pdf",
+  plot = final_plot,
+  width = 200,
+  height = 100,
+  units = "mm",
+  device = "pdf"
+)
 
-# Save as high-resolution PNG
-ggsave("./figures/Figure2_Shock_Impact_AllMarkets.png", 
-       plot = final_plot,
-       width = 14, 
-       height = 5,
-       dpi = 600,
-       bg = "white")
+# ggsave(
+#   filename = "Figure2_Shock_Impact_AllMarkets.tiff",
+#   plot = final_plot,
+#   width = 180,
+#   height = 75,
+#   units = "mm",
+#   dpi = 600,
+#   compression = "lzw"
+# )
 
-# Save as PDF (vector format for publication)
-ggsave("./figures/Figure2_Shock_Impact_AllMarkets.pdf", 
-       plot = final_plot,
-       width = 14, 
-       height = 5,
-       device = cairo_pdf)
-
-# Display message
-cat("Figure 2: Shock Impact Across Market Structures saved successfully!\n")
-cat("Files created: Figure2_Shock_Impact_AllMarkets.png, Figure2_Shock_Impact_AllMarkets.pdf\n")
+cat("\n")
+cat("============================================================\n")
+cat("  FIGURE 2: Shock Impact Across Market Structures\n")
+cat("  Q1 JOURNAL PUBLICATION STANDARD\n")
+cat("============================================================\n")
+cat("\n")
+cat("Files created:\n")
+cat("  - Figure2_Shock_Impact_AllMarkets.png  (600 DPI)\n")
+cat("  - Figure2_Shock_Impact_AllMarkets.pdf  (Vector)\n")
+# cat("  - Figure2_Shock_Impact_AllMarkets.tiff (600 DPI, LZW)\n")
+cat("\n")
+cat("Key patterns visualized:\n")
+cat("  - Logit: Catastrophic collapse under shocks A & C\n")
+cat("  - Hotelling: Remarkable stability (nearly flat lines)\n")
+cat("  - Linear: Profit inflation above monopoly level\n")
+cat("\n")

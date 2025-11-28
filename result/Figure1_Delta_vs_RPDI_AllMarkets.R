@@ -1,23 +1,10 @@
-# =============================================================================
-# FIGURE 1: Delta vs RPDI Scatter Plot - All Market Structures
-# =============================================================================
-# Three panels side-by-side: LOGIT | HOTELLING | LINEAR
-# With shared legend on the right
-# =============================================================================
-
-# Load required libraries
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
 library(scales)
 library(cowplot)
 
-# Set seed for reproducibility
 set.seed(42)
-
-# =============================================================================
-# DATA LOADING AND PREPARATION
-# =============================================================================
 
 # Read the data
 data <- read.csv("all_tables.csv", stringsAsFactors = FALSE)
@@ -61,206 +48,225 @@ data_long <- data_long %>%
 data_clean <- data_long %>%
   filter(Delta > -8 & Delta < 3, RPDI > -2 & RPDI < 1.5)
 
-# =============================================================================
-# DEFINE COMMON AESTHETICS
-# =============================================================================
+# Q1 JOURNAL COLOR PALETTE (Colorblind-friendly - Okabe-Ito inspired)
+shock_colors <- c(
+  "No Shock" = "#D55E00",
+  "Shock A"  = "#0072B2",
+  "Shock B"  = "#009E73",
+  "Shock C"  = "#CC79A7"
+)
 
-# Color palette for shock conditions (colorblind-friendly)
-shock_colors <- c("No Shock" = "#E41A1C",   # Red
-                  "Shock A" = "#377EB8",     # Blue
-                  "Shock B" = "#4DAF4A",     # Green
-                  "Shock C" = "#984EA3")     # Purple
+algo_shapes <- c(
+  "Q-learning" = 21,
+  "DQN"        = 22,
+  "PSO"        = 24,
+  "DDPG"       = 23
+)
 
-# Shape palette for algorithms
-algo_shapes <- c("Q-learning" = 16,  # Circle (filled)
-                 "DQN" = 15,          # Square (filled)
-                 "PSO" = 17,          # Triangle (filled)
-                 "DDPG" = 18)         # Diamond (filled)
+# algo_shapes <- c(
+#   "Q-learning" = 16,
+#   "DQN"        = 15,
+#   "PSO"        = 17,
+#   "DDPG"       = 18
+# )
 
-# Common theme for publication quality
-theme_publication <- theme_bw(base_size = 11) +
-  theme(
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-    axis.title = element_text(size = 10),
-    axis.text = element_text(size = 9),
-    legend.title = element_text(size = 10, face = "bold"),
-    legend.text = element_text(size = 9),
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
-    plot.margin = margin(5, 5, 5, 5)
-  )
+# Q1 JOURNAL THEME (Cross-platform compatible)
+theme_q1_journal <- function(base_size = 10) {
+  theme_bw(base_size = base_size) +
+    theme(
+      text = element_text(family = 'serif'),
+      plot.title = element_text(
+        size = rel(1.15), 
+        face = "bold", 
+        hjust = 0.5,
+        margin = margin(b = 8)
+      ),
+      axis.title = element_text(size = rel(1.0), face = "plain"),
+      axis.title.x = element_text(margin = margin(t = 8)),
+      axis.title.y = element_text(margin = margin(r = 8)),
+      axis.text = element_text(size = rel(0.9), color = "black"),
+      panel.grid.major = element_line(color = "gray85", linewidth = 0.4),
+      panel.grid.minor = element_blank(),
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 0.6),
+      legend.title = element_text(size = rel(0.95), face = "bold"),
+      legend.text = element_text(size = rel(0.85)),
+      legend.key.size = unit(0.9, "lines"),
+      legend.background = element_rect(fill = "white", color = NA),
+      legend.key = element_rect(fill = "white", color = NA),
+      plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+      strip.background = element_rect(fill = "gray95", color = "black", linewidth = 0.5),
+      strip.text = element_text(size = rel(1.0), face = "bold")
+    )
+}
 
-# =============================================================================
 # PANEL 1: LOGIT - Delta vs RPDI
-# =============================================================================
-
-logit_data <- data_clean %>% filter(Model == "LOGIT")
+logit_data <- data_clean |> filter(Model == "LOGIT")
 
 p1_logit <- ggplot(logit_data, aes(x = RPDI, y = Delta)) +
-  # Reference diagonal line (Delta = RPDI)
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
-              color = "gray40", linewidth = 0.7) +
-  # Data points
+  # geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
+  #             color = "gray50", linewidth = 0.6) +
   geom_point(aes(shape = Algorithm, color = Shock_Condition), 
-             size = 3.5, alpha = 0.85, stroke = 0.5) +
-  # Scales
+             size = 2.8, alpha = 0.9, stroke = 0.8) +
   scale_color_manual(values = shock_colors) +
   scale_shape_manual(values = algo_shapes) +
-  # Labels
+  scale_x_continuous(breaks = seq(-1.5, 1, by = 0.5)) +
+  scale_y_continuous(breaks = seq(-7, 2, by = 1)) +
   labs(
-    title = "LOGIT Model",
-    x = "Relative Price Difference Index (RPDI)",
-    y = "Delta (Δ)"
+    title = "Logit",
+    x = "RPDI",
+    y = "Delta"
   ) +
-  # Add annotation for the diagonal line
-  annotate("text", x = -0.5, y = 0, label = "Δ = RPDI", 
-           angle = 32, size = 3, color = "gray40", fontface = "italic") +
-  # Theme
-  theme_publication +
+  # annotate("text", x = -1.1, y = -0.8, label = "Delta = RPDI", 
+  #          angle = 20, size = 2, color = "gray50", fontface = "italic") +
+  theme_q1_journal() +
   theme(legend.position = "none")
 
-# =============================================================================
 # PANEL 2: HOTELLING - Delta vs RPDI
-# =============================================================================
-
-hotelling_data <- data_clean %>% filter(Model == "HOTELLING")
+hotelling_data <- data_clean |> filter(Model == "HOTELLING")
 
 p2_hotelling <- ggplot(hotelling_data, aes(x = RPDI, y = Delta)) +
-  # Reference diagonal line (Delta = RPDI)
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
-              color = "gray40", linewidth = 0.7) +
-  # Data points
+  # geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
+  #             color = "gray50", linewidth = 0.6) +
   geom_point(aes(shape = Algorithm, color = Shock_Condition), 
-             size = 3.5, alpha = 0.85, stroke = 0.5) +
-  # Scales
+             size = 2.8, alpha = 0.9, stroke = 0.8) +
   scale_color_manual(values = shock_colors) +
   scale_shape_manual(values = algo_shapes) +
-  # Labels
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.2)) +
   labs(
-    title = "HOTELLING Model",
-    x = "Relative Price Difference Index (RPDI)",
-    y = "Delta (Δ)"
+    title = "Hotelling",
+    x = "RPDI",
+    y = "Delta"
   ) +
-  # Add annotation for the diagonal line
-  annotate("text", x = 0.35, y = 0.5, label = "Δ = RPDI", 
-           angle = 40, size = 3, color = "gray40", fontface = "italic") +
-  # Theme
-  theme_publication +
+  # annotate("text", x = 0.42, y = 0.52, label = "Delta = RPDI", 
+  #          angle = 42, size = 2, color = "gray50", fontface = "italic") +
+  theme_q1_journal() +
   theme(legend.position = "none")
 
-# =============================================================================
 # PANEL 3: LINEAR - Delta vs RPDI
-# =============================================================================
-
 linear_data <- data_clean %>% filter(Model == "LINEAR")
 
 p3_linear <- ggplot(linear_data, aes(x = RPDI, y = Delta)) +
-  # Reference diagonal line (Delta = RPDI)
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
-              color = "gray40", linewidth = 0.7) +
-  # Data points
+  # geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
+  #             color = "gray50", linewidth = 0.6) +
+  annotate("rect", xmin = 0.45, xmax = 0.95, ymin = -0.15, ymax = 0.18,
+           fill = "#FFF3CD", alpha = 0.5) +
   geom_point(aes(shape = Algorithm, color = Shock_Condition), 
-             size = 3.5, alpha = 0.85, stroke = 0.5) +
-  # Scales
+             size = 2.8, alpha = 0.9, stroke = 0.8) +
   scale_color_manual(values = shock_colors) +
   scale_shape_manual(values = algo_shapes) +
-  # Labels
+  scale_x_continuous(breaks = seq(-0.2, 1, by = 0.2)) +
+  scale_y_continuous(breaks = seq(-0.5, 1.5, by = 0.5)) +
   labs(
-    title = "LINEAR Model",
-    x = "Relative Price Difference Index (RPDI)",
-    y = "Delta (Δ)"
+    title = "Linear",
+    x = "RPDI",
+    y = "Delta"
   ) +
-  # Add annotation for the diagonal line
-  annotate("text", x = 0.15, y = 0.35, label = "Δ = RPDI", 
-           angle = 38, size = 3, color = "gray40", fontface = "italic") +
-  # Highlight the decoupling region
-  annotate("rect", xmin = 0.4, xmax = 0.9, ymin = -0.2, ymax = 0.2,
-           fill = "yellow", alpha = 0.2) +
-  annotate("text", x = 0.65, y = -0.35, 
-           label = "Price-Profit\nDecoupling", 
-           size = 2.8, color = "#D95F02", fontface = "bold") +
-  # Theme
-  theme_publication +
+  # annotate("text", x = 0.18, y = 0.32, label = "Delta = RPDI", 
+  #          angle = 38, size = 2.8, color = "gray50", fontface = "italic") +
+  annotate("text", x = 0.70, y = -0.28, 
+           label = "Decoupling", 
+           size = 2.5, color = "#B8860B", fontface = "bold") +
+  theme_q1_journal() +
   theme(legend.position = "none")
 
-# =============================================================================
 # CREATE SHARED LEGEND
-# =============================================================================
-
-# Create a dummy plot for extracting legends
 p_legend <- ggplot(data_clean, aes(x = RPDI, y = Delta)) +
-  geom_point(aes(shape = Algorithm), size = 4, color = "black") +
-  geom_point(aes(color = Shock_Condition), size = 4, shape = 16) +
+  geom_point(aes(shape = Algorithm), size = 3, color = "black") +
+  geom_point(aes(color = Shock_Condition), size = 3, shape = 16) +
   scale_color_manual(values = shock_colors, name = "Shock Condition") +
   scale_shape_manual(values = algo_shapes, name = "Algorithm") +
   guides(
-    shape = guide_legend(order = 1, title.position = "top"),
-    color = guide_legend(order = 2, title.position = "top")
+    shape = guide_legend(
+         order = 1,
+         title.position = "top",
+         ncol = 1,
+         override.aes = list(
+                stroke = 0.8
+         )
+    ),
+    color = guide_legend(order = 2, title.position = "top", ncol = 1)
   ) +
-  theme_publication +
+  theme_q1_journal() +
   theme(
     legend.box = "vertical",
-    legend.spacing.y = unit(0.5, "cm"),
-    legend.title = element_text(size = 11, face = "bold"),
-    legend.text = element_text(size = 10)
+    legend.spacing.y = unit(0.6, "cm"),
+    legend.title = element_text(size = 9, face = "bold"),
+    legend.text = element_text(size = 8),
+    legend.margin = margin(t = 0, r = 5, b = 0, l = 5)
   )
 
-# Extract legend
 legend_grob <- get_legend(p_legend)
 
-# =============================================================================
-# COMBINE ALL PANELS WITH SHARED LEGEND
-# =============================================================================
-
-# Combine the three plots
-combined_plots <- p1_logit + p2_hotelling + p3_linear +
+# COMBINE ALL PANELS
+combined_plots <- (p1_logit | p2_hotelling | p3_linear) +
   plot_layout(ncol = 3, widths = c(1, 1, 1))
 
-# Final assembly with legend on the right
 final_figure <- plot_grid(
   combined_plots,
   legend_grob,
   ncol = 2,
-  rel_widths = c(3, 0.4)
+  rel_widths = c(1, 0.15),
+  align = "h",
+  axis = "tb"
 )
 
-# Add overall title
-title <- ggdraw() + 
+title_grob <- ggdraw() + 
   draw_label(
     "Relationship between Profit Extraction (Delta) and Price Elevation (RPDI)",
     fontface = 'bold',
-    size = 14,
-    x = 0.5,
-    hjust = 0.5
+    fontfamily = 'serif',
+    size = 12
   )
 
-# Final plot with title
 final_plot <- plot_grid(
-  title,
+  title_grob,
   final_figure,
   ncol = 1,
-  rel_heights = c(0.05, 1)
+  rel_heights = c(0.06, 1)
+) + theme(plot.margin = margin(5, 10, 5, 5))
+
+# SAVE FIGURES (Q1 Journal Standards)
+
+# PNG - 600 DPI
+ggsave(
+  filename = "./figures/Figure1_Delta_vs_RPDI_AllMarkets.png",
+  plot = final_plot,
+  width = 180,
+  height = 70,
+  units = "mm",
+  dpi = 600,
+  bg = "white"
 )
 
-# =============================================================================
-# SAVE THE FIGURE
-# =============================================================================
+# PDF - Vector format
+ggsave(
+  filename = "./figures/Figure1_Delta_vs_RPDI_AllMarkets.pdf",
+  plot = final_plot,
+  width = 180,
+  height = 70,
+  units = "mm",
+  device = "pdf"
+)
 
-# Save as high-resolution PNG
-ggsave("./figures/Figure1_Delta_vs_RPDI_AllMarkets.png", 
-       plot = final_plot,
-       width = 14, 
-       height = 5,
-       dpi = 600,
-       bg = "white")
+# TIFF - High-quality
+# ggsave(
+#   filename = "Figure1_Delta_vs_RPDI_AllMarkets.tiff",
+#   plot = final_plot,
+#   width = 180,
+#   height = 70,
+#   units = "mm",
+#   dpi = 600,
+#   compression = "lzw"
+# )
 
-# Save as PDF (vector format for publication)
-ggsave("./figures/Figure1_Delta_vs_RPDI_AllMarkets.pdf", 
-       plot = final_plot,
-       width = 14, 
-       height = 5,
-       device = cairo_pdf)
-
-# Display message
-cat("Figure 1: Delta vs RPDI (All Markets) saved successfully!\n")
-cat("Files created: Figure1_Delta_vs_RPDI_AllMarkets.png, Figure1_Delta_vs_RPDI_AllMarkets.pdf\n")
+cat("\n")
+cat("============================================================\n")
+cat("  FIGURE 1: Delta vs RPDI - All Market Structures\n")
+cat("  Q1 JOURNAL PUBLICATION STANDARD\n")
+cat("============================================================\n")
+cat("\n")
+cat("Files created:\n")
+cat("  - Figure1_Delta_vs_RPDI_AllMarkets.png  (600 DPI)\n")
+cat("  - Figure1_Delta_vs_RPDI_AllMarkets.pdf  (Vector)\n")
+cat("\n")
