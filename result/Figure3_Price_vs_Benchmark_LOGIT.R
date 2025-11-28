@@ -68,26 +68,26 @@ theo_nash <- data.frame(
 # Q1 JOURNAL COLOR PALETTE (Colorblind-friendly)
 algo_colors <- c(
   "Q-learning" = "#1B9E77",
-  "DQN"        = "#D95F02",
   "PSO"        = "#7570B3", 
+  "DQN"        = "#D95F02",
   "DDPG"       = "#E7298A"
 )
 
 algo_shapes <- c(
   "Q-learning" = 16,
-  "DQN"        = 15,
   "PSO"        = 17,
+  "DQN"        = 15,
   "DDPG"       = 18
 )
 
 algo_linetypes <- c(
   "Q-learning" = "solid",
-  "DQN"        = "solid",
   "PSO"        = "solid",
+  "DQN"        = "solid",
   "DDPG"       = "solid"
 )
 
-# Q1 JOURNAL THEME (Cross-platform compatible)
+# THEME (Cross-platform compatible)
 theme_q1_journal <- function(base_size = 11) {
   theme_bw(base_size = base_size) +
     theme(
@@ -168,44 +168,20 @@ p_main <- ggplot() +
   # Labels
   labs(
     title = "Logit Model: Price Stability vs Shifting Benchmark",
-    subtitle = "Algorithms maintain stable prices (~1.65) while Nash equilibrium rises to 1.91 under Shock C",
     x = "Shock Condition",
     y = "Price"
   ) +
   
-  # Annotations
-  
-  # Gap arrow (Shock C)
-  annotate("segment", x = 4.18, xend = 4.18, y = 1.60, yend = 1.86,
-           arrow = arrow(ends = "both", length = unit(0.12, "inches"), type = "closed"),
-           color = "#C41E3A", linewidth = 0.8) +
-  annotate("text", x = 4.32, y = 1.73, label = "Gap", 
-           size = 3.2, color = "#C41E3A", fontface = "bold", hjust = 0) +
-  
   # Theoretical Nash label
-  annotate("text", x = 1.0, y = 1.96, 
-           label = "Theoretical\nNash", 
-           size = 3.0, color = "black", fontface = "bold", hjust = 0.5,
-           lineheight = 0.85) +
+  annotate("text", x = 2.3, y = 1.8, 
+           label = "Theoretical Nash", 
+           size = 3.0, color = "black", hjust = 0.5,
+           lineheight = 0.85, angle = -50) +
   
   # No-shock Nash reference label
   annotate("text", x = 4.5, y = 1.445, 
            label = "No-shock Nash", 
-           size = 2.6, color = "gray55", hjust = 1, fontface = "italic") +
-  
-  # Algorithm prices annotation
-  annotate("text", x = 2.5, y = 1.53, 
-           label = "Algorithm prices cluster\naround 1.55-1.70", 
-           size = 2.8, color = "#1B9E77", fontface = "italic",
-           lineheight = 0.9, hjust = 0.5) +
-  
-  # Key insight box
-  annotate("label", x = 2.5, y = 1.97, 
-           label = "Negative RPDI occurs because prices remain\nbelow the shifted Nash benchmark (1.91)",
-           size = 2.8, fill = "#FFFACD", color = "gray25",
-           label.padding = unit(0.35, "lines"),
-           label.r = unit(0.2, "lines"),
-           lineheight = 0.9) +
+           size = 2.6, color = "gray55", hjust = 1) +
   
   # Theme
   theme_q1_journal() +
@@ -215,9 +191,9 @@ p_main <- ggplot() +
     linetype = guide_legend(order = 1)
   )
 
-# SAVE FIGURES (Q1 Journal Standards)
+# SAVE FIGURES
 ggsave(
-  filename = "Figure3_Price_vs_Benchmark_LOGIT.png",
+  filename = "./figures/Figure3_Price_vs_Benchmark_LOGIT.png",
   plot = p_main,
   width = 160,
   height = 100,
@@ -227,23 +203,13 @@ ggsave(
 )
 
 ggsave(
-  filename = "Figure3_Price_vs_Benchmark_LOGIT.pdf",
+  filename = "./figures/Figure3_Price_vs_Benchmark_LOGIT.pdf",
   plot = p_main,
   width = 160,
   height = 100,
   units = "mm",
   device = "pdf"
 )
-
-# ggsave(
-#   filename = "Figure3_Price_vs_Benchmark_LOGIT.tiff",
-#   plot = p_main,
-#   width = 160,
-#   height = 100,
-#   units = "mm",
-#   dpi = 600,
-#   compression = "lzw"
-# )
 
 cat("\n")
 cat("============================================================\n")

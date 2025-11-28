@@ -1,10 +1,12 @@
-
 # Load required libraries
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
 library(scales)
 library(cowplot)
+
+POINT_SIZE <- 1.7
+STROKE_SIZE <- 0.8
 
 # Set seed for reproducibility
 set.seed(42)
@@ -50,29 +52,29 @@ data_long <- data_long %>%
 data_clean <- data_long %>%
   filter(Delta > -8 & Delta < 3)
 
-# Q1 JOURNAL COLOR PALETTE (Colorblind-friendly)
+# COLOR PALETTE (Colorblind-friendly)
 algo_colors <- c(
   "Q-learning" = "#1B9E77",
-  "DQN"        = "#D95F02",
   "PSO"        = "#7570B3", 
+  "DQN"        = "#D95F02",
   "DDPG"       = "#E7298A"
 )
 
 algo_shapes <- c(
   "Q-learning" = 21,
-  "DQN"        = 22,
   "PSO"        = 24,
+  "DQN"        = 22,
   "DDPG"       = 23
 )
 
 algo_linetypes <- c(
   "Q-learning" = "solid",
-  "DQN"        = "solid",
   "PSO"        = "solid",
+  "DQN"        = "solid",
   "DDPG"       = "solid"
 )
 
-# Q1 JOURNAL THEME (Cross-platform compatible)
+# THEME (Cross-platform compatible)
 theme_q1_journal <- function(base_size = 10) {
   theme_bw(base_size = base_size) +
     theme(
@@ -127,7 +129,7 @@ p1_logit <- ggplot(logit_shock,
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
   geom_hline(yintercept = 1, linetype = "dotted", color = "gray40", linewidth = 0.5) +
   # geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
-  geom_point(aes(shape = Algorithm), size = 2.5, stroke = 1) +
+  geom_point(aes(shape = Algorithm), size = POINT_SIZE, stroke = STROKE_SIZE) +
   scale_color_manual(values = algo_colors) +
   scale_shape_manual(values = algo_shapes) +
   scale_linetype_manual(values = algo_linetypes) +
@@ -164,7 +166,7 @@ p2_hotelling <- ggplot(hotelling_shock,
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
   geom_hline(yintercept = 1, linetype = "dotted", color = "gray40", linewidth = 0.5) +
   #geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
-  geom_point(aes(shape = Algorithm), size = 2.5, stroke = 1) +
+  geom_point(aes(shape = Algorithm), size = POINT_SIZE, stroke = STROKE_SIZE) +
   scale_color_manual(values = algo_colors) +
   scale_shape_manual(values = algo_shapes) +
   scale_linetype_manual(values = algo_linetypes) +
@@ -202,8 +204,8 @@ p3_linear <- ggplot(linear_shock,
            fill = "#FFFACD", alpha = 0.6) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
   geom_hline(yintercept = 1, linetype = "dotted", color = "gray40", linewidth = 0.5) +
-  #geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
-  geom_point(aes(shape = Algorithm), size = 2.5, stroke = 1) +
+  # geom_line(aes(linetype = Algorithm), linewidth = 0.9) +
+  geom_point(aes(shape = Algorithm), size = POINT_SIZE, stroke = STROKE_SIZE) +
   scale_color_manual(values = algo_colors) +
   scale_shape_manual(values = algo_shapes) +
   scale_linetype_manual(values = algo_linetypes) +
@@ -231,19 +233,29 @@ p3_linear <- ggplot(linear_shock,
 
 # CREATE SHARED LEGEND
 p_legend <- ggplot(shock_data, aes(x = Shock_Condition, y = Mean_Delta)) +
-  # geom_line(aes(color = Algorithm, group = Algorithm, linetype = Algorithm), 
-  #           linewidth = 0.9) +
-  geom_point(aes(color = Algorithm, shape = Algorithm), size = 2.5) +
-  scale_color_manual(values = algo_colors, name = "Algorithm") +
-  scale_shape_manual(values = algo_shapes, name = "Algorithm") +
-  scale_linetype_manual(values = algo_linetypes, name = "Algorithm") +
+  geom_point(aes(color = Algorithm, shape = Algorithm), size = POINT_SIZE) +
+  scale_color_manual(
+    values = algo_colors,
+    name = "Algorithm",
+    breaks = c("Q-learning", "PSO", "DQN", "DDPG")  # Add this to all scales
+  ) +
+  scale_shape_manual(
+    values = algo_shapes,
+    name = "Algorithm",
+    breaks = c("Q-learning", "PSO", "DQN", "DDPG")  # Add this to all scales
+  ) +
+  scale_linetype_manual(
+    values = algo_linetypes,
+    name = "Algorithm",
+    breaks = c("Q-learning", "PSO", "DQN", "DDPG")  # Add this to all scales
+  ) +
   guides(
     color = guide_legend(
          title.position = "top",
          ncol = 1,
          order = 1,
          override.aes = list(
-                stroke = 0.8,
+                stroke = STROKE_SIZE,
                 color = algo_colors
          )
     ),
@@ -297,7 +309,7 @@ final_plot <- plot_grid(
   rel_heights = c(0.06, 1)
 ) + theme(plot.margin = margin(5, 10, 5, 5))
 
-# SAVE FIGURES (Q1 Journal Standards)
+# SAVE FIGURES
 ggsave(
   filename = "./figures/Figure2_Shock_Impact_AllMarkets.png",
   plot = final_plot,
@@ -316,16 +328,6 @@ ggsave(
   units = "mm",
   device = "pdf"
 )
-
-# ggsave(
-#   filename = "Figure2_Shock_Impact_AllMarkets.tiff",
-#   plot = final_plot,
-#   width = 180,
-#   height = 75,
-#   units = "mm",
-#   dpi = 600,
-#   compression = "lzw"
-# )
 
 cat("\n")
 cat("============================================================\n")

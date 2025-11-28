@@ -4,10 +4,13 @@ library(patchwork)
 library(scales)
 library(cowplot)
 
+POINT_SIZE <- 1.3
+STROKE_SIZE <- 0.8
+
 set.seed(42)
 
 # Read the data
-data <- read.csv("all_tables.csv", stringsAsFactors = FALSE)
+data <- read.csv("./all_tables.csv", stringsAsFactors = FALSE)
 
 # Create long format for both agents
 data_long <- data %>%
@@ -48,7 +51,7 @@ data_long <- data_long %>%
 data_clean <- data_long %>%
   filter(Delta > -8 & Delta < 3, RPDI > -2 & RPDI < 1.5)
 
-# Q1 JOURNAL COLOR PALETTE (Colorblind-friendly - Okabe-Ito inspired)
+# COLOR PALETTE (Colorblind-friendly - Okabe-Ito inspired)
 shock_colors <- c(
   "No Shock" = "#D55E00",
   "Shock A"  = "#0072B2",
@@ -58,19 +61,12 @@ shock_colors <- c(
 
 algo_shapes <- c(
   "Q-learning" = 21,
-  "DQN"        = 22,
   "PSO"        = 24,
+  "DQN"        = 22,
   "DDPG"       = 23
 )
 
-# algo_shapes <- c(
-#   "Q-learning" = 16,
-#   "DQN"        = 15,
-#   "PSO"        = 17,
-#   "DDPG"       = 18
-# )
-
-# Q1 JOURNAL THEME (Cross-platform compatible)
+# THEME (Cross-platform compatible)
 theme_q1_journal <- function(base_size = 10) {
   theme_bw(base_size = base_size) +
     theme(
@@ -103,10 +99,10 @@ theme_q1_journal <- function(base_size = 10) {
 logit_data <- data_clean |> filter(Model == "LOGIT")
 
 p1_logit <- ggplot(logit_data, aes(x = RPDI, y = Delta)) +
-  # geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
-  #             color = "gray50", linewidth = 0.6) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
+              color = "gray50", linewidth = 0.6) +
   geom_point(aes(shape = Algorithm, color = Shock_Condition), 
-             size = 2.8, alpha = 0.9, stroke = 0.8) +
+             size = POINT_SIZE, alpha = 0.9, stroke = STROKE_SIZE) +
   scale_color_manual(values = shock_colors) +
   scale_shape_manual(values = algo_shapes) +
   scale_x_continuous(breaks = seq(-1.5, 1, by = 0.5)) +
@@ -116,8 +112,8 @@ p1_logit <- ggplot(logit_data, aes(x = RPDI, y = Delta)) +
     x = "RPDI",
     y = "Delta"
   ) +
-  # annotate("text", x = -1.1, y = -0.8, label = "Delta = RPDI", 
-  #          angle = 20, size = 2, color = "gray50", fontface = "italic") +
+  annotate("text", x = -1.1, y = -0.8, label = "Delta = RPDI", 
+           angle = 20, size = 2, color = "gray50") +
   theme_q1_journal() +
   theme(legend.position = "none")
 
@@ -125,10 +121,10 @@ p1_logit <- ggplot(logit_data, aes(x = RPDI, y = Delta)) +
 hotelling_data <- data_clean |> filter(Model == "HOTELLING")
 
 p2_hotelling <- ggplot(hotelling_data, aes(x = RPDI, y = Delta)) +
-  # geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
-  #             color = "gray50", linewidth = 0.6) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
+              color = "gray50", linewidth = 0.6) +
   geom_point(aes(shape = Algorithm, color = Shock_Condition), 
-             size = 2.8, alpha = 0.9, stroke = 0.8) +
+             size = POINT_SIZE, alpha = 0.9, stroke = STROKE_SIZE) +
   scale_color_manual(values = shock_colors) +
   scale_shape_manual(values = algo_shapes) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
@@ -138,8 +134,8 @@ p2_hotelling <- ggplot(hotelling_data, aes(x = RPDI, y = Delta)) +
     x = "RPDI",
     y = "Delta"
   ) +
-  # annotate("text", x = 0.42, y = 0.52, label = "Delta = RPDI", 
-  #          angle = 42, size = 2, color = "gray50", fontface = "italic") +
+  annotate("text", x = 0.23, y = 0.3, label = "Delta = RPDI", 
+           angle = 45, size = 2, color = "gray50") +
   theme_q1_journal() +
   theme(legend.position = "none")
 
@@ -147,12 +143,12 @@ p2_hotelling <- ggplot(hotelling_data, aes(x = RPDI, y = Delta)) +
 linear_data <- data_clean %>% filter(Model == "LINEAR")
 
 p3_linear <- ggplot(linear_data, aes(x = RPDI, y = Delta)) +
-  # geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
-  #             color = "gray50", linewidth = 0.6) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", 
+              color = "gray50", linewidth = 0.6) +
   annotate("rect", xmin = 0.45, xmax = 0.95, ymin = -0.15, ymax = 0.18,
            fill = "#FFF3CD", alpha = 0.5) +
   geom_point(aes(shape = Algorithm, color = Shock_Condition), 
-             size = 2.8, alpha = 0.9, stroke = 0.8) +
+             size = POINT_SIZE, alpha = 0.9, stroke = STROKE_SIZE) +
   scale_color_manual(values = shock_colors) +
   scale_shape_manual(values = algo_shapes) +
   scale_x_continuous(breaks = seq(-0.2, 1, by = 0.2)) +
@@ -162,18 +158,21 @@ p3_linear <- ggplot(linear_data, aes(x = RPDI, y = Delta)) +
     x = "RPDI",
     y = "Delta"
   ) +
-  # annotate("text", x = 0.18, y = 0.32, label = "Delta = RPDI", 
-  #          angle = 38, size = 2.8, color = "gray50", fontface = "italic") +
+  annotate("text", x = 0.25, y = 0.38, label = "Delta = RPDI", 
+           angle = 25, size = 2, color = "gray50") +
   annotate("text", x = 0.70, y = -0.28, 
            label = "Decoupling", 
            size = 2.5, color = "#B8860B", fontface = "bold") +
   theme_q1_journal() +
   theme(legend.position = "none")
 
+# Ensure Algorithm factor levels match the order in algo_shapes
+data_clean$Algorithm <- factor(data_clean$Algorithm, 
+                               levels = c("Q-learning", "PSO", "DQN", "DDPG"))
 # CREATE SHARED LEGEND
 p_legend <- ggplot(data_clean, aes(x = RPDI, y = Delta)) +
-  geom_point(aes(shape = Algorithm), size = 3, color = "black") +
-  geom_point(aes(color = Shock_Condition), size = 3, shape = 16) +
+  geom_point(aes(shape = Algorithm), size = POINT_SIZE, color = "black") +
+  geom_point(aes(color = Shock_Condition), size = 2, shape = 16) +
   scale_color_manual(values = shock_colors, name = "Shock Condition") +
   scale_shape_manual(values = algo_shapes, name = "Algorithm") +
   guides(
@@ -182,7 +181,7 @@ p_legend <- ggplot(data_clean, aes(x = RPDI, y = Delta)) +
          title.position = "top",
          ncol = 1,
          override.aes = list(
-                stroke = 0.8
+                stroke = STROKE_SIZE
          )
     ),
     color = guide_legend(order = 2, title.position = "top", ncol = 1)
@@ -213,7 +212,7 @@ final_figure <- plot_grid(
 
 title_grob <- ggdraw() + 
   draw_label(
-    "Relationship between Profit Extraction (Delta) and Price Elevation (RPDI)",
+    "Relationship between Delta and RPDI",
     fontface = 'bold',
     fontfamily = 'serif',
     size = 12
@@ -248,17 +247,6 @@ ggsave(
   units = "mm",
   device = "pdf"
 )
-
-# TIFF - High-quality
-# ggsave(
-#   filename = "Figure1_Delta_vs_RPDI_AllMarkets.tiff",
-#   plot = final_plot,
-#   width = 180,
-#   height = 70,
-#   units = "mm",
-#   dpi = 600,
-#   compression = "lzw"
-# )
 
 cat("\n")
 cat("============================================================\n")
