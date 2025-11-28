@@ -74,7 +74,7 @@ class MarketEnv:
         self.shock_enabled = self.shock_cfg.get("enabled", False)
        
         if self.shock_enabled:
-            self.shock_mode = self.shock_cfg.get("mode", "correlated")
+            self.shock_mode = self.shock_cfg.get("mode", "independent")
             scheme = self.shock_cfg.get("scheme", None)
            
             # Get AR(1) parameters (verified against PDFs)
