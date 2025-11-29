@@ -225,7 +225,7 @@ final_plot <- plot_grid(
   rel_heights = c(0.06, 1)
 ) + theme(plot.margin = margin(5, 10, 5, 5))
 
-# SAVE FIGURES (Q1 Journal Standards)
+# SAVE FIGURES
 
 # PNG - 600 DPI
 ggsave(
