@@ -13,17 +13,17 @@ set.seed(42)
 data <- read.csv("./all_tables.csv", stringsAsFactors = FALSE)
 
 # Create long format for both agents
-data_long <- data %>%
+data_long <- data |>
   pivot_longer(
-    cols = c(Agent1_Delta, Agent2_Delta, Agent1_RPDI, Agent2_RPDI, 
+    cols = c(Agent1_Delta, Agent2_Delta, Agent1_RPDI, Agent2_RPDI,
              Agent1_Avg_Prices, Agent2_Avg_Prices),
     names_to = c("Agent", ".value"),
     names_pattern = "(Agent[12])_(.*)"
-  ) %>%
+  ) |>
   rename(Delta = Delta, RPDI = RPDI, Avg_Prices = Avg_Prices)
 
 # Extract algorithm from Matchup
-data_long <- data_long %>%
+data_long <- data_long |>
   mutate(
     Algorithm = case_when(
       Agent == "Agent1" ~ str_extract(Matchup, "^[A-Z]+"),
@@ -31,7 +31,7 @@ data_long <- data_long %>%
     ),
     Algorithm = case_when(
       Algorithm == "Q" ~ "Q-learning",
-      Algorithm == "DQN" ~ "DQN",
+      Algorithm == "DQN" ~ "DDQN",
       Algorithm == "PSO" ~ "PSO",
       Algorithm == "DDPG" ~ "DDPG",
       TRUE ~ Algorithm
@@ -42,13 +42,14 @@ data_long <- data_long %>%
       Shock == "B" ~ "Shock B",
       Shock == "C" ~ "Shock C"
     ),
-    Shock_Condition = factor(Shock_Condition, 
-                              levels = c("No Shock", "Shock A", "Shock B", "Shock C")),
+    Shock_Condition = factor(
+        Shock_Condition,
+        levels = c("No Shock", "Shock A", "Shock B", "Shock C")),
     Model = factor(Model, levels = c("LOGIT", "HOTELLING", "LINEAR"))
   )
 
 # Remove extreme outliers for visualization
-data_clean <- data_long %>%
+data_clean <- data_long |>
   filter(Delta > -8 & Delta < 3, RPDI > -2 & RPDI < 1.5)
 
 # COLOR PALETTE (Colorblind-friendly - Okabe-Ito inspired)
@@ -62,7 +63,7 @@ shock_colors <- c(
 algo_shapes <- c(
   "Q-learning" = 21,
   "PSO"        = 24,
-  "DQN"        = 22,
+  "DDQN"        = 22,
   "DDPG"       = 23
 )
 
@@ -168,7 +169,7 @@ p3_linear <- ggplot(linear_data, aes(x = RPDI, y = Delta)) +
 
 # Ensure Algorithm factor levels match the order in algo_shapes
 data_clean$Algorithm <- factor(data_clean$Algorithm, 
-                               levels = c("Q-learning", "PSO", "DQN", "DDPG"))
+                               levels = c("Q-learning", "PSO", "DDQN", "DDPG"))
 # CREATE SHARED LEGEND
 p_legend <- ggplot(data_clean, aes(x = RPDI, y = Delta)) +
   geom_point(aes(shape = Algorithm), size = POINT_SIZE, color = "black") +

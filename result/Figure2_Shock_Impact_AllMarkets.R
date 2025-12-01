@@ -31,12 +31,12 @@ data_long <- data_long %>%
     ),
     Algorithm = case_when(
       Algorithm == "Q" ~ "Q-learning",
-      Algorithm == "DQN" ~ "DQN",
+      Algorithm == "DQN" ~ "DDQN",
       Algorithm == "PSO" ~ "PSO",
       Algorithm == "DDPG" ~ "DDPG",
       TRUE ~ Algorithm
     ),
-    Algorithm = factor(Algorithm, levels = c("Q-learning", "DQN", "PSO", "DDPG")),
+    Algorithm = factor(Algorithm, levels = c("Q-learning", "DDQN", "PSO", "DDPG")),
     Shock_Condition = case_when(
       Shock == "0" ~ "No Shock",
       Shock == "A" ~ "Shock A",
@@ -56,21 +56,21 @@ data_clean <- data_long %>%
 algo_colors <- c(
   "Q-learning" = "#1B9E77",
   "PSO"        = "#7570B3", 
-  "DQN"        = "#D95F02",
+  "DDQN"        = "#D95F02",
   "DDPG"       = "#E7298A"
 )
 
 algo_shapes <- c(
   "Q-learning" = 21,
   "PSO"        = 24,
-  "DQN"        = 22,
+  "DDQN"        = 22,
   "DDPG"       = 23
 )
 
 algo_linetypes <- c(
   "Q-learning" = "solid",
   "PSO"        = "solid",
-  "DQN"        = "solid",
+  "DDQN"        = "solid",
   "DDPG"       = "solid"
 )
 
@@ -237,17 +237,17 @@ p_legend <- ggplot(shock_data, aes(x = Shock_Condition, y = Mean_Delta)) +
   scale_color_manual(
     values = algo_colors,
     name = "Algorithm",
-    breaks = c("Q-learning", "PSO", "DQN", "DDPG")  # Add this to all scales
+    breaks = c("Q-learning", "PSO", "DDQN", "DDPG")  # Add this to all scales
   ) +
   scale_shape_manual(
     values = algo_shapes,
     name = "Algorithm",
-    breaks = c("Q-learning", "PSO", "DQN", "DDPG")  # Add this to all scales
+    breaks = c("Q-learning", "PSO", "DDQN", "DDPG")  # Add this to all scales
   ) +
   scale_linetype_manual(
     values = algo_linetypes,
     name = "Algorithm",
-    breaks = c("Q-learning", "PSO", "DQN", "DDPG")  # Add this to all scales
+    breaks = c("Q-learning", "PSO", "DDQN", "DDPG")  # Add this to all scales
   ) +
   guides(
     color = guide_legend(
@@ -332,7 +332,6 @@ ggsave(
 cat("\n")
 cat("============================================================\n")
 cat("  FIGURE 2: Shock Impact Across Market Structures\n")
-cat("  Q1 JOURNAL PUBLICATION STANDARD\n")
 cat("============================================================\n")
 cat("\n")
 cat("Files created:\n")

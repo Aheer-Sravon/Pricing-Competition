@@ -30,12 +30,12 @@ data_long <- data_long %>%
     ),
     Algorithm = case_when(
       Algorithm == "Q" ~ "Q-learning",
-      Algorithm == "DQN" ~ "DQN",
+      Algorithm == "DQN" ~ "DDQN",
       Algorithm == "PSO" ~ "PSO",
       Algorithm == "DDPG" ~ "DDPG",
       TRUE ~ Algorithm
     ),
-    Algorithm = factor(Algorithm, levels = c("Q-learning", "DQN", "PSO", "DDPG")),
+    Algorithm = factor(Algorithm, levels = c("Q-learning", "DDQN", "PSO", "DDPG")),
     Shock_Condition = case_when(
       Shock == "0" ~ "No Shock",
       Shock == "A" ~ "Shock A",
@@ -78,21 +78,21 @@ theo_nash_linear <- data.frame(
 # COLOR PALETTE (Colorblind-friendly)
 algo_colors <- c(
   "Q-learning" = "#1B9E77",
-  "DQN"        = "#D95F02",
+  "DDQN"       = "#D95F02",
   "PSO"        = "#7570B3", 
   "DDPG"       = "#E7298A"
 )
 
 algo_shapes <- c(
   "Q-learning" = 16,
-  "DQN"        = 15,
+  "DDQN"        = 15,
   "PSO"        = 17,
   "DDPG"       = 18
 )
 
 algo_linetypes <- c(
   "Q-learning" = "solid",
-  "DQN"        = "solid",
+  "DDQN"       = "solid",
   "PSO"        = "solid",
   "DDPG"       = "solid"
 )
@@ -182,18 +182,18 @@ price_hotelling <- price_data_all %>% filter(Model == "HOTELLING")
 
 p2_hotelling <- ggplot() +
   # Theoretical Nash prices (constant at 1.0)
-  geom_hline(yintercept = 1.0, linetype = "longdash", 
+  geom_hline(yintercept = 1.0, linetype = "longdash",
              color = "black", linewidth = 1.1) +
   geom_point(data = theo_nash_hotelling,
              aes(x = Shock_Condition, y = Nash_Price),
              size = 3, shape = 4, stroke = 1.5, color = "black") +
   # Algorithm actual prices
-  geom_line(data = price_hotelling, 
-            aes(x = Shock_Condition, y = Mean_Price, 
+  geom_line(data = price_hotelling,
+            aes(x = Shock_Condition, y = Mean_Price,
                 color = Algorithm, group = Algorithm),
             linewidth = 0.9) +
   geom_point(data = price_hotelling,
-             aes(x = Shock_Condition, y = Mean_Price, 
+             aes(x = Shock_Condition, y = Mean_Price,
                  color = Algorithm, shape = Algorithm),
              size = 2.5, stroke = 0.4) +
   # Scales
@@ -337,7 +337,6 @@ ggsave(
 cat("\n")
 cat("============================================================\n")
 cat("  FIGURE 3: Price vs Benchmark - All Market Structures\n")
-cat("  Q1 JOURNAL PUBLICATION STANDARD\n")
 cat("============================================================\n")
 cat("\n")
 cat("Files created:\n")
