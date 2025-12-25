@@ -200,7 +200,7 @@ p2_hotelling <- ggplot() +
     limits = c(0.95, 1.25),
     breaks = seq(0.95, 1.25, by = 0.1),
     minor_breaks = NULL
-  ) + labs(title = "Hotelling", y = "Nash Price", x = element_blank()) +
+  ) + labs(title = "Hotelling", y = "Average Price", x = element_blank()) +
   # Annotations
   annotate("text", x = 1.0, y = 0.97, 
            label = "Theo. Nash", 
@@ -239,7 +239,7 @@ p3_linear <- ggplot() +
     limits = c(0.42, 0.52),
     breaks = seq(0.42, 0.52, by = 0.02),
     minor_breaks = NULL
-  ) + labs(title = "Linear", y = "Nash Price", x = element_blank()) +
+  ) + labs(title = "Linear", y = "Average Price", x = element_blank()) +
   # Annotations
   annotate("text", x = 1.0, y = 0.4225, 
            label = "Theo. Nash", 
