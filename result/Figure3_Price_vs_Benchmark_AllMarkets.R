@@ -1,12 +1,8 @@
-# Load required libraries
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
 library(scales)
 library(cowplot)
-
-# Set seed for reproducibility
-set.seed(42)
 
 # DATA LOADING AND PREPARATION
 data <- read.csv("all_tables.csv", stringsAsFactors = FALSE)
@@ -162,7 +158,7 @@ p1_logit <- ggplot() +
     limits = c(1.35, 2.00),
     breaks = seq(1.4, 2.0, by = 0.2),
     minor_breaks = NULL
-  ) + labs(y = "Nash Price", x = element_blank()) +
+  ) + labs(title = "Logit", y = "Average Price", x = element_blank()) +
   # Annotations
   annotate("text", x = 2.5, y = 1.78, 
            label = "Theo. Nash", 
@@ -172,6 +168,7 @@ p1_logit <- ggplot() +
            size = 2.2, color = "gray55", hjust = 1) +
   theme_q1_journal() +
   theme(
+    plot.title = element_text(hjust = 0.5),
     legend.position = "none",
     plot.subtitle = element_text(color = "#D55E00"),
     axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
@@ -203,13 +200,14 @@ p2_hotelling <- ggplot() +
     limits = c(0.95, 1.25),
     breaks = seq(0.95, 1.25, by = 0.1),
     minor_breaks = NULL
-  ) + labs(y = "Nash Price", x = element_blank()) +
+  ) + labs(title = "Hotelling", y = "Nash Price", x = element_blank()) +
   # Annotations
   annotate("text", x = 1.0, y = 0.97, 
            label = "Theo. Nash", 
            size = 2.5, color = "black", hjust = 0) +
   theme_q1_journal() +
   theme(
+    plot.title = element_text(hjust = 0.5),
     legend.position = "none",
     plot.subtitle = element_text(color = "#009E73"),
     axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
@@ -241,13 +239,14 @@ p3_linear <- ggplot() +
     limits = c(0.42, 0.52),
     breaks = seq(0.42, 0.52, by = 0.02),
     minor_breaks = NULL
-  ) + labs(y = "Nash Price", x = element_blank()) +
+  ) + labs(title = "Linear", y = "Nash Price", x = element_blank()) +
   # Annotations
   annotate("text", x = 1.0, y = 0.4225, 
            label = "Theo. Nash", 
            size = 2.5, color = "black", hjust = 0) +
   theme_q1_journal() +
   theme(
+    plot.title = element_text(hjust = 0.5),
     legend.position = "none",
     plot.subtitle = element_text(color = "#CC79A7"),
     axis.text.x = element_text(angle = 45, hjust = 1, size = 8)
@@ -348,3 +347,4 @@ cat("  - Logit: Nash shifts (1.47->1.91), prices lag behind (~1.65)\n")
 cat("  - Hotelling: Nash constant (1.0), prices stable above (~1.10)\n")
 cat("  - Linear: Nash constant (0.43), prices slightly above (~0.45)\n")
 cat("\n")
+
