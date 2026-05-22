@@ -1,20 +1,13 @@
 import numpy as np
 import pandas as pd
 import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import PSOAgent, DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
-sys.path.pop(0)
-
 SEED = 99
 NUM_RUNS = 50
-
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run PSO vs DDPG simulation"""
@@ -158,6 +151,7 @@ def main():
     }
     
     df = pd.DataFrame(data)
+    os.makedirs("./results", exist_ok=True)
     df.to_csv("./results/pso_vs_ddpg_schemeC.csv", index=False)
     
     print("\n" + "=" * 80)
@@ -184,6 +178,4 @@ def main():
     
     print("\n[Results saved to ./results/pso_vs_ddpg_schemeC.csv]")
 
-
-if __name__ == "__main__":
-    main()
+main()

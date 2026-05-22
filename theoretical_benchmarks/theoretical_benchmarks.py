@@ -139,7 +139,7 @@ class TheoreticalBenchmarks:
     def calculate_hotelling_benchmarks(self, shock_cfg=None):
         """
         Calculate Nash and Monopoly benchmarks for Hotelling model
-        Shocks don't affect expected benchmarks (linearity in net shock)
+        Shocks don't affect expected benchmarks
         """
         # Model parameters
         c = 0.0

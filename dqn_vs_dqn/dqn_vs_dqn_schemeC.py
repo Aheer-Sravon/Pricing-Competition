@@ -1,20 +1,13 @@
 import numpy as np
 import pandas as pd
 import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
-sys.path.pop(0)
-
 SEED = 99
 NUM_RUNS = 50
-
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run DQN vs DQN simulation"""
@@ -83,14 +76,14 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
 def main():
     shock_cfg = {
         'enabled': True,
-        'scheme': 'A',
+        'scheme': 'B',
         'mode': 'independent'
     }
     
     benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
     
     print("=" * 80)
-    print("DQN vs DQN - SCHEME A")
+    print("DQN vs DQN - SCHEME B")
     print("=" * 80)
     
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
@@ -147,6 +140,7 @@ def main():
     }
     
     df = pd.DataFrame(data)
+    os.makedirs("./results", exist_ok=True)
     df.to_csv("./results/dqn_vs_dqn_schemeC.csv", index=False)
     
     print("\n" + "=" * 80)
@@ -173,6 +167,4 @@ def main():
     
     print("\n[Results saved to ./results/dqn_vs_dqn_schemeC.csv]")
 
-
-if __name__ == "__main__":
-    main()
+main()

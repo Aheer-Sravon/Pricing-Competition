@@ -127,7 +127,7 @@ class MarketEnv:
         return self._get_state()
    
     def _get_state(self):
-        """Get current state as actual prices (numpy array)"""
+        """Get current state as actual prices"""
         return self.price_grid[self.current_price_idx].copy()
     
     def _get_state_indices(self):
@@ -184,7 +184,7 @@ class MarketEnv:
         return demands, profits
    
     def _hotelling_demand_profit(self, prices: np.ndarray, shocks: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Hotelling demand with net shock affecting boundary (verified against PDF)"""
+        """Hotelling demand with net shock affecting boundary"""
         p1, p2 = prices[0], prices[1]
         epsilon_net = shocks[0] - shocks[1] if self.n_firms == 2 else 0
        
@@ -199,7 +199,7 @@ class MarketEnv:
         return demands, profits
    
     def _linear_demand_profit(self, prices: np.ndarray, shocks: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Linear demand with additive shocks (verified against PDF)"""
+        """Linear demand with additive shocks"""
         a_shocked = self.a_bar + shocks
         denominator = 1 - self.d**2
        
@@ -220,7 +220,7 @@ class MarketEnv:
             action_indices: Array of price indices for each agent
             
         Returns:
-            next_state: Numpy array of actual prices (not indices)
+            next_state: Numpy array of actual prices
             profits: Numpy array of profits for each agent
             done: Episode termination flag
             info: Dictionary with prices, demands, and shocks
@@ -259,7 +259,7 @@ class MarketEnv:
 class MarketEnvContinuous(MarketEnv):
     """Market environment that accepts both discrete indices and continuous prices as actions"""
     
-    def step(self, actions):
+    def step(self, actions): # type: ignore
         """Execute one step with flexible action handling
         
         Args:

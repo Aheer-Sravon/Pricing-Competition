@@ -5,6 +5,7 @@ description = "Simulating Price Setting Under Uncertainty using RL Agent: Q, PSO
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "basedpyright>=1.39.5",
     "jupyter>=1.1.1",
     "numpy>=2.3.4",
     "pandas>=2.3.3",
@@ -13,3 +14,9 @@ dependencies = [
     "scipy>=1.16.3",
     "torch>=2.9.0",
 ]
+
+[tool.setuptools]
+packages = ["agents", "shocks", "theoretical_benchmarks", "environments"]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"

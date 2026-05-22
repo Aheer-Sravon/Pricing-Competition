@@ -12,7 +12,7 @@ class DQNAgent:
     and the dynamic pricing paper specifications.
    
     Key features:
-    - Uses continuous state representation (actual prices, not indices)
+    - Uses continuous state representation
     - Implements Double DQN with separate target network
     - Proper experience replay with adequate buffer size
     - Gradient clipping and Huber loss for stability

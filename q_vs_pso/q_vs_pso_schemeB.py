@@ -1,16 +1,9 @@
 import numpy as np
 import pandas as pd
-import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import QLearningAgent, PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
-
-sys.path.pop(0)
 
 SEED = 99
 NUM_RUNS = 50
@@ -35,7 +28,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     profits_history = []
     prices_history = []
     
-    for t in range(env.horizon):
+    for _ in range(env.horizon):
         # Q-Learning selects discrete action index
         q_action = q_agent.choose_action(state)  # int index
         
@@ -173,6 +166,4 @@ def main():
     
     print("\n[Results saved to ./results/q_vs_pso_schemeB.csv]")
 
-
-if __name__ == "__main__":
-    main()
+main()

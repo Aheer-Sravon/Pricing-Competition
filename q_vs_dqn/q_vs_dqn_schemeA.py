@@ -1,21 +1,10 @@
-"""
-Q-Learning vs DQN with Scheme A Shocks
-Scheme A: ρ=0.3, σ_η=0.5 (low persistence, high variance) - Independent shocks
-"""
-
-import sys
 import os
 import numpy as np
 import pandas as pd
 
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
-
 from environments import MarketEnvContinuous
 from agents import QLearningAgent, DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
-
-sys.path.pop(0)
 
 SEED = 99
 NUM_RUNS = 50
@@ -178,6 +167,4 @@ def main():
     print(f"DQN:        Avg Δ = {avg_delta_dqn:.4f}, Avg RPDI = {avg_rpdi_dqn:.4f}")
     print("\n[Results saved to ./results/q_vs_dqn_schemeA.csv]")
 
-
-if __name__ == "__main__":
-    main()
+main()

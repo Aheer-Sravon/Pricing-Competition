@@ -1,16 +1,9 @@
 import numpy as np
 import pandas as pd
-import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import QLearningAgent, PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
-
-sys.path.pop(0)
 
 SEED = 99
 NUM_RUNS = 50

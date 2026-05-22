@@ -1,14 +1,7 @@
-"""
-Diagnostic Script to Verify Theoretical Benchmarks
-Run this to check if your theoretical_benchmarks.py is working correctly
-"""
-
 import numpy as np
 from theoretical_benchmarks import TheoreticalBenchmarks
 
-print("=" * 80)
 print("DIAGNOSTIC: THEORETICAL BENCHMARKS VERIFICATION")
-print("=" * 80)
 
 # Set seed for reproducibility
 calculator = TheoreticalBenchmarks(seed=99)
@@ -40,23 +33,21 @@ for model, bench in all_benchmarks.items():
     print(f"  Profit Range (π^M - π^N): {denom:.4f}")
     
     if denom <= 0:
-        print(f"  ⚠️  WARNING: Monopoly profit should be > Nash profit!")
+        print("  ⚠️  WARNING: Monopoly profit should be > Nash profit!")
     elif denom < 0.01:
-        print(f"  ⚠️  WARNING: Very small profit range - Delta will be unstable!")
+        print("  ⚠️  WARNING: Very small profit range - Delta will be unstable!")
     else:
-        print(f"  ✓ Valid profit range")
+        print("  ✓ Valid profit range")
     
     # Calculate example Delta values
-    print(f"\n  Example Delta calculations:")
+    print("\n  Example Delta calculations:")
     test_profits = [bench['E_pi_N'], (bench['E_pi_N'] + bench['E_pi_M'])/2, bench['E_pi_M']]
     test_names = ["At Nash", "Halfway", "At Monopoly"]
     for name, profit in zip(test_names, test_profits):
         delta = (profit - bench['E_pi_N']) / denom if denom != 0 else 0
         print(f"    {name:12} (π={profit:.4f}): Δ = {delta:.4f}")
 
-print("\n" + "=" * 80)
 print("COMPARISON: NO SHOCKS vs SCHEME A")
-print("=" * 80)
 
 no_shock_benchmarks = calculator.calculate_all_benchmarks(None)
 
@@ -72,18 +63,14 @@ for model in ['logit', 'hotelling', 'linear']:
     if abs(pct_change_nash) > 0.1:
         print(f"  Change: {pct_change_nash:+.2f}%")
 
-print("\n" + "=" * 80)
 print("EXPECTED VALUES (from your notebook)")
-print("=" * 80)
 print("\nLOGIT with Scheme A (Independent):")
 print("  Expected Nash Price:     ~1.796")
 print("  Expected Nash Profit:    ~0.332")
 print("  Expected Monopoly Price: ~2.085")
 print("  Expected Monopoly Profit:~0.368")
 
-print("\n" + "=" * 80)
 print("SANITY CHECKS")
-print("=" * 80)
 
 checks_passed = 0
 checks_total = 0
@@ -162,7 +149,7 @@ def verify_nash_invariance_logit():
     
     avg_profit = np.mean(profits_list)
     
-    print(f"Nash price = 1.473:")
+    print("Nash price = 1.473:")
     print(f"  No shocks:   π = {profits1[0]:.4f}")
     print(f"  Scheme A:    E[π] = {avg_profit:.4f}")
     print(f"  Difference:  {abs(avg_profit - profits1[0]):.4f}")
@@ -192,7 +179,7 @@ def verify_linear_profit_range():
     
     profit_range = pi_M_true - profits_n[0]
     
-    print(f"Linear Model:")
+    print("Linear Model:")
     print(f"  Nash profit:     {profits_n[0]:.4f}")
     print(f"  Monopoly profit: {pi_M_true:.4f}")
     print(f"  Range:           {profit_range:.4f}")

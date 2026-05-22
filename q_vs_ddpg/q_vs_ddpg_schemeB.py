@@ -1,16 +1,10 @@
 import numpy as np
 import pandas as pd
 import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
 
 from environments import MarketEnvContinuous
 from agents import QLearningAgent, DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
-
-sys.path.pop(0)
 
 SEED = 99
 NUM_RUNS = 50
@@ -159,7 +153,8 @@ def main():
     }
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/q_vs_ddpg.csv", index=False)
+    os.makedirs("./results", exist_ok=True)
+    df.to_csv("./results/q_vs_ddpg_schemeB.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -183,8 +178,6 @@ def main():
     print(f"  Average Delta (Δ): {avg_delta_ddpg:.4f}")
     print(f"  Average RPDI:      {avg_rpdi_ddpg:.4f}")
     
-    print("\n[Results saved to ./results/q_vs_ddpg.csv]")
+    print("\n[Results saved to ./results/q_vs_ddpg_schemeB.csv]")
 
-
-if __name__ == "__main__":
-    main()
+main()
