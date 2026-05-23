@@ -15,7 +15,7 @@ class MarketEnv:
     ):
         self.model = market_model.lower()
         self.n_firms = n_firms
-        self.N = 15 # Number of discrete prices
+        self.N = 30 # Number of discrete prices
         self.horizon = horizon
         self.t = 0
         self.rng = np.random.RandomState(seed)

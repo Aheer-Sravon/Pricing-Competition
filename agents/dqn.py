@@ -77,16 +77,15 @@ class DQNAgent:
     def _build_network(self):
         """
         Build the neural network architecture.
-        Deeper network than original for better representation learning.
         """
         return nn.Sequential(
-            nn.Linear(self.state_dim, 128),
+            nn.Linear(self.state_dim, 400),
             nn.ReLU(),
-            nn.Linear(128, 128),
+            nn.Linear(400, 300),
             nn.ReLU(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, self.action_dim)
+            # nn.Linear(128, 64),
+            # nn.ReLU(),
+            nn.Linear(300, self.action_dim)
         )
    
     def remember(self, state, action, reward, next_state, done):
@@ -136,11 +135,11 @@ class DQNAgent:
         batch = random.sample(self.memory, self.batch_size)
        
         # Separate batch components
-        states = torch.FloatTensor([e[0] for e in batch]).to(self.device)
-        actions = torch.LongTensor([e[1] for e in batch]).to(self.device)
-        rewards = torch.FloatTensor([e[2] for e in batch]).to(self.device)
-        next_states = torch.FloatTensor([e[3] for e in batch]).to(self.device)
-        dones = torch.FloatTensor([e[4] for e in batch]).to(self.device)
+        states = torch.FloatTensor(np.array([e[0] for e in batch])).to(self.device)
+        actions = torch.LongTensor(np.array([e[1] for e in batch])).to(self.device)
+        rewards = torch.FloatTensor(np.array([e[2] for e in batch])).to(self.device)
+        next_states = torch.FloatTensor(np.array([e[3] for e in batch])).to(self.device)
+        dones = torch.FloatTensor(np.array([e[4] for e in batch])).to(self.device)
        
         # Current Q values for taken actions
         current_q_values = self.network(states).gather(1, actions.unsqueeze(1))

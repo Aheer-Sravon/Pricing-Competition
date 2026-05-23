@@ -6,8 +6,14 @@ from environments import MarketEnvContinuous
 from agents import PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
-SEED = 99
-NUM_RUNS = 50
+import argparse
+parser = argparse.ArgumentParser(prog="q_vs_q")
+parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
+parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
+args = parser.parse_args()
+
+SEED = args.seed[0] if args.seed is not None else 99
+NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
 def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run PSO vs PSO simulation"""

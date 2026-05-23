@@ -6,7 +6,14 @@ from environments import MarketEnvContinuous
 from agents import QLearningAgent, DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
-SEED = 99
+import argparse
+parser = argparse.ArgumentParser(prog="q_vs_q")
+parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
+parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
+args = parser.parse_args()
+
+SEED = args.seed[0] if args.seed is not None else 99
+NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
 def run_simulation(model, seed, shock_cfg, benchmarks, verbose=True):
     """Run a single simulation of Q-Learning vs DQN."""
@@ -86,7 +93,6 @@ def main():
     print("=" * 80)
     
     models = ['logit', 'hotelling', 'linear']
-    num_runs = 5
     results = {}
     run_logs = {model: {'delta_q': [], 'delta_dqn': [], 'rpdi_q': [], 'rpdi_dqn': []} for model in models}
     
@@ -102,7 +108,7 @@ def main():
         deltas_q, deltas_dqn = [], []
         rpdis_q, rpdis_dqn = [], []
         
-        for run in range(num_runs):
+        for run in range(NUM_RUNS):
             seed = SEED + run
             apq, apd, dq, dd, rq, rd, p_n = run_simulation(
                 model, seed, shock_cfg, model_benchmarks, verbose=(run == 0)
