@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 
@@ -78,6 +79,24 @@ def main():
     
     models = ['logit', 'hotelling', 'linear']
     results = {}
+
+    per_run_metrices = {
+            "logit": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            },
+            "hotelling": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            },
+            "linear": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            }
+    }
     
     for model in models:
         print(f"\nRunning {model.upper()} simulations...")
@@ -102,7 +121,11 @@ def main():
             rpdis1.append(r1)
             rpdis2.append(r2)
             theo_prices.append(p_n)
-        
+
+            per_run_metrices[model]["run"].append(run+1)
+            per_run_metrices[model]["avg_price_firm_1"].append(round(ap1, 2))
+            per_run_metrices[model]["avg_price_firm_2"].append(round(ap2, 2))
+
         results[model] = {
             'Avg Price Firm 1': np.mean(avg_prices1),
             'Theo Price': np.mean(theo_prices),
@@ -127,6 +150,15 @@ def main():
         'Firm 2 RPDI': [round(results[m]['RPDI 2'], 2) for m in models]
     }
     
+    os.makedirs("./results", exist_ok=True)
+
+    for model in models:
+        metrices_df = pd.DataFrame(per_run_metrices[model])
+        metrices_df["rolling_avg_firm_1"] = metrices_df["avg_price_firm_1"].rolling(window=3).mean().round(2)
+        metrices_df["rolling_avg_firm_2"] = metrices_df["avg_price_firm_2"].rolling(window=3).mean().round(2)
+
+        metrices_df.to_csv(f"./results/per_round_metrices_{model}.csv", index=False)
+
     df = pd.DataFrame(data)
     df.to_csv("./results/q_vs_q.csv", index=False)
     

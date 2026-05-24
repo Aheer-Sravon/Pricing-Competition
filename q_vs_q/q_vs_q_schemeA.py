@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 
@@ -80,6 +81,24 @@ def main():
     
     models = ['logit', 'hotelling', 'linear']
     results = {}
+
+    per_run_metrices = {
+            "logit": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            },
+            "hotelling": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            },
+            "linear": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            }
+    }
     
     for model in models:
         print(f"\nRunning {model.upper()} simulations...")
@@ -128,6 +147,15 @@ def main():
         'Firm 1 RPDI': [round(results[m]['RPDI 1'], 2) for m in models],
         'Firm 2 RPDI': [round(results[m]['RPDI 2'], 2) for m in models]
     }
+
+    os.makedirs("./results", exist_ok=True)
+
+    for model in models:
+        metrices_df = pd.DataFrame(per_run_metrices[model])
+        metrices_df["rolling_avg_firm_1"] = metrices_df["avg_price_firm_1"].rolling(window=3).mean().round(2)
+        metrices_df["rolling_avg_firm_2"] = metrices_df["avg_price_firm_2"].rolling(window=3).mean().round(2)
+
+        metrices_df.to_csv(f"./results/per_round_metrices_{model}.csv", index=False)
     
     df = pd.DataFrame(data)
     df.to_csv("./results/q_vs_q_schemeA.csv", index=False)

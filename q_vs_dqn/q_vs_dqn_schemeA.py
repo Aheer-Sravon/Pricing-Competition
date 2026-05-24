@@ -94,6 +94,25 @@ def main():
     
     models = ['logit', 'hotelling', 'linear']
     results = {}
+    
+    per_run_metrices = {
+            "logit": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            },
+            "hotelling": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            },
+            "linear": {
+                "run": [],
+                "avg_price_firm_1": [],
+                "avg_price_firm_2": [],
+            }
+    }
+
     run_logs = {model: {'delta_q': [], 'delta_dqn': [], 'rpdi_q': [], 'rpdi_dqn': []} for model in models}
     
     for model in models:
@@ -154,10 +173,19 @@ def main():
         'Q RPDI': [round(results[m]['RPDI Q'], 2) for m in models],
         'DQN RPDI': [round(results[m]['RPDI DQN'], 2) for m in models]
     }
+
+    os.makedirs("./results", exist_ok=True)
+
+    for model in models:
+        metrices_df = pd.DataFrame(per_run_metrices[model])
+        metrices_df["rolling_avg_firm_1"] = metrices_df["avg_price_firm_1"].rolling(window=3).mean().round(2)
+        metrices_df["rolling_avg_firm_2"] = metrices_df["avg_price_firm_2"].rolling(window=3).mean().round(2)
+
+        metrices_df.to_csv(f"./results/per_round_metrices_{model}.csv", index=False)
     
     df = pd.DataFrame(data)
-    os.makedirs("./results", exist_ok=True)
     df.to_csv("./results/q_vs_dqn_schemeA.csv", index=False)
+
     print(df.to_string(index=False))
     
     print(f"\n{'='*80}")

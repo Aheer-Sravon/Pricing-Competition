@@ -10,7 +10,7 @@ class MarketEnv:
         market_model: str = "logit",
         shock_cfg: Optional[Dict] = None,
         n_firms: int = 2,
-        horizon: int = 10000,
+        horizon: int = 3000,
         seed: Optional[int] = None
     ):
         self.model = market_model.lower()
