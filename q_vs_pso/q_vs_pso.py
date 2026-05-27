@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import QLearningAgent, PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
@@ -19,7 +19,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run Q-Learning vs PSO simulation"""
     np.random.seed(seed)
     
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg, seed=seed)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -40,10 +40,12 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         
         # PSO updates with Q's last price (state[0])
         pso_agent.update(state[0])
-        pso_price = pso_agent.choose_price()  # float
+        pso_price = pso_agent.choose_price()  # continuous price chosen by PSO
+        # choose action closest to the price chosen by PSO
+        pso_action = int(np.abs(env.price_grid - pso_price).argmin())
         
-        # Execute actions (discrete index + continuous price)
-        actions = [q_action, pso_price]
+        # Execute actions (discrete index + discrete index)
+        actions = [q_action, pso_action]
         next_state, rewards, done, info = env.step(actions)
         
         # Update Q-Learning
@@ -161,17 +163,17 @@ def main():
         'PSO RPDI': [round(results[m]['RPDI PSO'], 2) for m in models]
     }
 
-    os.makedirs("./results", exist_ok=True)
+    os.makedirs("./results/shock_none", exist_ok=True)
 
     for model in models:
         metrices_df = pd.DataFrame(per_run_metrices[model])
         metrices_df["rolling_avg_firm_1"] = metrices_df["avg_price_firm_1"].rolling(window=3).mean().round(2)
         metrices_df["rolling_avg_firm_2"] = metrices_df["avg_price_firm_2"].rolling(window=3).mean().round(2)
 
-        metrices_df.to_csv(f"./results/per_round_metrices_{model}.csv", index=False)
+        metrices_df.to_csv(f"./results/shock_none/per_round_metrices_{model}.csv", index=False)
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/q_vs_pso.csv", index=False)
+    df.to_csv("./results/shock_none/q_vs_pso.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -195,6 +197,6 @@ def main():
     print(f"  Average Delta (Δ): {avg_delta_pso:.4f}")
     print(f"  Average RPDI:      {avg_rpdi_pso:.4f}")
     
-    print("\n[Results saved to ./results/q_vs_pso.csv]")
+    print("\n[Results saved to ./results/shock_none/q_vs_pso.csv]")
 
 main()

@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
@@ -19,7 +19,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run PSO vs PSO simulation"""
     np.random.seed(seed)
     
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg, seed=seed)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -33,20 +33,26 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     profits_history = []
     prices_history = []
     
-    # Initialize prices
-    current_prices = [agents[0].choose_price(), agents[1].choose_price()]
+    # Initialize price indices
+    current_price_indices = [
+            int(np.abs(env.price_grid - agents[0].choose_price()).argmin()),
+            int(np.abs(env.price_grid - agents[1].choose_price()).argmin()),
+    ]
     
-    for t in range(env.horizon):
+    for _ in range(env.horizon):
         # Each agent updates with opponent's last price
-        agents[0].update(current_prices[1])
-        agents[1].update(current_prices[0])
+        agents[0].update(current_price_indices[1])
+        agents[1].update(current_price_indices[0])
         
-        current_prices = [agents[0].choose_price(), agents[1].choose_price()]
+        current_price_indices = [
+                int(np.abs(env.price_grid - agents[0].choose_price()).argmin()),
+                int(np.abs(env.price_grid - agents[1].choose_price()).argmin()),
+        ]
         
-        next_state, rewards, done, info = env.step(current_prices)
+        next_state, rewards, done, info = env.step(current_price_indices)
         
         state = next_state
-        prices_history.append(current_prices)
+        prices_history.append([env.price_grid[x] for x in current_price_indices])
         profits_history.append(rewards)
     
     # Calculate averages over last 1000 steps
@@ -157,17 +163,17 @@ def main():
         'Firm 2 RPDI': [round(results[m]['RPDI 2'], 2) for m in models]
     }
 
-    os.makedirs("./results", exist_ok=True)
+    os.makedirs("./results/shock_none", exist_ok=True)
 
     for model in models:
         metrices_df = pd.DataFrame(per_run_metrices[model])
         metrices_df["rolling_avg_firm_1"] = metrices_df["avg_price_firm_1"].rolling(window=3).mean().round(2)
         metrices_df["rolling_avg_firm_2"] = metrices_df["avg_price_firm_2"].rolling(window=3).mean().round(2)
 
-        metrices_df.to_csv(f"./results/per_round_metrices_{model}.csv", index=False)
+        metrices_df.to_csv(f"./results/shock_none/per_round_metrices_{model}.csv", index=False)
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/pso_vs_pso.csv", index=False)
+    df.to_csv("./results/shock_none/pso_vs_pso.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -191,6 +197,6 @@ def main():
     print(f"  Average Delta (Δ): {avg_delta2:.4f}")
     print(f"  Average RPDI:      {avg_rpdi2:.4f}")
     
-    print("\n[Results saved to ./results/pso_vs_pso.csv]")
+    print("\n[Results saved to ./results/shock_none/pso_vs_pso.csv]")
 
 main()

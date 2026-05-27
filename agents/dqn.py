@@ -52,11 +52,6 @@ class DQNAgent:
             np.random.seed(seed)
             random.seed(seed)
        
-        # For deterministic behavior on GPU
-        if self.device.type == 'cuda':
-            torch.backends.cudnn.deterministic = True
-            torch.backends.cudnn.benchmark = False
-       
         # Initialize neural networks
         self.network = self._build_network().to(self.device)
         self.target_network = self._build_network().to(self.device)

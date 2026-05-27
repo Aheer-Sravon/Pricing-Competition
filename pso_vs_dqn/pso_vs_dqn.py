@@ -166,17 +166,17 @@ def main():
         'DQN RPDI': [round(results[m]['RPDI DQN'], 2) for m in models]
     }
 
-    os.makedirs("./results", exist_ok=True)
+    os.makedirs("./results/shock_none", exist_ok=True)
 
     for model in models:
         metrices_df = pd.DataFrame(per_run_metrices[model])
         metrices_df["rolling_avg_firm_1"] = metrices_df["avg_price_firm_1"].rolling(window=3).mean().round(2)
         metrices_df["rolling_avg_firm_2"] = metrices_df["avg_price_firm_2"].rolling(window=3).mean().round(2)
 
-        metrices_df.to_csv(f"./results/per_round_metrices_{model}.csv", index=False)
+        metrices_df.to_csv(f"./results/shock_none/per_round_metrices_{model}.csv", index=False)
     
     df = pd.DataFrame(data)
-    df.to_csv("./results/pso_vs_dqn.csv", index=False)
+    df.to_csv("./results/shock_none/pso_vs_dqn.csv", index=False)
     
     print("\n" + "=" * 80)
     print("FINAL RESULTS")
@@ -200,6 +200,6 @@ def main():
     print(f"  Average Delta (Δ): {avg_delta_dqn:.4f}")
     print(f"  Average RPDI:      {avg_rpdi_dqn:.4f}")
     
-    print("\n[Results saved to ./results/pso_vs_dqn.csv]")
+    print("\n[Results saved to ./results/shock_none/pso_vs_dqn.csv]")
 
 main()
