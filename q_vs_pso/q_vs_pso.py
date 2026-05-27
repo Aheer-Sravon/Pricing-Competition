@@ -52,6 +52,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         q_agent.update(state, q_action, rewards[0], next_state)
         
         state = next_state
+        print(f"{info['prices'] = }\n")
         prices_history.append(info['prices'])
         profits_history.append(rewards)
     

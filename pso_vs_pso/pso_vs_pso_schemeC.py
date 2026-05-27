@@ -33,20 +33,28 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     profits_history = []
     prices_history = []
     
-    # Initialize prices
-    current_prices = [agents[0].choose_price(), agents[1].choose_price()]
+    # Initialize price indices
+    # Indices of the price grid elements which are closest to the prices
+    # chosen by the agents
+    current_price_indices = [
+            int(np.abs(env.price_grid - agents[0].choose_price()).argmin()),
+            int(np.abs(env.price_grid - agents[1].choose_price()).argmin()),
+    ]
     
-    for t in range(env.horizon):
+    for _ in range(env.horizon):
         # Each agent updates with opponent's last price
-        agents[0].update(current_prices[1])
-        agents[1].update(current_prices[0])
+        agents[0].update(env.price_grid[current_price_indices[1]])
+        agents[1].update(env.price_grid[current_price_indices[0]])
         
-        current_prices = [agents[0].choose_price(), agents[1].choose_price()]
+        current_price_indices = [
+                int(np.abs(env.price_grid - agents[0].choose_price()).argmin()),
+                int(np.abs(env.price_grid - agents[1].choose_price()).argmin()),
+        ]
         
-        next_state, rewards, done, info = env.step(current_prices)
+        next_state, rewards, done, info = env.step(current_price_indices)
         
         state = next_state
-        prices_history.append(current_prices)
+        prices_history.append([env.price_grid[idx] for idx in current_price_indices])
         profits_history.append(rewards)
     
     # Calculate averages over last 1000 steps

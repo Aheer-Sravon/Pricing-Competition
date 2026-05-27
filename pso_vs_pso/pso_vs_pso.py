@@ -34,6 +34,8 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     prices_history = []
     
     # Initialize price indices
+    # Indices of the price grid elements which are closest to the prices
+    # chosen by the agents
     current_price_indices = [
             int(np.abs(env.price_grid - agents[0].choose_price()).argmin()),
             int(np.abs(env.price_grid - agents[1].choose_price()).argmin()),
@@ -41,8 +43,8 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     
     for _ in range(env.horizon):
         # Each agent updates with opponent's last price
-        agents[0].update(current_price_indices[1])
-        agents[1].update(current_price_indices[0])
+        agents[0].update(env.price_grid[current_price_indices[1]])
+        agents[1].update(env.price_grid[current_price_indices[0]])
         
         current_price_indices = [
                 int(np.abs(env.price_grid - agents[0].choose_price()).argmin()),
@@ -52,7 +54,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         next_state, rewards, done, info = env.step(current_price_indices)
         
         state = next_state
-        prices_history.append([env.price_grid[x] for x in current_price_indices])
+        prices_history.append([env.price_grid[idx] for idx in current_price_indices])
         profits_history.append(rewards)
     
     # Calculate averages over last 1000 steps
