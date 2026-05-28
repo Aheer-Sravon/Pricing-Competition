@@ -8,18 +8,14 @@ from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
 parser = argparse.ArgumentParser(prog="q_vs_q")
-parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
-SEED = args.seed[0] if args.seed is not None else 99
 NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
-def run_simulation(model, seed, shock_cfg, benchmarks):
+def run_simulation(model, shock_cfg, benchmarks):
     """Run Q-Learning vs PSO simulation"""
-    np.random.seed(seed)
-    
-    env = MarketEnv(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -52,7 +48,6 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         q_agent.update(state, q_action, rewards[0], next_state)
         
         state = next_state
-        print(f"{info['prices'] = }\n")
         prices_history.append(info['prices'])
         profits_history.append(rewards)
     
@@ -87,7 +82,7 @@ def main():
         'enabled': False
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    benchmark_calculator = TheoreticalBenchmarks()
     
     print("=" * 80)
     print("Q-LEARNING vs PSO - SCHEME NONE")
@@ -130,8 +125,7 @@ def main():
         theo_prices = []
         
         for run in range(NUM_RUNS):
-            seed = SEED + run
-            ap_q, ap_pso, d_q, d_pso, r_q, r_pso, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            ap_q, ap_pso, d_q, d_pso, r_q, r_pso, p_n = run_simulation(model, shock_cfg, model_benchmarks)
             avg_prices_q.append(ap_q)
             avg_prices_pso.append(ap_pso)
             deltas_q.append(d_q)
@@ -139,6 +133,10 @@ def main():
             rpdis_q.append(r_q)
             rpdis_pso.append(r_pso)
             theo_prices.append(p_n)
+
+            per_run_metrices[model]["run"].append(run+1)
+            per_run_metrices[model]["avg_price_firm_1"].append(round(ap_q, 2))
+            per_run_metrices[model]["avg_price_firm_2"].append(round(ap_pso, 2))
         
         results[model] = {
             'Avg Price Q': np.mean(avg_prices_q),

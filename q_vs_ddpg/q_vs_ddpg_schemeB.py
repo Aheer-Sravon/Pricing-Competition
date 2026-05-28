@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import QLearningAgent, DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
@@ -19,7 +19,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     """Run Q-Learning vs DDPG simulation"""
     np.random.seed(seed)
     
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg, seed=seed)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -41,13 +41,14 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     for t in range(env.horizon):
         # Q-Learning selects discrete action index
         q_action_idx = q_agent.choose_action(state)
-        q_price = env.price_grid[q_action_idx]
         
         # DDPG selects continuous price
         ddpg_state = state.astype(np.float32)
         ddpg_price, ddpg_norm = ddpg_agent.select_action(ddpg_state, explore=True)
+        # Index of the element in the price grid closest to the price chosen by DDPG
+        ddpg_action_idx = int(np.abs(env.price_grid - ddpg_price).argmin())
         
-        actions = [q_price, ddpg_price]
+        actions = [q_action_idx, ddpg_action_idx]
         next_state, rewards, done, info = env.step(actions)
         
         # Update Q-Learning

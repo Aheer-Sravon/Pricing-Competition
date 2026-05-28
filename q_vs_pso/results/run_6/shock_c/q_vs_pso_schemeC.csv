@@ -1,0 +1,4 @@
+Model,Q Avg. Prices,Theo. Prices,PSO Avg. Prices,Theo. Prices ,Q Extra-profits Δ,PSO Extra-profits Δ,Q RPDI,PSO RPDI
+LOGIT,1.67,1.9,1.69,1.9,-2.08,-2.21,-0.81,-0.73
+HOTELLING,1.13,1.0,1.14,1.0,0.4,0.66,0.52,0.57
+LINEAR,0.47,0.43,0.44,0.43,1.17,1.16,0.53,0.16
