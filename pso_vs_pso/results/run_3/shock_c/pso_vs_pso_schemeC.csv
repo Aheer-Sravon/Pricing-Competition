@@ -1,0 +1,4 @@
+Model,Firm 1 Avg. Prices,Theo. Prices,Firm 2 Avg. Prices,Theo. Prices ,Firm 1 Extra-profits Δ,Firm 2 Extra-profits Δ,Firm 1 RPDI,Firm 2 RPDI
+LOGIT,1.57,1.89,1.56,1.89,-3.14,-3.12,-1.14,-1.2
+HOTELLING,1.06,1.0,1.06,1.0,0.26,0.23,0.26,0.23
+LINEAR,0.43,0.43,0.43,0.43,1.08,0.99,0.06,0.06

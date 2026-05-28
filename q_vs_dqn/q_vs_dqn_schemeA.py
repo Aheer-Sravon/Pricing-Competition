@@ -2,24 +2,20 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import QLearningAgent, DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
 parser = argparse.ArgumentParser(prog="q_vs_q")
-parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
-SEED = args.seed[0] if args.seed is not None else 99
 NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
-def run_simulation(model, seed, shock_cfg, benchmarks, verbose=True):
+def run_simulation(model, shock_cfg, benchmarks):
     """Run a single simulation of Q-Learning vs DQN."""
-    np.random.seed(seed)
-    
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg)
     
     q_agent = QLearningAgent(
         env.N,
@@ -31,7 +27,6 @@ def run_simulation(model, seed, shock_cfg, benchmarks, verbose=True):
         agent_id=1, 
         state_dim=2,
         action_dim=env.N,
-        seed=seed
     )
     
     state = env.reset()
@@ -85,7 +80,7 @@ def main():
         'mode': 'independent'
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    benchmark_calculator = TheoreticalBenchmarks()
     all_benchmarks = benchmark_calculator.calculate_all_benchmarks(shock_cfg)
     
     print("=" * 80)
@@ -128,10 +123,7 @@ def main():
         rpdis_q, rpdis_dqn = [], []
         
         for run in range(NUM_RUNS):
-            seed = SEED + run
-            apq, apd, dq, dd, rq, rd, p_n = run_simulation(
-                model, seed, shock_cfg, model_benchmarks, verbose=(run == 0)
-            )
+            apq, apd, dq, dd, rq, rd, p_n = run_simulation(model, shock_cfg, model_benchmarks)
             
             avg_prices_q.append(apq)
             avg_prices_dqn.append(apd)
@@ -148,6 +140,10 @@ def main():
             run_logs[model]['delta_dqn'].append(dd)
             run_logs[model]['rpdi_q'].append(rq)
             run_logs[model]['rpdi_dqn'].append(rd)
+
+            per_run_metrices[model]["run"].append(run+1)
+            per_run_metrices[model]["avg_price_firm_1"].append(round(apq, 2))
+            per_run_metrices[model]["avg_price_firm_2"].append(round(apd, 2))
         
         results[model] = {
             'Avg Price Q': np.mean(avg_prices_q),
