@@ -2,24 +2,20 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import PSOAgent, DQNAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
 parser = argparse.ArgumentParser(prog="q_vs_q")
-parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
-SEED = args.seed[0] if args.seed is not None else 99
 NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
-def run_simulation(model, seed, shock_cfg, benchmarks):
+def run_simulation(model, shock_cfg, benchmarks):
     """Run PSO vs DQN simulation"""
-    np.random.seed(seed)
-    
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -28,7 +24,7 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
     pso_agent = PSOAgent(env, agent_id=0, price_min=price_min, price_max=price_max)
     
     # Initialize DQN agent (agent 1)
-    dqn_agent = DQNAgent(agent_id=1, state_dim=2, action_dim=env.N, seed=seed)
+    dqn_agent = DQNAgent(agent_id=1, state_dim=2, action_dim=env.N)
     
     state = env.reset()
     profits_history = []
@@ -38,12 +34,13 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         # PSO updates with DQN's last price (state[1])
         pso_agent.update(state[1])
         pso_price = pso_agent.choose_price()  # Continuous price
+        pso_action = int(np.abs(env.price_grid - pso_price).argmin())
         
         # DQN selects action based on state (prices)
         dqn_action = dqn_agent.select_action(state, explore=True)  # Discrete index
         
-        # Execute actions (continuous price + discrete index)
-        actions = [pso_price, dqn_action]
+        # Execute actions (discrete index + discrete index)
+        actions = [pso_action, dqn_action]
         next_state, rewards, done, info = env.step(actions)
         
         # Update DQN
@@ -89,7 +86,7 @@ def main():
         'enabled': False
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    benchmark_calculator = TheoreticalBenchmarks()
     
     print("=" * 80)
     print("PSO vs DQN - SCHEME NONE")
@@ -132,8 +129,7 @@ def main():
         theo_prices = []
         
         for run in range(NUM_RUNS):
-            seed = SEED + run
-            ap_pso, ap_dqn, d_pso, d_dqn, r_pso, r_dqn, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            ap_pso, ap_dqn, d_pso, d_dqn, r_pso, r_dqn, p_n = run_simulation(model, shock_cfg, model_benchmarks)
             avg_prices_pso.append(ap_pso)
             avg_prices_dqn.append(ap_dqn)
             deltas_pso.append(d_pso)
@@ -141,6 +137,10 @@ def main():
             rpdis_pso.append(r_pso)
             rpdis_dqn.append(r_dqn)
             theo_prices.append(p_n)
+
+            per_run_metrices[model]["run"].append(run+1)
+            per_run_metrices[model]["avg_price_firm_1"].append(round(ap_pso, 2))
+            per_run_metrices[model]["avg_price_firm_2"].append(round(ap_dqn, 2))
         
         results[model] = {
             'Avg Price PSO': np.mean(avg_prices_pso),
