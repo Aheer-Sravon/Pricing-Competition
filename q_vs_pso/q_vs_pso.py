@@ -7,7 +7,7 @@ from agents import QLearningAgent, PSOAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
-parser = argparse.ArgumentParser(prog="q_vs_q")
+parser = argparse.ArgumentParser(prog="q_vs_pso")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
