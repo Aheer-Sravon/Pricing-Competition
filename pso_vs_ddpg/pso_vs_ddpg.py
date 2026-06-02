@@ -2,24 +2,20 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import PSOAgent, DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
 parser = argparse.ArgumentParser(prog="q_vs_q")
-parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
-SEED = args.seed[0] if args.seed is not None else 99
 NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
-def run_simulation(model, seed, shock_cfg, benchmarks):
+def run_simulation(model, shock_cfg, benchmarks):
     """Run PSO vs DDPG simulation"""
-    np.random.seed(seed)
-    
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -32,7 +28,6 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         agent_id=1,
         state_dim=2,
         action_dim=1,
-        seed=seed,
         price_min=price_min,
         price_max=price_max
     )
@@ -45,13 +40,15 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         # PSO updates with DDPG's last price (state[1])
         pso_agent.update(state[1])
         pso_price = pso_agent.choose_price()  # Continuous price
+        pso_action = int(np.abs(env.price_grid - pso_price).argmin())
         
         # DDPG selects continuous action
         ddpg_state = state.astype(np.float32)
         ddpg_price, ddpg_norm = ddpg_agent.select_action(ddpg_state, explore=True)
+        ddpg_action = int(np.abs(env.price_grid - ddpg_price).argmin())
         
         # Execute actions (both continuous prices)
-        actions = [pso_price, ddpg_price]
+        actions = [pso_action, ddpg_action]
         next_state, rewards, done, info = env.step(actions)
         
         # Update DDPG
@@ -95,7 +92,7 @@ def main():
         'enabled': False
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    benchmark_calculator = TheoreticalBenchmarks()
     
     print("=" * 80)
     print("PSO vs DDPG - SCHEME NONE")
@@ -138,8 +135,7 @@ def main():
         theo_prices = []
         
         for run in range(NUM_RUNS):
-            seed = SEED + run
-            ap_pso, ap_ddpg, d_pso, d_ddpg, r_pso, r_ddpg, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            ap_pso, ap_ddpg, d_pso, d_ddpg, r_pso, r_ddpg, p_n = run_simulation(model, shock_cfg, model_benchmarks)
             avg_prices_pso.append(ap_pso)
             avg_prices_ddpg.append(ap_ddpg)
             deltas_pso.append(d_pso)
@@ -147,6 +143,10 @@ def main():
             rpdis_pso.append(r_pso)
             rpdis_ddpg.append(r_ddpg)
             theo_prices.append(p_n)
+
+            per_run_metrices[model]["run"].append(run+1)
+            per_run_metrices[model]["avg_price_firm_1"].append(round(ap_pso, 2))
+            per_run_metrices[model]["avg_price_firm_2"].append(round(ap_ddpg, 2))
         
         results[model] = {
             'Avg Price PSO': np.mean(avg_prices_pso),

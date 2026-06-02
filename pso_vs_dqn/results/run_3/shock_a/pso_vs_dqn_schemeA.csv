@@ -1,0 +1,4 @@
+Model,PSO Avg. Prices,Theo. Prices,DQN Avg. Prices,Theo. Prices ,PSO Extra-profits Δ,DQN Extra-profits Δ,PSO RPDI,DQN RPDI
+LOGIT,1.69,1.79,1.69,1.79,-0.76,-1.28,-0.35,-0.35
+HOTELLING,1.14,1.0,1.13,1.0,0.53,0.53,0.57,0.52
+LINEAR,0.44,0.43,0.47,0.43,0.64,0.66,0.16,0.53
