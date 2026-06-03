@@ -1,0 +1,4 @@
+Model,PSO Avg. Prices,Theo. Prices,DDPG Avg. Prices,Theo. Prices ,PSO Extra-profits Δ,DDPG Extra-profits Δ,PSO RPDI,DDPG RPDI
+LOGIT,1.67,1.91,1.64,1.91,-2.67,-3.96,-0.87,-0.96
+HOTELLING,1.13,1.0,1.17,1.0,0.63,0.48,0.53,0.66
+LINEAR,0.44,0.43,0.47,0.43,1.2,1.17,0.15,0.62
