@@ -1,0 +1,262 @@
+[{"stream_name":"stderr","time":7.619691045,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.619788157,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.619794713,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.619798705,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.250543477,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.250593674,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.250600509,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.250605152,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":16.386629508,"data":"run_1\n"}
+,{"stream_name":"stdout","time":16.386704407,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":16.386712364,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":16.386718318,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":16.386724411,"data":"\n"}
+,{"stream_name":"stdout","time":16.386730399,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":892.98606525,"data":"  Completed: Firm 1 Δ = 0.469, Firm 2 Δ = 0.487\n"}
+,{"stream_name":"stdout","time":892.986140378,"data":"\n"}
+,{"stream_name":"stdout","time":892.986151633,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":1721.125830926,"data":"  Completed: Firm 1 Δ = 0.492, Firm 2 Δ = 0.492\n"}
+,{"stream_name":"stdout","time":1721.125867403,"data":"\n"}
+,{"stream_name":"stdout","time":1721.125873919,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":2553.954351117,"data":"  Completed: Firm 1 Δ = 0.043, Firm 2 Δ = 0.042\n"}
+,{"stream_name":"stdout","time":2553.954396551,"data":"\n"}
+,{"stream_name":"stdout","time":2553.954404452,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2553.954410578,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":2553.954415965,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2553.954421886,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":2553.954428415,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.47                    0.49         0.49         0.48\n"}
+,{"stream_name":"stdout","time":2553.954435169,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.49                    0.49         0.53         0.53\n"}
+,{"stream_name":"stdout","time":2553.954441477,"data":"   LINEAR                0.47          0.43                0.47           0.43                    0.04                    0.04         0.51         0.51\n"}
+,{"stream_name":"stdout","time":2553.954448422,"data":"\n"}
+,{"stream_name":"stdout","time":2553.954454108,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2553.95446009,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":2553.954481292,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2553.95448644,"data":"\n"}
+,{"stream_name":"stdout","time":2553.954490406,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":2553.954494612,"data":"  Average Delta (Δ): 0.3347\n"}
+,{"stream_name":"stdout","time":2553.954499488,"data":"  Average RPDI:      0.5104\n"}
+,{"stream_name":"stdout","time":2553.954503888,"data":"\n"}
+,{"stream_name":"stdout","time":2553.954508025,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":2553.954511994,"data":"  Average Delta (Δ): 0.3403\n"}
+,{"stream_name":"stdout","time":2553.954516407,"data":"  Average RPDI:      0.5090\n"}
+,{"stream_name":"stdout","time":2553.954520822,"data":"\n"}
+,{"stream_name":"stdout","time":2553.954524795,"data":"[Results saved to /kaggle/working/results/run_1/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stdout","time":2553.954529291,"data":"run_2\n"}
+,{"stream_name":"stdout","time":2553.954533226,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2553.95453748,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":2553.954541643,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2553.954545731,"data":"\n"}
+,{"stream_name":"stdout","time":2553.954549781,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":3428.32706899,"data":"  Completed: Firm 1 Δ = 0.479, Firm 2 Δ = 0.480\n"}
+,{"stream_name":"stdout","time":3428.327126773,"data":"\n"}
+,{"stream_name":"stdout","time":3428.327137968,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":4260.1956426,"data":"  Completed: Firm 1 Δ = 0.492, Firm 2 Δ = 0.494\n"}
+,{"stream_name":"stdout","time":4260.195690327,"data":"\n"}
+,{"stream_name":"stdout","time":4260.195698619,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":5087.254192566,"data":"  Completed: Firm 1 Δ = 0.044, Firm 2 Δ = 0.042\n"}
+,{"stream_name":"stdout","time":5087.254242786,"data":"\n"}
+,{"stream_name":"stdout","time":5087.254250399,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":5087.25425577,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":5087.254260794,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":5087.254266632,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":5087.254272224,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.48                    0.48         0.49         0.49\n"}
+,{"stream_name":"stdout","time":5087.254278035,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.49                    0.49         0.53         0.53\n"}
+,{"stream_name":"stdout","time":5087.254283381,"data":"   LINEAR                0.47          0.43                0.47           0.43                    0.04                    0.04         0.52         0.52\n"}
+,{"stream_name":"stdout","time":5087.254288388,"data":"\n"}
+,{"stream_name":"stdout","time":5087.254292836,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":5087.254297697,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":5087.254314875,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":5087.254319106,"data":"\n"}
+,{"stream_name":"stdout","time":5087.25432265,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":5087.254326332,"data":"  Average Delta (Δ): 0.3383\n"}
+,{"stream_name":"stdout","time":5087.254330165,"data":"  Average RPDI:      0.5113\n"}
+,{"stream_name":"stdout","time":5087.254333783,"data":"\n"}
+,{"stream_name":"stdout","time":5087.254337199,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":5087.254340983,"data":"  Average Delta (Δ): 0.3385\n"}
+,{"stream_name":"stdout","time":5087.254344722,"data":"  Average RPDI:      0.5132\n"}
+,{"stream_name":"stdout","time":5087.254348382,"data":"\n"}
+,{"stream_name":"stdout","time":5087.254351959,"data":"[Results saved to /kaggle/working/results/run_2/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stdout","time":5087.254355962,"data":"run_3\n"}
+,{"stream_name":"stdout","time":5087.254359794,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":5087.254363748,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":5087.254367472,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":5087.254371483,"data":"\n"}
+,{"stream_name":"stdout","time":5087.254375061,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":5959.042896134,"data":"  Completed: Firm 1 Δ = 0.477, Firm 2 Δ = 0.477\n"}
+,{"stream_name":"stdout","time":5959.042933102,"data":"\n"}
+,{"stream_name":"stdout","time":5959.042939117,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":6790.620148348,"data":"  Completed: Firm 1 Δ = 0.495, Firm 2 Δ = 0.490\n"}
+,{"stream_name":"stdout","time":6790.620188732,"data":"\n"}
+,{"stream_name":"stdout","time":6790.620192963,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":7617.865365386,"data":"  Completed: Firm 1 Δ = 0.043, Firm 2 Δ = 0.042\n"}
+,{"stream_name":"stdout","time":7617.865399634,"data":"\n"}
+,{"stream_name":"stdout","time":7617.865405616,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7617.865411514,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":7617.865416866,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7617.86542197,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":7617.865427342,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.48                    0.48         0.48         0.49\n"}
+,{"stream_name":"stdout","time":7617.865432612,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.49                    0.49         0.53         0.53\n"}
+,{"stream_name":"stdout","time":7617.865441883,"data":"   LINEAR                0.47          0.43                0.47           0.43                    0.04                    0.04         0.51         0.51\n"}
+,{"stream_name":"stdout","time":7617.86544596,"data":"\n"}
+,{"stream_name":"stdout","time":7617.865449112,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7617.865452587,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":7617.865463737,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7617.865466473,"data":"\n"}
+,{"stream_name":"stdout","time":7617.865468748,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":7617.865471166,"data":"  Average Delta (Δ): 0.3382\n"}
+,{"stream_name":"stdout","time":7617.865473894,"data":"  Average RPDI:      0.5091\n"}
+,{"stream_name":"stdout","time":7617.865476363,"data":"\n"}
+,{"stream_name":"stdout","time":7617.8654786,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":7617.865480953,"data":"  Average Delta (Δ): 0.3365\n"}
+,{"stream_name":"stdout","time":7617.865483392,"data":"  Average RPDI:      0.5110\n"}
+,{"stream_name":"stdout","time":7617.865499725,"data":"\n"}
+,{"stream_name":"stdout","time":7617.865502012,"data":"[Results saved to /kaggle/working/results/run_3/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stdout","time":7617.865504334,"data":"run_4\n"}
+,{"stream_name":"stdout","time":7617.865506534,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7617.865508998,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":7617.865511203,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7617.86551352,"data":"\n"}
+,{"stream_name":"stdout","time":7617.86551566,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":8488.677938297,"data":"  Completed: Firm 1 Δ = 0.478, Firm 2 Δ = 0.476\n"}
+,{"stream_name":"stdout","time":8488.677995758,"data":"\n"}
+,{"stream_name":"stdout","time":8488.67800405,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":9315.397257122,"data":"  Completed: Firm 1 Δ = 0.490, Firm 2 Δ = 0.496\n"}
+,{"stream_name":"stdout","time":9315.397305876,"data":"\n"}
+,{"stream_name":"stdout","time":9315.397313345,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":10152.465915999,"data":"  Completed: Firm 1 Δ = 0.042, Firm 2 Δ = 0.042\n"}
+,{"stream_name":"stdout","time":10152.465954646,"data":"\n"}
+,{"stream_name":"stdout","time":10152.465961916,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10152.465967917,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":10152.465973229,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10152.46597888,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":10152.465985187,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.48                    0.48         0.48         0.48\n"}
+,{"stream_name":"stdout","time":10152.465990861,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.49                    0.50         0.53         0.53\n"}
+,{"stream_name":"stdout","time":10152.465996927,"data":"   LINEAR                0.47          0.43                0.47           0.43                    0.04                    0.04         0.51         0.51\n"}
+,{"stream_name":"stdout","time":10152.466002787,"data":"\n"}
+,{"stream_name":"stdout","time":10152.466008049,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10152.466013526,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":10152.466031518,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10152.466035778,"data":"\n"}
+,{"stream_name":"stdout","time":10152.466039352,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":10152.466043232,"data":"  Average Delta (Δ): 0.3368\n"}
+,{"stream_name":"stdout","time":10152.466047077,"data":"  Average RPDI:      0.5096\n"}
+,{"stream_name":"stdout","time":10152.466050929,"data":"\n"}
+,{"stream_name":"stdout","time":10152.466054559,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":10152.466058356,"data":"  Average Delta (Δ): 0.3380\n"}
+,{"stream_name":"stdout","time":10152.466062265,"data":"  Average RPDI:      0.5085\n"}
+,{"stream_name":"stdout","time":10152.466066664,"data":"\n"}
+,{"stream_name":"stdout","time":10152.466070562,"data":"[Results saved to /kaggle/working/results/run_4/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stdout","time":10152.466074528,"data":"run_5\n"}
+,{"stream_name":"stdout","time":10152.466078146,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10152.466082115,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":10152.466085818,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10152.466089875,"data":"\n"}
+,{"stream_name":"stdout","time":10152.466093591,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":11028.196775413,"data":"  Completed: Firm 1 Δ = 0.478, Firm 2 Δ = 0.477\n"}
+,{"stream_name":"stdout","time":11028.196844722,"data":"\n"}
+,{"stream_name":"stdout","time":11028.19685299,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":11872.666626883,"data":"  Completed: Firm 1 Δ = 0.497, Firm 2 Δ = 0.493\n"}
+,{"stream_name":"stdout","time":11872.666678725,"data":"\n"}
+,{"stream_name":"stdout","time":11872.666685324,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":12719.19934005,"data":"  Completed: Firm 1 Δ = 0.042, Firm 2 Δ = 0.043\n"}
+,{"stream_name":"stdout","time":12719.199388146,"data":"\n"}
+,{"stream_name":"stdout","time":12719.199403705,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":12719.199408737,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":12719.199412606,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":12719.199416868,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":12719.199421179,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.48                    0.48         0.49         0.49\n"}
+,{"stream_name":"stdout","time":12719.19942532,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.50                    0.49         0.53         0.54\n"}
+,{"stream_name":"stdout","time":12719.199429377,"data":"   LINEAR                0.47          0.43                0.46           0.43                    0.04                    0.04         0.51         0.51\n"}
+,{"stream_name":"stdout","time":12719.199433405,"data":"\n"}
+,{"stream_name":"stdout","time":12719.199437125,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":12719.199441101,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":12719.199456925,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":12719.199460346,"data":"\n"}
+,{"stream_name":"stdout","time":12719.199463404,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":12719.199466209,"data":"  Average Delta (Δ): 0.3392\n"}
+,{"stream_name":"stdout","time":12719.199469126,"data":"  Average RPDI:      0.5100\n"}
+,{"stream_name":"stdout","time":12719.199471877,"data":"\n"}
+,{"stream_name":"stdout","time":12719.199474549,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":12719.199477285,"data":"  Average Delta (Δ): 0.3378\n"}
+,{"stream_name":"stdout","time":12719.199480126,"data":"  Average RPDI:      0.5100\n"}
+,{"stream_name":"stdout","time":12719.199482953,"data":"\n"}
+,{"stream_name":"stdout","time":12719.199485658,"data":"[Results saved to /kaggle/working/results/run_5/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stdout","time":12719.199488562,"data":"run_6\n"}
+,{"stream_name":"stdout","time":12719.199491441,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":12719.199494362,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":12719.199497153,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":12719.199500076,"data":"\n"}
+,{"stream_name":"stdout","time":12719.199502866,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":13594.600956124,"data":"  Completed: Firm 1 Δ = 0.477, Firm 2 Δ = 0.482\n"}
+,{"stream_name":"stdout","time":13594.600998354,"data":"\n"}
+,{"stream_name":"stdout","time":13594.601009429,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":14434.610966178,"data":"  Completed: Firm 1 Δ = 0.498, Firm 2 Δ = 0.491\n"}
+,{"stream_name":"stdout","time":14434.61100216,"data":"\n"}
+,{"stream_name":"stdout","time":14434.611007143,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":15271.968448145,"data":"  Completed: Firm 1 Δ = 0.042, Firm 2 Δ = 0.043\n"}
+,{"stream_name":"stdout","time":15271.968509368,"data":"\n"}
+,{"stream_name":"stdout","time":15271.968523908,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15271.968528745,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":15271.968532728,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15271.968537001,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":15271.968541302,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.48                    0.48         0.49         0.48\n"}
+,{"stream_name":"stdout","time":15271.968545551,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.50                    0.49         0.53         0.54\n"}
+,{"stream_name":"stdout","time":15271.968549558,"data":"   LINEAR                0.47          0.43                0.46           0.43                    0.04                    0.04         0.51         0.51\n"}
+,{"stream_name":"stdout","time":15271.968573285,"data":"\n"}
+,{"stream_name":"stdout","time":15271.968580649,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15271.968587554,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":15271.968606822,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15271.968611595,"data":"\n"}
+,{"stream_name":"stdout","time":15271.968622279,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":15271.968626656,"data":"  Average Delta (Δ): 0.3388\n"}
+,{"stream_name":"stdout","time":15271.968630857,"data":"  Average RPDI:      0.5109\n"}
+,{"stream_name":"stdout","time":15271.968635094,"data":"\n"}
+,{"stream_name":"stdout","time":15271.968639107,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":15271.96864543,"data":"  Average Delta (Δ): 0.3385\n"}
+,{"stream_name":"stdout","time":15271.968653355,"data":"  Average RPDI:      0.5102\n"}
+,{"stream_name":"stdout","time":15271.968656262,"data":"\n"}
+,{"stream_name":"stdout","time":15271.968659585,"data":"[Results saved to /kaggle/working/results/run_6/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stdout","time":15271.968684443,"data":"run_7\n"}
+,{"stream_name":"stdout","time":15271.968689448,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15271.968694945,"data":"DQN vs DQN - SCHEME NONE\n"}
+,{"stream_name":"stdout","time":15271.968700127,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15271.968704649,"data":"\n"}
+,{"stream_name":"stdout","time":15271.968708706,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":16153.611736618,"data":"  Completed: Firm 1 Δ = 0.473, Firm 2 Δ = 0.483\n"}
+,{"stream_name":"stdout","time":16153.611776622,"data":"\n"}
+,{"stream_name":"stdout","time":16153.611783807,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":16984.777409178,"data":"  Completed: Firm 1 Δ = 0.496, Firm 2 Δ = 0.490\n"}
+,{"stream_name":"stdout","time":16984.777463264,"data":"\n"}
+,{"stream_name":"stdout","time":16984.777471356,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":17807.667798918,"data":"  Completed: Firm 1 Δ = 0.042, Firm 2 Δ = 0.042\n"}
+,{"stream_name":"stdout","time":17807.667843555,"data":"\n"}
+,{"stream_name":"stdout","time":17807.667849201,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17807.667853051,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":17807.667856365,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17807.667872891,"data":"    Model  Firm 1 Avg. Prices  Theo. Prices  Firm 2 Avg. Prices  Theo. Prices   Firm 1 Extra-profits Δ  Firm 2 Extra-profits Δ  Firm 1 RPDI  Firm 2 RPDI\n"}
+,{"stream_name":"stdout","time":17807.667876349,"data":"    LOGIT                1.69          1.47                1.69           1.47                    0.47                    0.48         0.49         0.48\n"}
+,{"stream_name":"stdout","time":17807.667879554,"data":"HOTELLING                1.13          1.00                1.13           1.00                    0.50                    0.49         0.53         0.53\n"}
+,{"stream_name":"stdout","time":17807.667882758,"data":"   LINEAR                0.47          0.43                0.47           0.43                    0.04                    0.04         0.51         0.51\n"}
+,{"stream_name":"stdout","time":17807.667886098,"data":"\n"}
+,{"stream_name":"stdout","time":17807.667889119,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17807.667892292,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":17807.667904259,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17807.667906856,"data":"\n"}
+,{"stream_name":"stdout","time":17807.667909011,"data":"Firm 1 (DQN):\n"}
+,{"stream_name":"stdout","time":17807.667911216,"data":"  Average Delta (Δ): 0.3369\n"}
+,{"stream_name":"stdout","time":17807.667913529,"data":"  Average RPDI:      0.5092\n"}
+,{"stream_name":"stdout","time":17807.667915893,"data":"\n"}
+,{"stream_name":"stdout","time":17807.667918052,"data":"Firm 2 (DQN):\n"}
+,{"stream_name":"stdout","time":17807.667920298,"data":"  Average Delta (Δ): 0.3384\n"}
+,{"stream_name":"stdout","time":17807.667922524,"data":"  Average RPDI:      0.5098\n"}
+,{"stream_name":"stdout","time":17807.667924794,"data":"\n"}
+,{"stream_name":"stdout","time":17807.667927252,"data":"[Results saved to /kaggle/working/results/run_7/shock_none/dqn_vs_dqn.csv]\n"}
+,{"stream_name":"stderr","time":17813.666018203,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":17813.666057317,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":17813.851342958,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":17813.851370511,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":17814.526806934,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":17814.847086832,"data":"[NbConvertApp] Writing 85406 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":17817.44405102,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":17818.51772484,"data":"[NbConvertApp] Writing 522353 bytes to __results__.html\n"}
+]
