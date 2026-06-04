@@ -20,7 +20,7 @@ class MarketEnv:
         self.t = 0
         self.rng = np.random.RandomState(seed)
        
-        # Model-specific parameters (verified against PDFs)
+        # Model-specific parameters
         if self.model == "logit":
             self.c = 1.0
             self.a = 2.0
