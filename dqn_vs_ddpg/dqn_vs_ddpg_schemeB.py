@@ -2,37 +2,32 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import DQNAgent, DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
-parser = argparse.ArgumentParser(prog="q_vs_q")
-parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
+parser = argparse.ArgumentParser(prog="dqn_vs_ddpg")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
-SEED = args.seed[0] if args.seed is not None else 99
 NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
-def run_simulation(model, seed, shock_cfg, benchmarks):
+def run_simulation(model, shock_cfg, benchmarks):
     """Run DQN vs DDPG simulation"""
-    np.random.seed(seed)
-    
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
     
     # Initialize DQN agent (agent 0)
-    dqn_agent = DQNAgent(agent_id=0, state_dim=2, action_dim=env.N, seed=seed)
+    dqn_agent = DQNAgent(agent_id=0, state_dim=2, action_dim=env.N)
     
     # Initialize DDPG agent (agent 1)
     ddpg_agent = DDPGAgent(
         agent_id=1,
         state_dim=2,
         action_dim=1,
-        seed=seed,
         price_min=price_min,
         price_max=price_max
     )
@@ -103,7 +98,7 @@ def main():
         'mode': 'independent'
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    benchmark_calculator = TheoreticalBenchmarks()
     
     print("=" * 80)
     print("DQN vs DDPG - SCHEME B")
@@ -146,8 +141,7 @@ def main():
         theo_prices = []
         
         for run in range(NUM_RUNS):
-            seed = SEED + run
-            ap_dqn, ap_ddpg, d_dqn, d_ddpg, r_dqn, r_ddpg, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            ap_dqn, ap_ddpg, d_dqn, d_ddpg, r_dqn, r_ddpg, p_n = run_simulation(model, shock_cfg, model_benchmarks)
             avg_prices_dqn.append(ap_dqn)
             avg_prices_ddpg.append(ap_ddpg)
             deltas_dqn.append(d_dqn)
