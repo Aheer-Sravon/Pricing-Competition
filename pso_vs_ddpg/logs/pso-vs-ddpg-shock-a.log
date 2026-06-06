@@ -1,0 +1,262 @@
+[{"stream_name":"stderr","time":6.223974797,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.22404794,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.224051965,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.224054496,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":6.7923119,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.792350919,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.79235758,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.792362274,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":13.602812671,"data":"run_1\n"}
+,{"stream_name":"stdout","time":13.602889663,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13.602898074,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":13.602903235,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13.602909584,"data":"\n"}
+,{"stream_name":"stdout","time":13.602913811,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":1223.581677331,"data":"  Completed: PSO Δ = -2.197, DDPG Δ = -2.156\n"}
+,{"stream_name":"stdout","time":1223.58177549,"data":"\n"}
+,{"stream_name":"stdout","time":1223.581782771,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":2410.274101696,"data":"  Completed: PSO Δ = 0.543, DDPG Δ = 0.414\n"}
+,{"stream_name":"stdout","time":2410.274138369,"data":"\n"}
+,{"stream_name":"stdout","time":2410.274144956,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":3588.393287052,"data":"  Completed: PSO Δ = 0.656, DDPG Δ = 0.648\n"}
+,{"stream_name":"stdout","time":3588.393321,"data":"\n"}
+,{"stream_name":"stdout","time":3588.393326888,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":3588.393331634,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":3588.393336151,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":3588.393340758,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":3588.393345766,"data":"    LOGIT             1.67          1.80              1.58           1.80                -2.20                 -2.16     -0.44      -0.74\n"}
+,{"stream_name":"stdout","time":3588.39335214,"data":"HOTELLING             1.13          1.00              1.13           1.00                 0.54                  0.41      0.50       0.53\n"}
+,{"stream_name":"stdout","time":3588.393360256,"data":"   LINEAR             0.44          0.43              0.48           0.43                 0.66                  0.65      0.15       0.67\n"}
+,{"stream_name":"stdout","time":3588.39336436,"data":"\n"}
+,{"stream_name":"stdout","time":3588.393367388,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":3588.393370572,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":3588.39338191,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":3588.393384485,"data":"\n"}
+,{"stream_name":"stdout","time":3588.393386583,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":3588.393388692,"data":"  Average Delta (Δ): -0.3326\n"}
+,{"stream_name":"stdout","time":3588.393391013,"data":"  Average RPDI:      0.0701\n"}
+,{"stream_name":"stdout","time":3588.393393122,"data":"\n"}
+,{"stream_name":"stdout","time":3588.39339514,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":3588.393397215,"data":"  Average Delta (Δ): -0.3647\n"}
+,{"stream_name":"stdout","time":3588.393399403,"data":"  Average RPDI:      0.1521\n"}
+,{"stream_name":"stdout","time":3588.393401541,"data":"\n"}
+,{"stream_name":"stdout","time":3588.393403584,"data":"[Results saved to /kaggle/working/results/run_1/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stdout","time":3588.39340578,"data":"run_2\n"}
+,{"stream_name":"stdout","time":3588.393407938,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":3588.393410223,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":3588.39341233,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":3588.393414668,"data":"\n"}
+,{"stream_name":"stdout","time":3588.393416886,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":4771.588053591,"data":"  Completed: PSO Δ = -1.678, DDPG Δ = -2.135\n"}
+,{"stream_name":"stdout","time":4771.588101205,"data":"\n"}
+,{"stream_name":"stdout","time":4771.58810549,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":5953.629911155,"data":"  Completed: PSO Δ = 0.512, DDPG Δ = 0.424\n"}
+,{"stream_name":"stdout","time":5953.629969214,"data":"\n"}
+,{"stream_name":"stdout","time":5953.629976139,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":7129.917420794,"data":"  Completed: PSO Δ = 0.637, DDPG Δ = 0.640\n"}
+,{"stream_name":"stdout","time":7129.917460411,"data":"\n"}
+,{"stream_name":"stdout","time":7129.917467277,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7129.917475115,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":7129.917485532,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7129.91750095,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":7129.91750536,"data":"    LOGIT             1.67          1.80              1.62           1.80                -1.68                 -2.13     -0.44      -0.61\n"}
+,{"stream_name":"stdout","time":7129.917509265,"data":"HOTELLING             1.13          1.00              1.12           1.00                 0.51                  0.42      0.51       0.49\n"}
+,{"stream_name":"stdout","time":7129.917513548,"data":"   LINEAR             0.44          0.43              0.47           0.43                 0.64                  0.64      0.14       0.51\n"}
+,{"stream_name":"stdout","time":7129.917545233,"data":"\n"}
+,{"stream_name":"stdout","time":7129.917551877,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7129.917558401,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":7129.917564149,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7129.917577649,"data":"\n"}
+,{"stream_name":"stdout","time":7129.917581491,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":7129.917585378,"data":"  Average Delta (Δ): -0.1763\n"}
+,{"stream_name":"stdout","time":7129.917595452,"data":"  Average RPDI:      0.0732\n"}
+,{"stream_name":"stdout","time":7129.917598454,"data":"\n"}
+,{"stream_name":"stdout","time":7129.91760094,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":7129.917603376,"data":"  Average Delta (Δ): -0.3571\n"}
+,{"stream_name":"stdout","time":7129.917605891,"data":"  Average RPDI:      0.1307\n"}
+,{"stream_name":"stdout","time":7129.91760843,"data":"\n"}
+,{"stream_name":"stdout","time":7129.917610815,"data":"[Results saved to /kaggle/working/results/run_2/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stdout","time":7129.917613405,"data":"run_3\n"}
+,{"stream_name":"stdout","time":7129.917615928,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7129.917618476,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":7129.917621017,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":7129.917624734,"data":"\n"}
+,{"stream_name":"stdout","time":7129.917642501,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":8315.647552479,"data":"  Completed: PSO Δ = -2.223, DDPG Δ = -1.726\n"}
+,{"stream_name":"stdout","time":8315.647588826,"data":"\n"}
+,{"stream_name":"stdout","time":8315.647592829,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":9509.332281217,"data":"  Completed: PSO Δ = 0.440, DDPG Δ = 0.447\n"}
+,{"stream_name":"stdout","time":9509.332338384,"data":"\n"}
+,{"stream_name":"stdout","time":9509.332345786,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":10691.890425011,"data":"  Completed: PSO Δ = 0.652, DDPG Δ = 0.660\n"}
+,{"stream_name":"stdout","time":10691.890488356,"data":"\n"}
+,{"stream_name":"stdout","time":10691.89049743,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10691.890504707,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":10691.890510772,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10691.890516947,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":10691.890523412,"data":"    LOGIT             1.67          1.79              1.55           1.79                -2.22                 -1.73     -0.41      -0.81\n"}
+,{"stream_name":"stdout","time":10691.890529745,"data":"HOTELLING             1.12          1.00              1.12           1.00                 0.44                  0.45      0.49       0.46\n"}
+,{"stream_name":"stdout","time":10691.890545121,"data":"   LINEAR             0.44          0.43              0.46           0.43                 0.65                  0.66      0.14       0.51\n"}
+,{"stream_name":"stdout","time":10691.890551404,"data":"\n"}
+,{"stream_name":"stdout","time":10691.890559488,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10691.890566026,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":10691.890574248,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10691.890594827,"data":"\n"}
+,{"stream_name":"stdout","time":10691.890600215,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":10691.890604554,"data":"  Average Delta (Δ): -0.3771\n"}
+,{"stream_name":"stdout","time":10691.890609004,"data":"  Average RPDI:      0.0752\n"}
+,{"stream_name":"stdout","time":10691.890613444,"data":"\n"}
+,{"stream_name":"stdout","time":10691.890617537,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":10691.890621699,"data":"  Average Delta (Δ): -0.2062\n"}
+,{"stream_name":"stdout","time":10691.890626159,"data":"  Average RPDI:      0.0552\n"}
+,{"stream_name":"stdout","time":10691.89063046,"data":"\n"}
+,{"stream_name":"stdout","time":10691.890634954,"data":"[Results saved to /kaggle/working/results/run_3/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stdout","time":10691.890639518,"data":"run_4\n"}
+,{"stream_name":"stdout","time":10691.890643777,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10691.890648318,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":10691.890652649,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":10691.890677984,"data":"\n"}
+,{"stream_name":"stdout","time":10691.890683859,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":11887.676056912,"data":"  Completed: PSO Δ = -2.141, DDPG Δ = -1.983\n"}
+,{"stream_name":"stdout","time":11887.676127957,"data":"\n"}
+,{"stream_name":"stdout","time":11887.676134534,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":13075.202673118,"data":"  Completed: PSO Δ = 0.469, DDPG Δ = 0.431\n"}
+,{"stream_name":"stdout","time":13075.202727058,"data":"\n"}
+,{"stream_name":"stdout","time":13075.202735621,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":14251.131625175,"data":"  Completed: PSO Δ = 0.663, DDPG Δ = 0.661\n"}
+,{"stream_name":"stdout","time":14251.13166655,"data":"\n"}
+,{"stream_name":"stdout","time":14251.131674966,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":14251.131680952,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":14251.131686543,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":14251.131692536,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":14251.131715332,"data":"    LOGIT             1.68          1.80              1.59           1.80                -2.14                 -1.98     -0.42      -0.72\n"}
+,{"stream_name":"stdout","time":14251.131721722,"data":"HOTELLING             1.12          1.00              1.12           1.00                 0.47                  0.43      0.50       0.47\n"}
+,{"stream_name":"stdout","time":14251.13172929,"data":"   LINEAR             0.44          0.43              0.48           0.43                 0.66                  0.66      0.14       0.66\n"}
+,{"stream_name":"stdout","time":14251.131738859,"data":"\n"}
+,{"stream_name":"stdout","time":14251.131744287,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":14251.131750225,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":14251.131756002,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":14251.131761818,"data":"\n"}
+,{"stream_name":"stdout","time":14251.131780485,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":14251.131785436,"data":"  Average Delta (Δ): -0.3365\n"}
+,{"stream_name":"stdout","time":14251.131789496,"data":"  Average RPDI:      0.0759\n"}
+,{"stream_name":"stdout","time":14251.131793591,"data":"\n"}
+,{"stream_name":"stdout","time":14251.131797542,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":14251.131801545,"data":"  Average Delta (Δ): -0.2971\n"}
+,{"stream_name":"stdout","time":14251.131806271,"data":"  Average RPDI:      0.1349\n"}
+,{"stream_name":"stdout","time":14251.131810392,"data":"\n"}
+,{"stream_name":"stdout","time":14251.131814439,"data":"[Results saved to /kaggle/working/results/run_4/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stdout","time":14251.131818811,"data":"run_5\n"}
+,{"stream_name":"stdout","time":14251.131823412,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":14251.131827774,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":14251.131832045,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":14251.131837364,"data":"\n"}
+,{"stream_name":"stdout","time":14251.131841514,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":15442.601091621,"data":"  Completed: PSO Δ = -2.280, DDPG Δ = -2.240\n"}
+,{"stream_name":"stdout","time":15442.601153375,"data":"\n"}
+,{"stream_name":"stdout","time":15442.601160676,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":16620.340061608,"data":"  Completed: PSO Δ = 0.568, DDPG Δ = 0.474\n"}
+,{"stream_name":"stdout","time":16620.340111321,"data":"\n"}
+,{"stream_name":"stdout","time":16620.340116284,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":17797.518711461,"data":"  Completed: PSO Δ = 0.604, DDPG Δ = 0.646\n"}
+,{"stream_name":"stdout","time":17797.518748153,"data":"\n"}
+,{"stream_name":"stdout","time":17797.518754501,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17797.518760076,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":17797.518764968,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17797.518769705,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":17797.518774626,"data":"    LOGIT             1.67          1.80              1.59           1.80                -2.28                 -2.24     -0.44      -0.72\n"}
+,{"stream_name":"stdout","time":17797.518779402,"data":"HOTELLING             1.13          1.00              1.15           1.00                 0.57                  0.47      0.51       0.60\n"}
+,{"stream_name":"stdout","time":17797.518784254,"data":"   LINEAR             0.44          0.43              0.46           0.43                 0.60                  0.65      0.13       0.43\n"}
+,{"stream_name":"stdout","time":17797.518788962,"data":"\n"}
+,{"stream_name":"stdout","time":17797.518793713,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17797.518798376,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":17797.518802892,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17797.518807474,"data":"\n"}
+,{"stream_name":"stdout","time":17797.518811863,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":17797.518829773,"data":"  Average Delta (Δ): -0.3695\n"}
+,{"stream_name":"stdout","time":17797.518832503,"data":"  Average RPDI:      0.0694\n"}
+,{"stream_name":"stdout","time":17797.518834738,"data":"\n"}
+,{"stream_name":"stdout","time":17797.51883675,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":17797.518838886,"data":"  Average Delta (Δ): -0.3732\n"}
+,{"stream_name":"stdout","time":17797.518841071,"data":"  Average RPDI:      0.1043\n"}
+,{"stream_name":"stdout","time":17797.51884322,"data":"\n"}
+,{"stream_name":"stdout","time":17797.518845371,"data":"[Results saved to /kaggle/working/results/run_5/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stdout","time":17797.518847551,"data":"run_6\n"}
+,{"stream_name":"stdout","time":17797.518849785,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17797.518851996,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":17797.518854092,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":17797.518856286,"data":"\n"}
+,{"stream_name":"stdout","time":17797.518858317,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":18982.074822291,"data":"  Completed: PSO Δ = -2.125, DDPG Δ = -1.854\n"}
+,{"stream_name":"stdout","time":18982.074879642,"data":"\n"}
+,{"stream_name":"stdout","time":18982.074886682,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":20167.432576576,"data":"  Completed: PSO Δ = 0.486, DDPG Δ = 0.436\n"}
+,{"stream_name":"stdout","time":20167.432609056,"data":"\n"}
+,{"stream_name":"stdout","time":20167.432613316,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":21344.359455707,"data":"  Completed: PSO Δ = 0.709, DDPG Δ = 0.655\n"}
+,{"stream_name":"stdout","time":21344.359511931,"data":"\n"}
+,{"stream_name":"stdout","time":21344.359519295,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":21344.359524705,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":21344.359529154,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":21344.35953384,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":21344.35953879,"data":"    LOGIT             1.67          1.79              1.56           1.79                -2.12                 -1.85     -0.40      -0.75\n"}
+,{"stream_name":"stdout","time":21344.359543571,"data":"HOTELLING             1.12          1.00              1.12           1.00                 0.49                  0.44      0.49       0.50\n"}
+,{"stream_name":"stdout","time":21344.359553711,"data":"   LINEAR             0.44          0.43              0.48           0.43                 0.71                  0.65      0.15       0.68\n"}
+,{"stream_name":"stdout","time":21344.359557137,"data":"\n"}
+,{"stream_name":"stdout","time":21344.359560055,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":21344.359563142,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":21344.359566162,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":21344.359569277,"data":"\n"}
+,{"stream_name":"stdout","time":21344.359572238,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":21344.359575267,"data":"  Average Delta (Δ): -0.3100\n"}
+,{"stream_name":"stdout","time":21344.359600879,"data":"  Average RPDI:      0.0805\n"}
+,{"stream_name":"stdout","time":21344.359605752,"data":"\n"}
+,{"stream_name":"stdout","time":21344.359609716,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":21344.35961372,"data":"  Average Delta (Δ): -0.2543\n"}
+,{"stream_name":"stdout","time":21344.359617764,"data":"  Average RPDI:      0.1446\n"}
+,{"stream_name":"stdout","time":21344.359621175,"data":"\n"}
+,{"stream_name":"stdout","time":21344.359624295,"data":"[Results saved to /kaggle/working/results/run_6/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stdout","time":21344.359627688,"data":"run_7\n"}
+,{"stream_name":"stdout","time":21344.359630854,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":21344.359634334,"data":"PSO vs DDPG - SCHEME A\n"}
+,{"stream_name":"stdout","time":21344.359637608,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":21344.359641049,"data":"\n"}
+,{"stream_name":"stdout","time":21344.359644198,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":22531.951883145,"data":"  Completed: PSO Δ = -2.043, DDPG Δ = -1.756\n"}
+,{"stream_name":"stdout","time":22531.951932908,"data":"\n"}
+,{"stream_name":"stdout","time":22531.951938939,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":23711.615247911,"data":"  Completed: PSO Δ = 0.603, DDPG Δ = 0.451\n"}
+,{"stream_name":"stdout","time":23711.615291557,"data":"\n"}
+,{"stream_name":"stdout","time":23711.615298448,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":24888.978198406,"data":"  Completed: PSO Δ = 0.639, DDPG Δ = 0.648\n"}
+,{"stream_name":"stdout","time":24888.978233858,"data":"\n"}
+,{"stream_name":"stdout","time":24888.978239401,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":24888.978244178,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":24888.978248911,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":24888.978253515,"data":"    Model  PSO Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   PSO Extra-profits Δ  DDPG Extra-profits Δ  PSO RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":24888.978258407,"data":"    LOGIT             1.67          1.79              1.57           1.79                -2.04                 -1.76     -0.41      -0.74\n"}
+,{"stream_name":"stdout","time":24888.978263138,"data":"HOTELLING             1.13          1.00              1.15           1.00                 0.60                  0.45      0.52       0.61\n"}
+,{"stream_name":"stdout","time":24888.978282308,"data":"   LINEAR             0.44          0.43              0.47           0.43                 0.64                  0.65      0.14       0.61\n"}
+,{"stream_name":"stdout","time":24888.978286566,"data":"\n"}
+,{"stream_name":"stdout","time":24888.978289466,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":24888.97829254,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":24888.978295711,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":24888.978298919,"data":"\n"}
+,{"stream_name":"stdout","time":24888.97830178,"data":"PSO Agent:\n"}
+,{"stream_name":"stdout","time":24888.978304738,"data":"  Average Delta (Δ): -0.2668\n"}
+,{"stream_name":"stdout","time":24888.978307868,"data":"  Average RPDI:      0.0832\n"}
+,{"stream_name":"stdout","time":24888.978318044,"data":"\n"}
+,{"stream_name":"stdout","time":24888.97832039,"data":"DDPG Agent:\n"}
+,{"stream_name":"stdout","time":24888.97832252,"data":"  Average Delta (Δ): -0.2189\n"}
+,{"stream_name":"stdout","time":24888.978324718,"data":"  Average RPDI:      0.1597\n"}
+,{"stream_name":"stdout","time":24888.978326966,"data":"\n"}
+,{"stream_name":"stdout","time":24888.97832908,"data":"[Results saved to /kaggle/working/results/run_7/shock_a/pso_vs_ddpg_schemeA.csv]\n"}
+,{"stream_name":"stderr","time":24894.036779425,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":24894.036810948,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":24894.193792793,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":24894.19381794,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":24894.805963544,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":24895.103304156,"data":"[NbConvertApp] Writing 85801 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":24897.415532208,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":24898.388667269,"data":"[NbConvertApp] Writing 524369 bytes to __results__.html\n"}
+]

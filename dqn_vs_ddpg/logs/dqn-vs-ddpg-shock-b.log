@@ -1,0 +1,262 @@
+[{"stream_name":"stderr","time":5.9794973,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":5.979580535,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":5.979584728,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":5.979587293,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":6.526097196,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":6.5261401150000005,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":6.526144713,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":6.52614811,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":13.171440575,"data":"run_1\n"}
+,{"stream_name":"stdout","time":13.171513824,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13.171521559,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":13.171527094,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13.171531961,"data":"\n"}
+,{"stream_name":"stdout","time":13.171536485,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":1516.529335567,"data":"  Completed: DQN Δ = 0.948, DDPG Δ = -0.221\n"}
+,{"stream_name":"stdout","time":1516.529405052,"data":"\n"}
+,{"stream_name":"stdout","time":1516.529411178,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":2977.626938809,"data":"  Completed: DQN Δ = 0.479, DDPG Δ = 0.435\n"}
+,{"stream_name":"stdout","time":2977.626972826,"data":"\n"}
+,{"stream_name":"stdout","time":2977.626978854,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":4590.388223239,"data":"  Completed: DQN Δ = 0.070, DDPG Δ = -0.016\n"}
+,{"stream_name":"stdout","time":4590.388277448,"data":"\n"}
+,{"stream_name":"stdout","time":4590.388282422,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":4590.388286042,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":4590.388289308,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":4590.388292674,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":4590.38829651,"data":"    LOGIT             1.69          1.54              1.83           1.54                 0.95                 -0.22      0.37       0.72\n"}
+,{"stream_name":"stdout","time":4590.388299875,"data":"HOTELLING             1.13          1.00              1.13           1.00                 0.48                  0.43      0.50       0.53\n"}
+,{"stream_name":"stdout","time":4590.388339345,"data":"   LINEAR             0.47          0.43              0.47           0.43                 0.07                 -0.02      0.52       0.57\n"}
+,{"stream_name":"stdout","time":4590.388348124,"data":"\n"}
+,{"stream_name":"stdout","time":4590.388353266,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":4590.388358778,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":4590.388376201,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":4590.388380455,"data":"\n"}
+,{"stream_name":"stdout","time":4590.388383957,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":4590.388387596,"data":"  Average Delta (Δ): 0.4991\n"}
+,{"stream_name":"stdout","time":4590.388391286,"data":"  Average RPDI:      0.4629\n"}
+,{"stream_name":"stdout","time":4590.388394866,"data":"\n"}
+,{"stream_name":"stdout","time":4590.388398653,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":4590.388402106,"data":"  Average Delta (Δ): 0.0657\n"}
+,{"stream_name":"stdout","time":4590.388405699,"data":"  Average RPDI:      0.6062\n"}
+,{"stream_name":"stdout","time":4590.388409244,"data":"\n"}
+,{"stream_name":"stdout","time":4590.388412634,"data":"[Results saved to /kaggle/working/results/run_1/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stdout","time":4590.388416339,"data":"run_2\n"}
+,{"stream_name":"stdout","time":4590.388419848,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":4590.388426838,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":4590.38842942,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":4590.388432196,"data":"\n"}
+,{"stream_name":"stdout","time":4590.388434542,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":6229.401672073,"data":"  Completed: DQN Δ = 0.653, DDPG Δ = -0.123\n"}
+,{"stream_name":"stdout","time":6229.401725112,"data":"\n"}
+,{"stream_name":"stdout","time":6229.40173212,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":7766.077090971,"data":"  Completed: DQN Δ = 0.319, DDPG Δ = 0.443\n"}
+,{"stream_name":"stdout","time":7766.077127087,"data":"\n"}
+,{"stream_name":"stdout","time":7766.077135484,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":9310.279737673,"data":"  Completed: DQN Δ = 0.011, DDPG Δ = 0.072\n"}
+,{"stream_name":"stdout","time":9310.279793924,"data":"\n"}
+,{"stream_name":"stdout","time":9310.279799925,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":9310.27980506,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":9310.279809579,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":9310.279814506,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":9310.279821907,"data":"    LOGIT             1.68          1.54              1.77           1.54                 0.65                 -0.12      0.36       0.58\n"}
+,{"stream_name":"stdout","time":9310.279825166,"data":"HOTELLING             1.13          1.00              1.09           1.00                 0.32                  0.44      0.50       0.37\n"}
+,{"stream_name":"stdout","time":9310.279828449,"data":"   LINEAR             0.47          0.43              0.46           0.43                 0.01                  0.07      0.51       0.41\n"}
+,{"stream_name":"stdout","time":9310.279831627,"data":"\n"}
+,{"stream_name":"stdout","time":9310.279834559,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":9310.279837679,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":9310.279840788,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":9310.27985099,"data":"\n"}
+,{"stream_name":"stdout","time":9310.279853469,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":9310.279866122,"data":"  Average Delta (Δ): 0.3276\n"}
+,{"stream_name":"stdout","time":9310.279870032,"data":"  Average RPDI:      0.4585\n"}
+,{"stream_name":"stdout","time":9310.279873921,"data":"\n"}
+,{"stream_name":"stdout","time":9310.279877964,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":9310.279881877,"data":"  Average Delta (Δ): 0.1305\n"}
+,{"stream_name":"stdout","time":9310.279885674,"data":"  Average RPDI:      0.4517\n"}
+,{"stream_name":"stdout","time":9310.279889041,"data":"\n"}
+,{"stream_name":"stdout","time":9310.27989225,"data":"[Results saved to /kaggle/working/results/run_2/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stdout","time":9310.279895687,"data":"run_3\n"}
+,{"stream_name":"stdout","time":9310.27989891,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":9310.279902338,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":9310.279905654,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":9310.279909145,"data":"\n"}
+,{"stream_name":"stdout","time":9310.279912407,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":10845.792139585,"data":"  Completed: DQN Δ = 0.772, DDPG Δ = -0.187\n"}
+,{"stream_name":"stdout","time":10845.792180461,"data":"\n"}
+,{"stream_name":"stdout","time":10845.792187321,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":12338.172337082,"data":"  Completed: DQN Δ = 0.437, DDPG Δ = 0.400\n"}
+,{"stream_name":"stdout","time":12338.172413176,"data":"\n"}
+,{"stream_name":"stdout","time":12338.172421278,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":13850.890106749,"data":"  Completed: DQN Δ = 0.049, DDPG Δ = 0.021\n"}
+,{"stream_name":"stdout","time":13850.890161226,"data":"\n"}
+,{"stream_name":"stdout","time":13850.890169601,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13850.890174874,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":13850.890179448,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13850.890184489,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":13850.890189472,"data":"    LOGIT             1.69          1.54              1.80           1.54                 0.77                 -0.19      0.36       0.64\n"}
+,{"stream_name":"stdout","time":13850.890194329,"data":"HOTELLING             1.13          1.00              1.11           1.00                 0.44                  0.40      0.50       0.45\n"}
+,{"stream_name":"stdout","time":13850.890202365,"data":"   LINEAR             0.47          0.43              0.46           0.43                 0.05                  0.02      0.51       0.50\n"}
+,{"stream_name":"stdout","time":13850.890205631,"data":"\n"}
+,{"stream_name":"stdout","time":13850.8902086,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13850.890211761,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":13850.890214852,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13850.890218199,"data":"\n"}
+,{"stream_name":"stdout","time":13850.890228736,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":13850.890231169,"data":"  Average Delta (Δ): 0.4194\n"}
+,{"stream_name":"stdout","time":13850.890233726,"data":"  Average RPDI:      0.4597\n"}
+,{"stream_name":"stdout","time":13850.890247229,"data":"\n"}
+,{"stream_name":"stdout","time":13850.890251258,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":13850.890255219,"data":"  Average Delta (Δ): 0.0781\n"}
+,{"stream_name":"stdout","time":13850.890259138,"data":"  Average RPDI:      0.5340\n"}
+,{"stream_name":"stdout","time":13850.890263107,"data":"\n"}
+,{"stream_name":"stdout","time":13850.890266401,"data":"[Results saved to /kaggle/working/results/run_3/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stdout","time":13850.890269969,"data":"run_4\n"}
+,{"stream_name":"stdout","time":13850.890273242,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13850.890276832,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":13850.890280254,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":13850.890284019,"data":"\n"}
+,{"stream_name":"stdout","time":13850.890287447,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":15420.666598116,"data":"  Completed: DQN Δ = 0.667, DDPG Δ = -0.142\n"}
+,{"stream_name":"stdout","time":15420.666644914,"data":"\n"}
+,{"stream_name":"stdout","time":15420.666664289,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":16944.259325208,"data":"  Completed: DQN Δ = 0.382, DDPG Δ = 0.375\n"}
+,{"stream_name":"stdout","time":16944.259377689,"data":"\n"}
+,{"stream_name":"stdout","time":16944.259386346,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":18468.013998266,"data":"  Completed: DQN Δ = 0.063, DDPG Δ = -0.020\n"}
+,{"stream_name":"stdout","time":18468.014036907,"data":"\n"}
+,{"stream_name":"stdout","time":18468.01404118,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":18468.01406,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":18468.014065753,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":18468.014071196,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":18468.014077165,"data":"    LOGIT             1.68          1.54              1.78           1.54                 0.67                 -0.14      0.36       0.59\n"}
+,{"stream_name":"stdout","time":18468.014082764,"data":"HOTELLING             1.12          1.00              1.09           1.00                 0.38                  0.37      0.50       0.37\n"}
+,{"stream_name":"stdout","time":18468.014087577,"data":"   LINEAR             0.46          0.43              0.46           0.43                 0.06                 -0.02      0.51       0.42\n"}
+,{"stream_name":"stdout","time":18468.014092306,"data":"\n"}
+,{"stream_name":"stdout","time":18468.014096616,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":18468.014101185,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":18468.014111293,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":18468.014114756,"data":"\n"}
+,{"stream_name":"stdout","time":18468.014117688,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":18468.014129447,"data":"  Average Delta (Δ): 0.3708\n"}
+,{"stream_name":"stdout","time":18468.014132053,"data":"  Average RPDI:      0.4556\n"}
+,{"stream_name":"stdout","time":18468.014134277,"data":"\n"}
+,{"stream_name":"stdout","time":18468.014136378,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":18468.014138535,"data":"  Average Delta (Δ): 0.0711\n"}
+,{"stream_name":"stdout","time":18468.014140832,"data":"  Average RPDI:      0.4636\n"}
+,{"stream_name":"stdout","time":18468.01414393,"data":"\n"}
+,{"stream_name":"stdout","time":18468.014159076,"data":"[Results saved to /kaggle/working/results/run_4/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stdout","time":18468.01416309,"data":"run_5\n"}
+,{"stream_name":"stdout","time":18468.01416708,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":18468.014171102,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":18468.014174932,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":18468.014178456,"data":"\n"}
+,{"stream_name":"stdout","time":18468.014181688,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":20040.972131333,"data":"  Completed: DQN Δ = 0.469, DDPG Δ = -0.022\n"}
+,{"stream_name":"stdout","time":20040.972181322,"data":"\n"}
+,{"stream_name":"stdout","time":20040.972187507,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":21575.437875408,"data":"  Completed: DQN Δ = 0.373, DDPG Δ = 0.436\n"}
+,{"stream_name":"stdout","time":21575.437912606,"data":"\n"}
+,{"stream_name":"stdout","time":21575.437918124,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":23093.436225222,"data":"  Completed: DQN Δ = 0.116, DDPG Δ = -0.012\n"}
+,{"stream_name":"stdout","time":23093.436285377,"data":"\n"}
+,{"stream_name":"stdout","time":23093.436292283,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23093.436297385,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":23093.436301865,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23093.436307468,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":23093.436329172,"data":"    LOGIT             1.68          1.54              1.73           1.54                 0.47                 -0.02      0.36       0.47\n"}
+,{"stream_name":"stdout","time":23093.436334756,"data":"HOTELLING             1.13          1.00              1.11           1.00                 0.37                  0.44      0.50       0.43\n"}
+,{"stream_name":"stdout","time":23093.436339772,"data":"   LINEAR             0.47          0.43              0.46           0.43                 0.12                 -0.01      0.51       0.49\n"}
+,{"stream_name":"stdout","time":23093.436344827,"data":"\n"}
+,{"stream_name":"stdout","time":23093.436349326,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23093.43635387,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":23093.436358104,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23093.436369954,"data":"\n"}
+,{"stream_name":"stdout","time":23093.436374365,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":23093.436383644,"data":"  Average Delta (Δ): 0.3192\n"}
+,{"stream_name":"stdout","time":23093.436411401,"data":"  Average RPDI:      0.4600\n"}
+,{"stream_name":"stdout","time":23093.436416492,"data":"\n"}
+,{"stream_name":"stdout","time":23093.436420435,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":23093.436423819,"data":"  Average Delta (Δ): 0.1341\n"}
+,{"stream_name":"stdout","time":23093.436427353,"data":"  Average RPDI:      0.4624\n"}
+,{"stream_name":"stdout","time":23093.436430702,"data":"\n"}
+,{"stream_name":"stdout","time":23093.436433986,"data":"[Results saved to /kaggle/working/results/run_5/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stdout","time":23093.436437444,"data":"run_6\n"}
+,{"stream_name":"stdout","time":23093.436440714,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23093.4364443,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":23093.43644764,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23093.436451192,"data":"\n"}
+,{"stream_name":"stdout","time":23093.436454431,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":24653.376778322,"data":"  Completed: DQN Δ = 0.648, DDPG Δ = -0.105\n"}
+,{"stream_name":"stdout","time":24653.376814674,"data":"\n"}
+,{"stream_name":"stdout","time":24653.376821106,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":26177.128058908,"data":"  Completed: DQN Δ = 0.401, DDPG Δ = 0.404\n"}
+,{"stream_name":"stdout","time":26177.128100977,"data":"\n"}
+,{"stream_name":"stdout","time":26177.128104988,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":27705.615707749,"data":"  Completed: DQN Δ = 0.040, DDPG Δ = 0.096\n"}
+,{"stream_name":"stdout","time":27705.615745841,"data":"\n"}
+,{"stream_name":"stdout","time":27705.615751004,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":27705.615769237,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":27705.615774635,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":27705.615780108,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":27705.615786081,"data":"    LOGIT             1.69          1.54              1.76           1.54                 0.65                  -0.1      0.37       0.56\n"}
+,{"stream_name":"stdout","time":27705.615791096,"data":"HOTELLING             1.13          1.00              1.10           1.00                 0.40                   0.4      0.51       0.42\n"}
+,{"stream_name":"stdout","time":27705.615795996,"data":"   LINEAR             0.47          0.43              0.46           0.43                 0.04                   0.1      0.51       0.48\n"}
+,{"stream_name":"stdout","time":27705.615800799,"data":"\n"}
+,{"stream_name":"stdout","time":27705.615805111,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":27705.615809739,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":27705.61581421,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":27705.615818719,"data":"\n"}
+,{"stream_name":"stdout","time":27705.615822979,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":27705.615827373,"data":"  Average Delta (Δ): 0.3631\n"}
+,{"stream_name":"stdout","time":27705.615836623,"data":"  Average RPDI:      0.4624\n"}
+,{"stream_name":"stdout","time":27705.615848904,"data":"\n"}
+,{"stream_name":"stdout","time":27705.615863681,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":27705.615867993,"data":"  Average Delta (Δ): 0.1319\n"}
+,{"stream_name":"stdout","time":27705.615871813,"data":"  Average RPDI:      0.4855\n"}
+,{"stream_name":"stdout","time":27705.615875705,"data":"\n"}
+,{"stream_name":"stdout","time":27705.615879399,"data":"[Results saved to /kaggle/working/results/run_6/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stdout","time":27705.615883434,"data":"run_7\n"}
+,{"stream_name":"stdout","time":27705.615886632,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":27705.615890078,"data":"DQN vs DDPG - SCHEME B\n"}
+,{"stream_name":"stdout","time":27705.615893408,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":27705.615897014,"data":"\n"}
+,{"stream_name":"stdout","time":27705.615900246,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":29266.255240539,"data":"  Completed: DQN Δ = 0.723, DDPG Δ = -0.174\n"}
+,{"stream_name":"stdout","time":29266.255285918,"data":"\n"}
+,{"stream_name":"stdout","time":29266.255295052,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":30775.787578772,"data":"  Completed: DQN Δ = 0.494, DDPG Δ = 0.445\n"}
+,{"stream_name":"stdout","time":30775.787635058,"data":"\n"}
+,{"stream_name":"stdout","time":30775.787641778,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":32258.213785823,"data":"  Completed: DQN Δ = 0.116, DDPG Δ = -0.007\n"}
+,{"stream_name":"stdout","time":32258.213822746,"data":"\n"}
+,{"stream_name":"stdout","time":32258.213828758,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":32258.213833938,"data":"FINAL RESULTS\n"}
+,{"stream_name":"stdout","time":32258.213838796,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":32258.213866986,"data":"    Model  DQN Avg. Prices  Theo. Prices  DDPG Avg. Prices  Theo. Prices   DQN Extra-profits Δ  DDPG Extra-profits Δ  DQN RPDI  DDPG RPDI\n"}
+,{"stream_name":"stdout","time":32258.213871217,"data":"    LOGIT             1.69          1.54              1.79           1.54                 0.72                 -0.17      0.36       0.62\n"}
+,{"stream_name":"stdout","time":32258.213875046,"data":"HOTELLING             1.13          1.00              1.14           1.00                 0.49                  0.45      0.50       0.56\n"}
+,{"stream_name":"stdout","time":32258.21389538,"data":"   LINEAR             0.47          0.43              0.47           0.43                 0.12                 -0.01      0.51       0.51\n"}
+,{"stream_name":"stdout","time":32258.213902402,"data":"\n"}
+,{"stream_name":"stdout","time":32258.2139082,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":32258.213914631,"data":"OVERALL AVERAGES ACROSS ALL MODELS\n"}
+,{"stream_name":"stdout","time":32258.21391997,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":32258.213925411,"data":"\n"}
+,{"stream_name":"stdout","time":32258.213930369,"data":"DQN:\n"}
+,{"stream_name":"stdout","time":32258.213935383,"data":"  Average Delta (Δ): 0.4445\n"}
+,{"stream_name":"stdout","time":32258.213940463,"data":"  Average RPDI:      0.4583\n"}
+,{"stream_name":"stdout","time":32258.213945483,"data":"\n"}
+,{"stream_name":"stdout","time":32258.21396238,"data":"DDPG:\n"}
+,{"stream_name":"stdout","time":32258.213969672,"data":"  Average Delta (Δ): 0.0880\n"}
+,{"stream_name":"stdout","time":32258.213972265,"data":"  Average RPDI:      0.5611\n"}
+,{"stream_name":"stdout","time":32258.213974823,"data":"\n"}
+,{"stream_name":"stdout","time":32258.213977488,"data":"[Results saved to /kaggle/working/results/run_7/shock_b/dqn_vs_ddpg_schemeB.csv]\n"}
+,{"stream_name":"stderr","time":32263.364725118,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":32263.364753948,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":32263.509416318,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":32263.509438835,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":32264.107917336,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":32264.402498033,"data":"[NbConvertApp] Writing 85683 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":32266.705326517,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":32267.679025306,"data":"[NbConvertApp] Writing 524143 bytes to __results__.html\n"}
+]
