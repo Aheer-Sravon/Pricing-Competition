@@ -2,24 +2,20 @@ import os
 import numpy as np
 import pandas as pd
 
-from environments import MarketEnvContinuous
+from environments import MarketEnv
 from agents import DDPGAgent
 from theoretical_benchmarks import TheoreticalBenchmarks
 
 import argparse
 parser = argparse.ArgumentParser(prog="q_vs_q")
-parser.add_argument("-s", "--seed", type=int, nargs=1, help="Specify the seed")
 parser.add_argument("-r", "--num_runs", type=int, nargs=1, help="Number of batches per model")
 args = parser.parse_args()
 
-SEED = args.seed[0] if args.seed is not None else 99
 NUM_RUNS = args.num_runs[0] if args.num_runs is not None else 50
 
-def run_simulation(model, seed, shock_cfg, benchmarks):
+def run_simulation(model, shock_cfg, benchmarks):
     """Run DDPG vs DDPG simulation"""
-    np.random.seed(seed)
-    
-    env = MarketEnvContinuous(market_model=model, shock_cfg=shock_cfg, seed=seed)
+    env = MarketEnv(market_model=model, shock_cfg=shock_cfg)
     
     price_min = env.price_grid.min()
     price_max = env.price_grid.max()
@@ -29,7 +25,6 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         agent_id=0,
         state_dim=2,
         action_dim=1,
-        seed=seed,
         price_min=price_min,
         price_max=price_max
     )
@@ -38,7 +33,6 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         agent_id=1,
         state_dim=2,
         action_dim=1,
-        seed=seed + 1000,  # Different seed for diversity
         price_min=price_min,
         price_max=price_max
     )
@@ -53,7 +47,10 @@ def run_simulation(model, seed, shock_cfg, benchmarks):
         price1, norm_action1 = ddpg_agent1.select_action(state_float, explore=True)
         price2, norm_action2 = ddpg_agent2.select_action(state_float, explore=True)
         
-        actions = [price1, price2]
+        actions = [
+                int(np.abs(env.price_grid - price1).argmin()),
+                int(np.abs(env.price_grid - price2).argmin())
+        ]
         next_state, rewards, done, info = env.step(actions)
         
         # Update both agents
@@ -107,7 +104,7 @@ def main():
         'mode': 'independent'
     }
     
-    benchmark_calculator = TheoreticalBenchmarks(seed=SEED)
+    benchmark_calculator = TheoreticalBenchmarks()
     
     print("=" * 80)
     print("DDPG vs DDPG - SCHEME A")
@@ -150,8 +147,7 @@ def main():
         theo_prices = []
         
         for run in range(NUM_RUNS):
-            seed = SEED + run
-            ap1, ap2, d1, d2, r1, r2, p_n = run_simulation(model, seed, shock_cfg, model_benchmarks)
+            ap1, ap2, d1, d2, r1, r2, p_n = run_simulation(model, shock_cfg, model_benchmarks)
             avg_prices1.append(ap1)
             avg_prices2.append(ap2)
             deltas1.append(d1)
@@ -159,6 +155,10 @@ def main():
             rpdis1.append(r1)
             rpdis2.append(r2)
             theo_prices.append(p_n)
+
+            per_run_metrices[model]["run"].append(run+1)
+            per_run_metrices[model]["avg_price_firm_1"].append(round(ap1, 2))
+            per_run_metrices[model]["avg_price_firm_2"].append(round(ap2, 2))
         
         results[model] = {
             'Avg Price Firm 1': np.mean(avg_prices1),
