@@ -1,0 +1,101 @@
+[{"stream_name":"stderr","time":11.111851799,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.111939872,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.111946437,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.111950496,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":11.913329385,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.913379917,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.913386756,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.913390815,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":25.295891648,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":25.29597985,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":25.295987109,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":25.29599218,"data":"\n"}
+,{"stream_name":"stdout","time":25.295996622,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":198.298244916,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_1/logit.csv'\n"}
+,{"stream_name":"stdout","time":198.451640821,"data":"\n"}
+,{"stream_name":"stdout","time":198.451701465,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":356.282777789,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_1/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":356.45426653,"data":"\n"}
+,{"stream_name":"stdout","time":356.454335021,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":515.094111732,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_1/linear.csv'\n"}
+,{"stream_name":"stdout","time":515.263950288,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":515.263991704,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":515.263998804,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":515.264004386,"data":"\n"}
+,{"stream_name":"stdout","time":515.264010014,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":673.860041722,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_2/logit.csv'\n"}
+,{"stream_name":"stdout","time":674.031084549,"data":"\n"}
+,{"stream_name":"stdout","time":674.031120321,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":827.881266785,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_2/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":828.054889808,"data":"\n"}
+,{"stream_name":"stdout","time":828.054927972,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":982.100122784,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_2/linear.csv'\n"}
+,{"stream_name":"stdout","time":982.267813099,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":982.267846451,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":982.267867298,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":982.267871713,"data":"\n"}
+,{"stream_name":"stdout","time":982.267874908,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":1138.207436913,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_3/logit.csv'\n"}
+,{"stream_name":"stdout","time":1138.373935968,"data":"\n"}
+,{"stream_name":"stdout","time":1138.373974682,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":1307.100395026,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_3/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":1307.265087998,"data":"\n"}
+,{"stream_name":"stdout","time":1307.265137306,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":1468.107591623,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_3/linear.csv'\n"}
+,{"stream_name":"stdout","time":1468.272560683,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1468.272632221,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":1468.272640727,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1468.272646627,"data":"\n"}
+,{"stream_name":"stdout","time":1468.272651847,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":1626.396149486,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_4/logit.csv'\n"}
+,{"stream_name":"stdout","time":1626.56544313,"data":"\n"}
+,{"stream_name":"stdout","time":1626.565488741,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":1781.822806993,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_4/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":1781.985262466,"data":"\n"}
+,{"stream_name":"stdout","time":1781.985298063,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":1937.728054321,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_4/linear.csv'\n"}
+,{"stream_name":"stdout","time":1937.896239737,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1937.896275565,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":1937.896279796,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1937.896283274,"data":"\n"}
+,{"stream_name":"stdout","time":1937.896286208,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":2091.801919207,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_5/logit.csv'\n"}
+,{"stream_name":"stdout","time":2091.972716208,"data":"\n"}
+,{"stream_name":"stdout","time":2091.972762621,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":2243.205724313,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_5/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":2243.371894538,"data":"\n"}
+,{"stream_name":"stdout","time":2243.371931025,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":2394.621009517,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_5/linear.csv'\n"}
+,{"stream_name":"stdout","time":2394.788151531,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2394.788217183,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":2394.788224957,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2394.78822862,"data":"\n"}
+,{"stream_name":"stdout","time":2394.788231707,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":2547.005475205,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_6/logit.csv'\n"}
+,{"stream_name":"stdout","time":2547.175490859,"data":"\n"}
+,{"stream_name":"stdout","time":2547.175522433,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":2697.707967978,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_6/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":2697.876951906,"data":"\n"}
+,{"stream_name":"stdout","time":2697.876987485,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":2848.907535242,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_6/linear.csv'\n"}
+,{"stream_name":"stdout","time":2849.077441997,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2849.07747449,"data":"DDPG vs DDPG - SCHEME C - Tracking\n"}
+,{"stream_name":"stdout","time":2849.077478737,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":2849.077482042,"data":"\n"}
+,{"stream_name":"stdout","time":2849.077485022,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":3000.270214752,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_7/logit.csv'\n"}
+,{"stream_name":"stdout","time":3000.436759889,"data":"\n"}
+,{"stream_name":"stdout","time":3000.436797979,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":3150.748376251,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_7/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":3150.91500022,"data":"\n"}
+,{"stream_name":"stdout","time":3150.915068233,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":3302.429624021,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_7/linear.csv'\n"}
+,{"stream_name":"stderr","time":3307.897380816,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":3307.897413888,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":3308.143824871,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":3308.143857283,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":3308.844959432,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":3309.153839045,"data":"[NbConvertApp] Writing 223254 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":3311.474227179,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":3312.473862931,"data":"[NbConvertApp] Writing 564278 bytes to __results__.html\n"}
+]
