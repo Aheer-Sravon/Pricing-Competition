@@ -1,0 +1,108 @@
+[{"stream_name":"stderr","time":11.997655434,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.997782454,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.99779059,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.997795086,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":12.816297153,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":12.816350067,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":12.816360414,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":12.816364269,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":25.605066813,"data":"run_1\n"}
+,{"stream_name":"stdout","time":25.605136448,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":25.605144006,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":25.605150215,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":25.605156454,"data":"\n"}
+,{"stream_name":"stdout","time":25.60516277,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":89.303571155,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_1/logit.csv'\n"}
+,{"stream_name":"stdout","time":89.470036433,"data":"\n"}
+,{"stream_name":"stdout","time":89.470100624,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":143.850081783,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_1/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":144.033738228,"data":"\n"}
+,{"stream_name":"stdout","time":144.033801717,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":198.14144846,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_1/linear.csv'\n"}
+,{"stream_name":"stdout","time":198.32405898,"data":"run_2\n"}
+,{"stream_name":"stdout","time":198.324113163,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":198.324122438,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":198.324130156,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":198.32413565,"data":"\n"}
+,{"stream_name":"stdout","time":198.324141049,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":253.539685888,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_2/logit.csv'\n"}
+,{"stream_name":"stdout","time":253.723241135,"data":"\n"}
+,{"stream_name":"stdout","time":253.723276856,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":308.027451973,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_2/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":308.209007996,"data":"\n"}
+,{"stream_name":"stdout","time":308.209064646,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":363.879593007,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_2/linear.csv'\n"}
+,{"stream_name":"stdout","time":364.057198927,"data":"run_3\n"}
+,{"stream_name":"stdout","time":364.057266023,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":364.057275672,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":364.057280112,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":364.057284432,"data":"\n"}
+,{"stream_name":"stdout","time":364.057289018,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":420.574729286,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_3/logit.csv'\n"}
+,{"stream_name":"stdout","time":420.750092227,"data":"\n"}
+,{"stream_name":"stdout","time":420.750133971,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":479.93888558,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_3/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":480.11546413,"data":"\n"}
+,{"stream_name":"stdout","time":480.115530559,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":540.409710722,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_3/linear.csv'\n"}
+,{"stream_name":"stdout","time":540.581089777,"data":"run_4\n"}
+,{"stream_name":"stdout","time":540.581142638,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":540.581151839,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":540.581157108,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":540.5811623,"data":"\n"}
+,{"stream_name":"stdout","time":540.581168061,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":603.307521563,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_4/logit.csv'\n"}
+,{"stream_name":"stdout","time":603.482811136,"data":"\n"}
+,{"stream_name":"stdout","time":603.482860992,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":663.014717311,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_4/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":663.191154726,"data":"\n"}
+,{"stream_name":"stdout","time":663.191195705,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":721.968482806,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_4/linear.csv'\n"}
+,{"stream_name":"stdout","time":722.142900471,"data":"run_5\n"}
+,{"stream_name":"stdout","time":722.142968967,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":722.14297741,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":722.142983239,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":722.142988668,"data":"\n"}
+,{"stream_name":"stdout","time":722.142993205,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":782.632302975,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_5/logit.csv'\n"}
+,{"stream_name":"stdout","time":782.805422921,"data":"\n"}
+,{"stream_name":"stdout","time":782.80547257,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":839.446983345,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_5/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":839.623777468,"data":"\n"}
+,{"stream_name":"stdout","time":839.623842797,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":896.18468606,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_5/linear.csv'\n"}
+,{"stream_name":"stdout","time":896.36360684,"data":"run_6\n"}
+,{"stream_name":"stdout","time":896.363677435,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":896.363687878,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":896.363694428,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":896.363701073,"data":"\n"}
+,{"stream_name":"stdout","time":896.363707509,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":954.774260645,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_6/logit.csv'\n"}
+,{"stream_name":"stdout","time":954.947567915,"data":"\n"}
+,{"stream_name":"stdout","time":954.947608952,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":1010.81942229,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_6/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":1010.998785396,"data":"\n"}
+,{"stream_name":"stdout","time":1010.9988471,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":1066.959465287,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_6/linear.csv'\n"}
+,{"stream_name":"stdout","time":1067.13603067,"data":"run_7\n"}
+,{"stream_name":"stdout","time":1067.136090561,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1067.13609915,"data":"DQN vs DQN - SCHEME NONE - Tracking\n"}
+,{"stream_name":"stdout","time":1067.136104517,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1067.1361099,"data":"\n"}
+,{"stream_name":"stdout","time":1067.136114714,"data":"Running LOGIT simulations...\n"}
+,{"stream_name":"stdout","time":1125.504677204,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_7/logit.csv'\n"}
+,{"stream_name":"stdout","time":1125.682257425,"data":"\n"}
+,{"stream_name":"stdout","time":1125.682295802,"data":"Running HOTELLING simulations...\n"}
+,{"stream_name":"stdout","time":1181.962557724,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_7/hotelling.csv'\n"}
+,{"stream_name":"stdout","time":1182.140272069,"data":"\n"}
+,{"stream_name":"stdout","time":1182.140330754,"data":"Running LINEAR simulations...\n"}
+,{"stream_name":"stdout","time":1238.750696191,"data":"[INFO] Simulation logs written successfully to '/kaggle/working/run_7/linear.csv'\n"}
+,{"stream_name":"stderr","time":1244.154540724,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1244.154584243,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1244.424598578,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1244.424639914,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1245.163876762,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":1245.488858198,"data":"[NbConvertApp] Writing 222686 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":1247.854669298,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1248.886904602,"data":"[NbConvertApp] Writing 562616 bytes to __results__.html\n"}
+]
