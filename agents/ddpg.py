@@ -26,14 +26,14 @@ class ReplayBuffer:
 
 class Actor(nn.Module):
     """Actor network for DDPG"""
-    def __init__(self, state_dim, action_dim, hidden_dim=400):
+    def __init__(self, state_dim, action_dim, hidden_dim=400): # action_dim = 1
         super(Actor, self).__init__()
-        self.bn_input = nn.BatchNorm1d(state_dim)
-        self.fc1 = nn.Linear(state_dim, hidden_dim)
+        self.bn_input = nn.BatchNorm1d(state_dim) # 2
+        self.fc1 = nn.Linear(state_dim, hidden_dim) # 400
         self.bn1 = nn.BatchNorm1d(hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, 300)
+        self.fc2 = nn.Linear(hidden_dim, 300) # 300
         self.bn2 = nn.BatchNorm1d(300)
-        self.fc3 = nn.Linear(300, action_dim)
+        self.fc3 = nn.Linear(300, action_dim) # 1
        
         # Initialize weights
         self._init_weights()
@@ -54,10 +54,10 @@ class Critic(nn.Module):
     """Critic network for DDPG"""
     def __init__(self, state_dim, action_dim, hidden_dim=400):
         super(Critic, self).__init__()
-        self.bn_input = nn.BatchNorm1d(state_dim)
-        self.fc1 = nn.Linear(state_dim, hidden_dim)
+        self.bn_input = nn.BatchNorm1d(state_dim) # 2
+        self.fc1 = nn.Linear(state_dim, hidden_dim) # 400
         self.bn1 = nn.BatchNorm1d(hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim + action_dim, 300)
+        self.fc2 = nn.Linear(hidden_dim + action_dim, 300) 
         self.fc3 = nn.Linear(300, 1)
        
         # Initialize weights

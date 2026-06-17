@@ -74,13 +74,11 @@ class DQNAgent:
         Build the neural network architecture.
         """
         return nn.Sequential(
-            nn.Linear(self.state_dim, 400),
+            nn.Linear(self.state_dim, 400), # 2
             nn.ReLU(),
-            nn.Linear(400, 300),
+            nn.Linear(400, 300), # 400
             nn.ReLU(),
-            # nn.Linear(128, 64),
-            # nn.ReLU(),
-            nn.Linear(300, self.action_dim)
+            nn.Linear(300, self.action_dim) # 300 -> 1
         )
    
     def remember(self, state, action, reward, next_state, done):
